@@ -1,15 +1,6 @@
 import styled from "styled-components";
 import ShopItem from "./ShopItem";
 
-interface Props {
-	itemsList: {
-		image: string;
-		name: string;
-		description: string;
-		price: number;
-	}[];
-}
-
 const ItemsGroup = styled.div`
 	display: grid;
 	gap: 30px;
@@ -44,19 +35,31 @@ const ItemsGroup = styled.div`
 	}
 `;
 
+interface Props {
+	itemsList: {
+		item_id: number;
+		image: string;
+		name: string;
+		description: string;
+		price: number;
+	}[];
+}
+
 const AllItemsView = ({ itemsList }: Props) => {
 	return (
-		<ItemsGroup>
-			{itemsList.map((item, index) => (
-				<ShopItem
-					key={index}
-					itemImage={item.image}
-					itemName={item.name}
-					itemDescription={item.description}
-					price={item.price}
-				/>
-			))}
-		</ItemsGroup>
+		<>
+			<ItemsGroup>
+				{itemsList.map((item) => (
+					<ShopItem
+						key={item.item_id}
+						itemImage={item.image}
+						itemName={item.name}
+						itemDescription={item.description}
+						price={item.price}
+					/>
+				))}
+			</ItemsGroup>
+		</>
 	);
 };
 

@@ -5,7 +5,7 @@ import NewSection from "./NewSection";
 import DeviceDetector from "./DeviceDetector";
 import CategoriesSection from "./CategoriesSection";
 
-const HomePage = () => {
+const HomePage: React.FC = () => {
 	return (
 		<>
 			<DeviceDetector />

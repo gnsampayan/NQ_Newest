@@ -12,10 +12,28 @@ const SignIn = () => {
 
 	const navigate = useNavigate();
 
-	const handleSubmit = (event: FormEvent) => {
+	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		// Here you would typically send the form data to a server
-		console.log(`Username: ${username}, Password: ${password}`);
+		try {
+			// Make a GET request to check if the username and password are valid
+			const response = await fetch(
+				`http://localhost:8081/users?user_name=${username}&user_password=${password}`
+			);
+
+			const data = await response.json();
+
+			if (data.status === "ok") {
+				// Credentials are valid, navigate to the new page
+				console.log("Sign in successful");
+				navigate("/"); // Replace "/dashboard" with the desired path for the new page
+			} else {
+				// Handle invalid credentials
+				console.error("Invalid credentials");
+			}
+		} catch (error) {
+			console.error("An error occurred:", error);
+		}
 	};
 
 	return (

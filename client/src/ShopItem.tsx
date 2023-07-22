@@ -81,7 +81,7 @@ const ShopItem = ({ itemImage, itemName, itemDescription, price }: Props) => {
 	return (
 		<ItemContainer>
 			<ImageContainer>
-				<Image src={itemImage} alt="An image of an electric motor" />
+				<Image src={itemImage} alt={itemDescription} />
 			</ImageContainer>
 			<ItemDetails>
 				<TopDetails>
