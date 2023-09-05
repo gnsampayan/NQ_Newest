@@ -2,9 +2,18 @@ import express, { json } from 'express';
 import { createPool } from 'mysql2';
 import cors from 'cors';
 
+import config from 'config';
+
+
 const app = express();
 app.use(cors());
 app.use(json());
+
+
+//Configuration
+console.log('Application Name: ' + config.get('name'));
+console.log('Mail Server: ' + config.get('mail.host'));
+console.log('Mail Password: ' + config.get('mail.password'));
 
 // Create a MySQL connection pool
 const pool = createPool({
