@@ -10,21 +10,34 @@ const SignUp = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
+	const type = "normal"; // temporary - move to config
 
 	const navigate = useNavigate();
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		try {
+			// First, check if the user already exists
+			const checkResponse = await fetch(
+				`http://localhost:8081/users?email=${email}`
+			);
+			const checkData = await checkResponse.json();
+
+			if (checkData.status === "ok") {
+				console.error("User already exists.");
+				return;
+			}
+
+			// If not, create a new user
 			const response = await fetch("http://localhost:8081/users", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					user_name: username,
-					user_password: password,
-					user_email: email,
-					user_type: "normal",
+					name: username,
+					password: password,
+					email: email,
+					type: type,
 				}),
 			});
 			const data = await response.json();

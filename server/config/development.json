@@ -2,5 +2,12 @@
     "name": "My Express App - Development",
     "mail": {
         "host": "dev-mail-server"
+    },
+    "server": {
+        "host": "localhost",
+        "user": "root",
+        "password": "mrbonkers123",
+        "database": "dev_featured"
     }
+    
 }
