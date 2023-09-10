@@ -54,6 +54,6 @@ export default function(pool) {  // Export as a function that takes pool
         }
       );
     });
-
+    
     return router;
 }

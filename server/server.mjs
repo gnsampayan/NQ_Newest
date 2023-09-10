@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import config from 'config';
 import userRoutes from './routes/users.mjs';
+import log from './middleware/logger.mjs';
 
 
 // Create a MySQL connection pool
@@ -17,15 +18,16 @@ const pool = createPool({
   queueLimit: 0
 });
 
+const app = express();
+
+app.use(log);
+app.use(cors());
+app.use(json());
+app.use('/api/users', userRoutes(pool));
 //Configuration
 console.log('Application Name: ' + config.get('name'));
 console.log('Mail Server: ' + config.get('mail.host'));
 // console.log('Mail Password: ' + config.get('mail.password'));
-
-const app = express();
-app.use(cors());
-app.use(json());
-app.use('/api/users', userRoutes(pool));
 
 // Test the MySQL connection
 pool.getConnection((err, connection) => {
