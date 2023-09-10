@@ -18,7 +18,7 @@ const SignIn = () => {
 		try {
 			// Make a GET request to check if the username and password are valid
 			const response = await fetch(
-				`http://localhost:8081/users?user_name=${username}&user_password=${password}`
+				`http://localhost:8081/api/users?username=${username}&password=${password}`
 			);
 
 			const data = await response.json();

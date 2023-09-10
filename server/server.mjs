@@ -3,17 +3,8 @@ import { createPool } from 'mysql2';
 import cors from 'cors';
 
 import config from 'config';
-import users from './routes/users.mjs';
+import userRoutes from './routes/users.mjs';
 
-const app = express();
-app.use(cors());
-app.use(json());
-app.use('/api/users', users);
-
-//Configuration
-console.log('Application Name: ' + config.get('name'));
-console.log('Mail Server: ' + config.get('mail.host'));
-// console.log('Mail Password: ' + config.get('mail.password'));
 
 // Create a MySQL connection pool
 const pool = createPool({
@@ -25,6 +16,16 @@ const pool = createPool({
   connectionLimit: 10,
   queueLimit: 0
 });
+
+//Configuration
+console.log('Application Name: ' + config.get('name'));
+console.log('Mail Server: ' + config.get('mail.host'));
+// console.log('Mail Password: ' + config.get('mail.password'));
+
+const app = express();
+app.use(cors());
+app.use(json());
+app.use('/api/users', userRoutes(pool));
 
 // Test the MySQL connection
 pool.getConnection((err, connection) => {
@@ -55,6 +56,7 @@ app.get('/data', (req, res) => {
 app.listen(8081, () => {
   console.log('Server started on port 8081');
 });
+
 
 // app.get('/', (req, res) => {
 //   return res.json('From the backend side');
