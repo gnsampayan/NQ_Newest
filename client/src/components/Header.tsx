@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { BsFillPersonFill } from "react-icons/bs";
-import storeFront from "./assets/Storefront.svg";
+import storeFront from "../assets/Storefront.svg";
 import { useNavigate } from "react-router-dom";
 
 const NavBox = styled.nav`
@@ -105,19 +105,25 @@ const StyledPersonIcon = styled(BsFillPersonFill)`
 	transform: translateY(2px);
 `;
 
-const NavModule = () => {
+interface Props {
+	showBlade: () => void;
+	hideBlade: () => void;
+}
+
+const NavModule = ({ showBlade, hideBlade } : Props) => {
 	const navItems = [
 		{ name: "Store", path: "/store" },
 		{ name: "Business", path: "/business" },
 		{ name: "Contact Us", path: "/contact-us" },
 		{ name: "Sign in", path: "/sign-in" },
 	];
-
 	const navigate = useNavigate();
-
 	return (
 		<NavBox>
-			<WaterMarkParent onClick={() => navigate("/")}>
+			<WaterMarkParent onClick={() => {
+				hideBlade();
+				navigate("/");
+				}}>
 				<MainIcon
 					src={storeFront}
 					alt="NQ logo of a minimal store front icon"
@@ -134,8 +140,16 @@ const NavModule = () => {
 						<ItemComponent
 							key={item.name}
 							onClick={() => {
-								console.log(`${item.name} clicked`);
-								navigate(item.path);
+								if (item.name === "Store") {
+									console.log(`you clicked store`);
+									navigate(item.path);
+									showBlade();
+								} else {
+									console.log(`${item.name} clicked`);
+									navigate(item.path);
+									hideBlade();
+								}
+								
 							}}
 						>
 							{item.name === "Sign in" && (

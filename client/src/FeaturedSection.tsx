@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import ShopSection from "./ShopSection";
+import ShopSection from "./components/ShopSection";
 
 import ElectricMotor from "./assets/items/electric-motor.png";
 import Bolts from "./assets/items/bolts.png";
