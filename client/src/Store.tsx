@@ -13,7 +13,6 @@ import Cement from "./assets/items/cement.png";
 const Wrapper = styled.div`
 	position: absolute;
 	color: white;
-	background-color: orange;
 	margin-left: 400px;
 	width: calc(100% - 400px);
 	height: calc(100vh - 80px);
