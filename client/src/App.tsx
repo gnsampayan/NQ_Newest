@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 import NavModule from "./components/Header";
@@ -11,7 +12,7 @@ import ContactUs from "./ContactUs";
 import SignIn from "./components/SignInModal";
 import SignUp from "./components/SignUp";
 import Blade from "./components/Blade";
-import { useState, useEffect } from 'react';
+import Member from './Member';
 
 const Wrapper = styled.div`
 	margin-top: 80px;
@@ -20,34 +21,47 @@ const Wrapper = styled.div`
 	min-height: calc(100vh - 80px);
 `;
 
+function MainApp() {
+  const [vis, setVis] = useState(false);
+  const [membership, setMembership] = useState(() => {
+    const savedMembership = localStorage.getItem('membership');
+    return savedMembership ? JSON.parse(savedMembership) : false;
+  });
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/store') {
+      setVis(true);
+    } else {
+      setVis(false);
+    }
+  }, [location]);
+
+  return (
+    <Wrapper>
+      <NavModule showBlade={() => {setVis(true)}} hideBlade={() => {setVis(false)}} membership={membership}/>
+      <Blade isVisible={vis}/>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/featured" element={<FeaturedPage />} />
+        <Route path="/new" element={<NewItemsPage />} />
+        <Route path="/store" element={<Store />} />
+        <Route path="/business" element={<Business />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/sign-in" element={<SignIn setMembership={setMembership} membership={membership}/>} />
+        <Route path="/sign-up" element={<SignUp />} />
+		<Route path="/member" element={<Member setMembership={setMembership}/>} />
+      </Routes>
+    </Wrapper>
+  );
+}
+
 function App() {
-	const [vis, setVis] = useState(() => {
-		// Retrieve the initial value from localStorage if it exists
-		const savedVis = localStorage.getItem('vis');
-		return savedVis ? JSON.parse(savedVis) : false;
-	});
-	useEffect(() => {
-		// Update localStorage whenever vis changes
-		localStorage.setItem('vis', JSON.stringify(vis));
-	}, [vis]);
-	return (
-		<BrowserRouter>
-			<Wrapper>
-				<NavModule showBlade={() => {setVis(true)}} hideBlade={() => {setVis(false)}}/>
-				<Blade isVisible={vis}/>
-				<Routes>
-					<Route path="/" element={<HomePage />} />
-					<Route path="/featured" element={<FeaturedPage />} />
-					<Route path="/new" element={<NewItemsPage />} />
-					<Route path="/store" element={<Store />} />
-					<Route path="/business" element={<Business />} />
-					<Route path="/contact-us" element={<ContactUs />} />
-					<Route path="/sign-in" element={<SignIn />} />
-					<Route path="/sign-up" element={<SignUp />} />
-				</Routes>
-			</Wrapper>
-		</BrowserRouter>
-	);
+  return (
+    <BrowserRouter>
+      <MainApp />
+    </BrowserRouter>
+  );
 }
 
 export default App;

@@ -7,17 +7,28 @@ const BladeContents = styled.div<Props>`
     position: absolute;
     background-color: #D9D9D9;
     width: 400px;
-    height: calc(100vh - 80px);
+    height: auto;
     display: ${props => (props.isVisible ? 'block' : 'none')};
+    padding-bottom: 40px;
 `;
 const Text = styled.h5`
     color: #2B2B2B;
     font-family: 'Work Sans', sans-serif;
     font-style: normal;
-    font-weight: normal;
+    font-weight: 300;
     font-size: 1.375rem;
     margin-left: 40px;
     margin-bottom: 20px;
+`;
+const BoldText = styled(Text)`
+  font-weight: 600;
+`;
+const TitleTxt = styled.h3`
+    color: #2B2B2B;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 40px 0px 20px 40px;
 `;
 
 interface Props {
@@ -30,12 +41,12 @@ const Blade = ({ isVisible } : Props) => {
             <>
                 <SearchBar/>
                 <section>
-                    <Text>In Stock</Text>
-                    <Text>Featured</Text>
-                    <Text>On Sale</Text>
-                    <Text>Popular</Text>
+                    <BoldText>In Stock</BoldText>
+                    <BoldText>Featured</BoldText>
+                    <BoldText>On Sale</BoldText>
+                    <BoldText>Popular</BoldText>
                 </section>
-                <h3>CATEGORIES</h3>
+                <TitleTxt>CATEGORIES</TitleTxt>
                 <section>
                     <Text>Electronics</Text>
                     <Text>Hardware</Text>

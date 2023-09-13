@@ -1,12 +1,18 @@
 import styled from "styled-components";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
 	color: white;
 `;
 
-const SignIn = () => {
+interface SignInProps {
+	membership: boolean;
+	setMembership: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+  
+
+const SignIn: React.FC<SignInProps> = ({ membership, setMembership }) => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
@@ -24,9 +30,9 @@ const SignIn = () => {
 			const data = await response.json();
 
 			if (data.status === "ok") {
-				// Credentials are valid, navigate to the new page
-				console.log("Sign in successful");
-				navigate("/"); // Replace "/dashboard" with the desired path for the new page
+				setMembership(true);
+				console.log("sign in sucessful")
+				navigate("/member"); // Replace "/dashboard" with the desired path for the new page
 			} else {
 				// Handle invalid credentials
 				console.error("Invalid credentials");
@@ -35,6 +41,15 @@ const SignIn = () => {
 			console.error("An error occurred:", error);
 		}
 	};
+
+	useEffect(() => {
+		console.log("useEffect triggered: ", membership); // log the current state
+		localStorage.setItem('membership', JSON.stringify(membership));
+		if (membership) {
+			console.log("Sign in successful");
+			navigate("/member"); 
+		}
+	  }, [membership]);
 
 	return (
 		<Wrapper>

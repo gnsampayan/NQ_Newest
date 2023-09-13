@@ -5,6 +5,7 @@ import { BsSearch } from "react-icons/bs";
 
 const Wrapper = styled.div`
   position: relative;
+  margin-bottom: 20px;
 `;
 const Icon = styled(BsSearch)`
   position: absolute;

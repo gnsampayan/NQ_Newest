@@ -55,7 +55,10 @@ const SignInItem = styled(NavItem)`
 	background: #a259ff;
 	border-radius: 20px;
 `;
-
+const MemberItem = styled(NavItem)`
+	background: red;
+	border-radius: 20px;
+`;
 const PersonIcon = styled.span`
 	margin-right: 10px;
 
@@ -108,9 +111,10 @@ const StyledPersonIcon = styled(BsFillPersonFill)`
 interface Props {
 	showBlade: () => void;
 	hideBlade: () => void;
+	membership: boolean;
 }
 
-const NavModule = ({ showBlade, hideBlade } : Props) => {
+const NavModule = ({ showBlade, hideBlade, membership } : Props) => {
 	const navItems = [
 		{ name: "Store", path: "/store" },
 		{ name: "Business", path: "/business" },
@@ -135,7 +139,14 @@ const NavModule = ({ showBlade, hideBlade } : Props) => {
 			</WaterMarkParent>
 			<NavMenu>
 				{navItems.map((item) => {
-					const ItemComponent = item.name === "Sign in" ? SignInItem : NavItem;
+					let ItemComponent;
+
+					// Conditionally assign ItemComponent based on membership and item name
+					if (item.name === "Sign in") {
+					  ItemComponent = membership ? MemberItem : SignInItem;
+					} else {
+					  ItemComponent = NavItem;
+					}
 					return (
 						<ItemComponent
 							key={item.name}
@@ -152,12 +163,12 @@ const NavModule = ({ showBlade, hideBlade } : Props) => {
 								
 							}}
 						>
-							{item.name === "Sign in" && (
+							{item.name === "Sign in" && !membership && ( // Only show icon if not a member
 								<PersonIcon>
 									<StyledPersonIcon />
 								</PersonIcon>
 							)}
-							{item.name}
+							{ item.name === "Sign in" && membership ? "Member" : item.name}
 						</ItemComponent>
 					);
 				})}
