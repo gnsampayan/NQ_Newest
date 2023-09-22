@@ -11,8 +11,8 @@ import Business from "./Business";
 import ContactUs from "./ContactUs";
 import SignIn from "./components/SignInModal";
 import SignUp from "./components/SignUp";
-import Blade from "./components/Blade";
 import Member from './Member';
+import Blade from './components/Blade';
 
 const Wrapper = styled.div`
 	margin-top: 80px;
@@ -22,24 +22,15 @@ const Wrapper = styled.div`
 `;
 
 function MainApp() {
-  const [vis, setVis] = useState(false);
+  const [vis , setVis] = useState(false);
   const [membership, setMembership] = useState(() => {
     const savedMembership = localStorage.getItem('membership');
     return savedMembership ? JSON.parse(savedMembership) : false;
   });
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.pathname === '/store') {
-      setVis(true);
-    } else {
-      setVis(false);
-    }
-  }, [location]);
 
   return (
     <Wrapper>
-      <NavModule showBlade={() => {setVis(true)}} hideBlade={() => {setVis(false)}} membership={membership}/>
+      <NavModule membership={membership} vis={vis} setVis={setVis} />
       <Blade isVisible={vis}/>
       <Routes>
         <Route path="/" element={<HomePage />} />

@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { BsFillPersonFill } from "react-icons/bs";
 import storeFront from "../assets/Storefront.svg";
 import { useNavigate } from "react-router-dom";
+import Hamburger from "./Hamburger";
+import Blade from "./Blade";
 
 const NavBox = styled.nav`
 	background-color: #221f27;
@@ -108,22 +110,37 @@ const StyledPersonIcon = styled(BsFillPersonFill)`
 	transform: translateY(2px);
 `;
 
-interface Props {
-	showBlade: () => void;
-	hideBlade: () => void;
+interface NavModuleProps {
 	membership: boolean;
+  	vis: boolean;
+  	setVis: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const NavModule = ({ showBlade, hideBlade, membership } : Props) => {
+const NavModule: React.FC<NavModuleProps> = ({ membership, vis, setVis } : NavModuleProps) => {
 	const navItems = [
-		{ name: "Store", path: "/store" },
-		{ name: "Business", path: "/business" },
+		{ name: "Shop", path: "/store" },
+		{ name: "Inquiries", path: "/business" },
 		{ name: "Contact Us", path: "/contact-us" },
 		{ name: "Sign in", path: "/sign-in" },
 	];
 	const navigate = useNavigate();
+
+	const showBlade = () => {
+		console.log('show blade');
+		return (
+			<Blade isVisible={true}/>
+		)
+	}
+	const hideBlade = () => {
+		console.log('hide Blade');
+		return (
+			<Blade isVisible={false}/>
+		)
+	}
+	
 	return (
 		<NavBox>
+			<Hamburger vis={vis} setVis={setVis} />
 			<WaterMarkParent onClick={() => {
 				hideBlade();
 				navigate("/");
@@ -151,7 +168,7 @@ const NavModule = ({ showBlade, hideBlade, membership } : Props) => {
 						<ItemComponent
 							key={item.name}
 							onClick={() => {
-								if (item.name === "Store") {
+								if (item.name === "Shop") {
 									console.log(`you clicked store`);
 									navigate(item.path);
 									showBlade();

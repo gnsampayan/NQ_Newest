@@ -20,40 +20,40 @@ export default function(pool) {  // Export as a function that takes pool
         return res.status(200).json({ status: 'ok', message: 'Sign up successful' });
       });
     });
+  router.get('/', (req, res) => {
+    const { username, password } = req.query;
+
+    if (!username) {
+      res.status(400).json({ error: 'Invalid request: Missing user name' });
+      return;
+    }
+    if (!password) {
+      res.status(400).json({ error: 'Invalid request: Missing user password' });
+      return;
+    }
+
+    pool.query(
+      'SELECT * FROM users WHERE user_name = ? AND user_password = ?',
+      [username, password],
+      (err, results) => {
+        if (err) {
+          console.error('Error retrieving data:', err);
+          res.status(500).json({ error: 'Error retrieving data' });
+          return;
+        }
+
+        if (results.length > 0) {
+          // User exists in the database with matching credentials
+          res.status(200).json({ status: 'ok', message: 'Valid credentials' });
+        } else {
+          // Invalid credentials
+          res.status(401).json({ error: 'Invalid credentials' });
+        }
+      }
+    );
+  });
 
     // Temp User credentials DB check
-    router.get('/', (req, res) => {
-      const { username, password } = req.query;
-
-      if (!username) {
-        res.status(400).json({ error: 'Invalid request: Missing user name' });
-        return;
-      }
-      if (!password) {
-        res.status(400).json({ error: 'Invalid request: Missing user password' });
-        return;
-      }
-
-      pool.query(
-        'SELECT * FROM users WHERE user_name = ? AND user_password = ?',
-        [username, password],
-        (err, results) => {
-          if (err) {
-            console.error('Error retrieving data:', err);
-            res.status(500).json({ error: 'Error retrieving data' });
-            return;
-          }
-
-          if (results.length > 0) {
-            // User exists in the database with matching credentials
-            res.status(200).json({ status: 'ok', message: 'Valid credentials' });
-          } else {
-            // Invalid credentials
-            res.status(401).json({ error: 'Invalid credentials' });
-          }
-        }
-      );
-    });
     
     return router;
 }

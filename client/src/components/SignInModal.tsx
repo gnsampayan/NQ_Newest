@@ -17,7 +17,6 @@ const SignIn: React.FC<SignInProps> = ({ membership, setMembership }) => {
 	const [password, setPassword] = useState("");
 
 	const navigate = useNavigate();
-
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		// Here you would typically send the form data to a server
@@ -32,6 +31,8 @@ const SignIn: React.FC<SignInProps> = ({ membership, setMembership }) => {
 			if (data.status === "ok") {
 				setMembership(true);
 				console.log("sign in sucessful")
+				localStorage.setItem('membership', JSON.stringify(true));
+				console.log('membership stored in local storage');
 				navigate("/member"); // Replace "/dashboard" with the desired path for the new page
 			} else {
 				// Handle invalid credentials
@@ -48,6 +49,7 @@ const SignIn: React.FC<SignInProps> = ({ membership, setMembership }) => {
 		if (membership) {
 			console.log("Sign in successful");
 			navigate("/member"); 
+			
 		}
 	  }, [membership]);
 

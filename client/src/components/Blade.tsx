@@ -20,8 +20,8 @@ const Text = styled.h5`
     margin-left: 40px;
     margin-bottom: 20px;
 `;
-const BoldText = styled(Text)`
-  font-weight: 600;
+const Promo = styled(Text)`
+  font-weight: 400;
 `;
 const TitleTxt = styled.h3`
     color: #2B2B2B;
@@ -41,10 +41,10 @@ const Blade = ({ isVisible } : Props) => {
             <>
                 <SearchBar/>
                 <section>
-                    <BoldText>In Stock</BoldText>
-                    <BoldText>Featured</BoldText>
-                    <BoldText>On Sale</BoldText>
-                    <BoldText>Popular</BoldText>
+                    <Promo>In Stock</Promo>
+                    <Promo>Featured</Promo>
+                    <Promo>On Sale</Promo>
+                    <Promo>Popular</Promo>
                 </section>
                 <TitleTxt>CATEGORIES</TitleTxt>
                 <section>

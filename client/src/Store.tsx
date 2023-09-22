@@ -34,7 +34,7 @@ const Store = () => {
 	
 	return (
 	<Wrapper>
-		Store
+		Shop
 		<ShopSection
 			title="Featured Items"
 			subtitle="Explore our top featured products"

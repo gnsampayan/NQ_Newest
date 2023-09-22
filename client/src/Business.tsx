@@ -5,7 +5,13 @@ const Wrapper = styled.div`
 `;
 
 const Business = () => {
-	return <Wrapper>Business</Wrapper>;
+	return (
+	<Wrapper>
+		<h1>Services</h1>
+		<ul>Tool Rentals</ul>
+		<ul>Vehicle Rentals</ul>
+	</Wrapper>
+	);
 };
 
 export default Business;
