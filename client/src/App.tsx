@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 
 import NavModule from "./components/Header";
@@ -13,6 +13,8 @@ import SignIn from "./components/SignInModal";
 import SignUp from "./components/SignUp";
 import Member from './Member';
 import Blade from './components/Blade';
+import Page from './Page';
+import TestContents from './components/TestContents';
 
 const Wrapper = styled.div`
 	margin-top: 80px;
@@ -41,6 +43,7 @@ function MainApp() {
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/sign-in" element={<SignIn setMembership={setMembership} membership={membership}/>} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/page" element={<Page sectionElement={TestContents()} />} />
 		<Route path="/member" element={<Member setMembership={setMembership}/>} />
       </Routes>
     </Wrapper>
