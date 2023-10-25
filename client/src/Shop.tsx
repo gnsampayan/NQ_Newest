@@ -10,15 +10,20 @@ import Pipes from "./assets/items/pipes.png";
 import HollowBlocks from "./assets/items/hollow-block.png";
 import Cement from "./assets/items/cement.png";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<ShopProps>`
 	position: absolute;
 	color: white;
-	margin-left: 400px;
+	margin-left: ${props => props.margin};
+	margin-right: auto;
 	width: calc(100% - 400px);
 	height: calc(100vh - 80px);
 `;
 
-const Store = () => {
+interface ShopProps {
+	margin: string;
+}
+
+const Shop: React.FC<ShopProps> = ({ margin }) => {
 
 	const featuredItems = [
 		{ name: "ElectricMotor", image: ElectricMotor },
@@ -33,7 +38,7 @@ const Store = () => {
 	const navigate = useNavigate();
 	
 	return (
-	<Wrapper>
+	<Wrapper margin={margin}>
 		Shop
 		<ShopSection
 			title="Featured Items"
@@ -49,4 +54,4 @@ const Store = () => {
 	
 };
 
-export default Store;
+export default Shop;

@@ -1,20 +1,20 @@
 import { RxHamburgerMenu } from 'react-icons/rx';
+import styled from 'styled-components';
 
-interface HamburgerProps {
-  vis: boolean;
-  setVis: React.Dispatch<React.SetStateAction<boolean>>;
+const Wrapper = styled.div`
+  cursor: pointer;
+`
+
+interface Props {
+  ontoggleBladeVis: () => void;
 }
 
-const Hamburger: React.FC<HamburgerProps> = ({ vis, setVis }) => {
-  const handleHamburger = () => {
-    console.log('hamburger clicked');
-    setVis(!vis);
-  };
+const Hamburger = ( { ontoggleBladeVis } : Props ) => {
 
   return (
-    <div onClick={handleHamburger}>
+    <Wrapper onClick={ontoggleBladeVis}>
       <RxHamburgerMenu color='white' />
-    </div>
+    </Wrapper>
   );
 };
 

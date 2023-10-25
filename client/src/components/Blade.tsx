@@ -4,13 +4,27 @@ import 'typeface-work-sans';
 
 
 const BladeContents = styled.div<Props>`
-    position: absolute;
+    position: fixed;
+    top: 76px;
+    z-index: 2;
     background-color: #D9D9D9;
     width: 400px;
-    height: auto;
+    height: calc(100vh - 76px);
     display: ${props => (props.isVisible ? 'block' : 'none')};
     padding-bottom: 40px;
+    overflow-y: scroll;
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    
 `;
+
 const Text = styled.h5`
     color: #2B2B2B;
     font-family: 'Work Sans', sans-serif;
@@ -36,7 +50,7 @@ interface Props {
   }
 
 const Blade = ({ isVisible } : Props) => {
-    return <BladeContents isVisible={isVisible}>
+    return <BladeContents isVisible={isVisible} >
         {isVisible && 
             <>
                 <SearchBar/>

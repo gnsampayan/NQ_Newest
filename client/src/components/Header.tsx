@@ -3,7 +3,6 @@ import { BsFillPersonFill } from "react-icons/bs";
 import storeFront from "../assets/Storefront.svg";
 import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
-import Blade from "./Blade";
 
 const NavBox = styled.nav`
 	background-color: #221f27;
@@ -110,13 +109,12 @@ const StyledPersonIcon = styled(BsFillPersonFill)`
 	transform: translateY(2px);
 `;
 
-interface NavModuleProps {
+interface HeaderProps {
 	membership: boolean;
-  	vis: boolean;
-  	setVis: React.Dispatch<React.SetStateAction<boolean>>;
+	ontoggleBladeVis: () => void;
 }
 
-const NavModule: React.FC<NavModuleProps> = ({ membership, vis, setVis } : NavModuleProps) => {
+const Header: React.FC<HeaderProps> = ({ membership, ontoggleBladeVis } : HeaderProps) => {
 	const navItems = [
 		{ name: "Shop", path: "/store" },
 		{ name: "Inquiries", path: "/business" },
@@ -124,25 +122,10 @@ const NavModule: React.FC<NavModuleProps> = ({ membership, vis, setVis } : NavMo
 		{ name: "Sign in", path: "/sign-in" },
 	];
 	const navigate = useNavigate();
-
-	const showBlade = () => {
-		console.log('show blade');
-		return (
-			<Blade isVisible={true}/>
-		)
-	}
-	const hideBlade = () => {
-		console.log('hide Blade');
-		return (
-			<Blade isVisible={false}/>
-		)
-	}
-	
 	return (
 		<NavBox>
-			<Hamburger vis={vis} setVis={setVis} />
+			<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
 			<WaterMarkParent onClick={() => {
-				hideBlade();
 				navigate("/");
 				}}>
 				<MainIcon
@@ -171,11 +154,9 @@ const NavModule: React.FC<NavModuleProps> = ({ membership, vis, setVis } : NavMo
 								if (item.name === "Shop") {
 									console.log(`you clicked store`);
 									navigate(item.path);
-									showBlade();
 								} else {
 									console.log(`${item.name} clicked`);
 									navigate(item.path);
-									hideBlade();
 								}
 								
 							}}
@@ -194,4 +175,4 @@ const NavModule: React.FC<NavModuleProps> = ({ membership, vis, setVis } : NavMo
 	);
 };
 
-export default NavModule;
+export default Header;
