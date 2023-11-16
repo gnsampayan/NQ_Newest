@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ShopItem from "../../components/ShopItem";
+import ShopItem from "./ShopItem";
 
 const ItemsGroup = styled.div`
 	display: grid;

@@ -4,7 +4,7 @@ const Wrapper = styled.div`
 	color: white;
 `;
 
-const Business = () => {
+const Services = () => {
 	return (
 	<Wrapper>
 		<h1>Services</h1>
@@ -14,4 +14,4 @@ const Business = () => {
 	);
 };
 
-export default Business;
+export default Services;

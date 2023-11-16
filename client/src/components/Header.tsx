@@ -117,7 +117,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ membership, ontoggleBladeVis } : HeaderProps) => {
 	const navItems = [
 		{ name: "Shop", path: "/store" },
-		{ name: "Inquiries", path: "/business" },
+		{ name: "Services", path: "/services" },
 		{ name: "Contact Us", path: "/contact-us" },
 		{ name: "Sign in", path: "/sign-in" },
 	];
