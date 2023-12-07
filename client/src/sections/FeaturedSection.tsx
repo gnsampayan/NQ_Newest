@@ -38,6 +38,7 @@ const FeaturedSection = () => {
 				amount={20}
 				name={featuredItems.map((item) => item.name)}
 				goToPage={() => navigate("/featured")}
+				onClick={() => navigate("/")}
 				/>
 		</Wrapper>
 	);

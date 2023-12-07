@@ -42,6 +42,7 @@ interface Props {
 		name: string;
 		description: string;
 		price: number;
+		onClick: () => void;
 	}[];
 }
 
@@ -56,6 +57,7 @@ const AllItemsView = ({ itemsList }: Props) => {
 						itemName={item.name}
 						itemDescription={item.description}
 						price={item.price}
+						itemOnClick={item.onClick}
 					/>
 				))}
 			</ItemsGroup>

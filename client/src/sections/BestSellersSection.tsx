@@ -28,6 +28,10 @@ const BestSellersSection = () => {
 
 	const navigate = useNavigate();
 
+	const handleItemClick = (itemName: string) => {
+        console.log(itemName);
+    };
+
 	return (
 		<Wrapper>
 			<ShopSection
@@ -38,6 +42,7 @@ const BestSellersSection = () => {
 				amount={20}
 				name={bestSellerItems.map((item) => item.name)}
 				goToPage={() => navigate("/featured")}
+				onClick={(itemName: string) => handleItemClick(itemName)}
 				/>
 		</Wrapper>
 	);

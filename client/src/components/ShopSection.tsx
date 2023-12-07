@@ -57,6 +57,7 @@ interface Props {
 	amount: number;
 	name: Array<string>;
 	goToPage: () => void;
+	onClick: (itemName: string) => void;
 }
 
 const ShopSection = ({
@@ -67,6 +68,7 @@ const ShopSection = ({
 	amount,
 	name,
 	goToPage,
+	onClick,
 }: Props) => {
 	const [visibleItems, setVisibleItems] = useState(itemImage);
 	useEffect(() => {
@@ -111,6 +113,7 @@ const ShopSection = ({
 						itemName={name[index]}
 						itemDescription={description}
 						price={amount}
+						itemOnClick={() => onClick(name[index])}
 					/>
 				))}
 			</ItemGroup>

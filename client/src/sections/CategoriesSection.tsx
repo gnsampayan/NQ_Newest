@@ -77,14 +77,14 @@ const CategoryName = styled.h2`
 
 const CategoriesSection = () => {
 	const categories = [
-		{ name: "Electronics", image: ElectricMotor },
-		{ name: "Hardware", image: Metals },
+		{ name: "Electrical", image: ElectricMotor },
+		{ name: "Metals", image: Metals },
 		{ name: "Plumbing", image: Pipes },
 		{ name: "Tools", image: Hammer },
 		{ name: "Carpentry", image: Plywood },
 		{ name: "Masonry", image: HollowBlock },
-		{ name: "Ladders", image: Ladder },
-		{ name: "Wires", image: WireSpools },
+		{ name: "Fixtures", image: Ladder },
+		{ name: "Insulation", image: WireSpools },
 	];
 
 	return (

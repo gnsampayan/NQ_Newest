@@ -13,9 +13,19 @@ const  Member: React.FC<MemberProps> = ({ setMembership }) => {
       localStorage.setItem('membership', JSON.stringify(false));
     }
   
+    const handleCreateItemClick = () => {
+      console.log('clicked create an item');
+      navigate("/item-creation");
+    };
+    const handleViewStockClick = () => {
+      console.log('clicked view stock');
+    }
+
     return (
       <>
         <div style={{color: "white"}}>Member Area</div>
+        <button onClick={handleCreateItemClick}>Create an Item</button>
+        <button onClick={handleViewStockClick}>View Stock</button>
         <button onClick={SignOut}>Sign Out</button>
       </>
     )

@@ -7,11 +7,16 @@ const ItemContainer = styled.div`
 	border-radius: 20px;
 	position: relative;
 	overflow: hidden;
+	cursor: pointer;
+	&:hover {
+		border: solid 2px #a259ff;
+	}
 `;
 const ImageContainer = styled.div`
 	height: 300px;
 	position: relative;
 	overflow: hidden;
+	z-index: 4;
 `;
 const Image = styled.img`
 	width: 100%;
@@ -62,6 +67,7 @@ const AddToCartButton = styled.button`
 	&:hover {
 		background-color: rgba(162, 89, 255, 0.4);
 	}
+	z-index: 6;
 `;
 const StyledCartIcon = styled(BsFillCartPlusFill)`
 	all: unset;
@@ -75,17 +81,18 @@ interface Props {
 	itemName: string;
 	itemDescription: string;
 	price: number;
+	itemOnClick: () => void;
 }
 
-const ShopItem = ({ itemImage, itemName, itemDescription, price }: Props) => {
+const ShopItem = ({ itemImage, itemName, itemDescription, price, itemOnClick }: Props) => {
 	return (
-		<ItemContainer>
-			<ImageContainer>
-				<Image src={itemImage} alt={itemDescription} />
+		<ItemContainer >
+			<ImageContainer onClick={itemOnClick}>
+				<Image src={itemImage} />
 			</ImageContainer>
 			<ItemDetails>
 				<TopDetails>
-					<ItemName>{itemName}</ItemName>
+					<ItemName onClick={itemOnClick}>{itemName}</ItemName>
 					<ItemDescription>{itemDescription}</ItemDescription>
 				</TopDetails>
 				<BottomDetails>

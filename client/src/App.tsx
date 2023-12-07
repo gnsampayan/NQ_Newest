@@ -15,6 +15,7 @@ import Blade from './components/Blade';
 import Page from './Page';
 import TestContents from './components/TestContents';
 import Services from './Services';
+import ItemCreation from './ItemCreation';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -56,6 +57,7 @@ function MainApp() {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/page" element={<Page sectionElement={TestContents()} />} />
           <Route path="/member" element={<Member setMembership={setMembership}/>} />
+          <Route path="/item-creation" element={<ItemCreation />} />
         </Routes>
       </Wrapper>
     </>
