@@ -19,6 +19,7 @@ const  Member: React.FC<MemberProps> = ({ setMembership }) => {
     };
     const handleViewStockClick = () => {
       console.log('clicked view stock');
+      navigate("/view-stock");
     }
 
     return (

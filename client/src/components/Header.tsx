@@ -133,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({ membership, ontoggleBladeVis } : Header
 					alt="NQ logo of a minimal store front icon"
 				/>
 				<WaterMark>
-					<WordMarkMain>HQ Hardware</WordMarkMain>
+					<WordMarkMain>NQ Hardware</WordMarkMain>
 					<WordMarkSecondary>& General Enterprise</WordMarkSecondary>
 				</WaterMark>
 			</WaterMarkParent>

@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
-import ElectricMotor from "../assets/items/electric-motor.png";
-import Hammer from "../assets/items/hammer.png";
-import Metals from "../assets/items/metals.png";
+import Electrical from "../assets/items/electrical.png";
+import Tools from "../assets/items/tools.png";
+import Metals from "../assets/items/metals_v2.png";
 import Pipes from "../assets/items/pipes.png";
-import Plywood from "../assets/items/plywood.png";
-import HollowBlock from "../assets/items/hollow-block.png";
-import Ladder from "../assets/items/ladder.png";
-import WireSpools from "../assets/items/wire-spools.png";
+import Carpentry from "../assets/items/carpentry.png";
+import Masonry from "../assets/items/masonry.png";
+import Fixtures from "../assets/items/fixtures.png";
+import Insulation from "../assets/items/insulation.png";
 
 const Wrapper = styled.div`
 	position: relative;
@@ -37,7 +37,6 @@ const Overlay = styled.div`
 	height: 200px;
 	width: 200px;
 	z-index: 2;
-	backdrop-filter: blur(6px);
 	overflow: hidden;
 	background-color: rgba(0, 0, 0, 0.2);
 `;
@@ -65,6 +64,7 @@ const CategoryItem = styled.div<CategoryItemProps>`
 
 	&:hover ${Overlay} {
 		background-color: rgba(162, 89, 255, 0.4);
+		backdrop-filter: blur(6px);
 	}
 `;
 
@@ -73,18 +73,20 @@ const CategoryName = styled.h2`
 	font-size: 2em;
 	font-weight: 600;
 	z-index: 4;
+	background-color: rgba(0, 0, 0, 0.6);
+	padding: 2px 100% 8px 100%;
 `;
 
 const CategoriesSection = () => {
 	const categories = [
-		{ name: "Electrical", image: ElectricMotor },
+		{ name: "Electrical", image: Electrical },
 		{ name: "Metals", image: Metals },
 		{ name: "Plumbing", image: Pipes },
-		{ name: "Tools", image: Hammer },
-		{ name: "Carpentry", image: Plywood },
-		{ name: "Masonry", image: HollowBlock },
-		{ name: "Fixtures", image: Ladder },
-		{ name: "Insulation", image: WireSpools },
+		{ name: "Tools", image: Tools },
+		{ name: "Carpentry", image: Carpentry },
+		{ name: "Masonry", image: Masonry },
+		{ name: "Fixtures", image: Fixtures },
+		{ name: "Insulation", image: Insulation },
 	];
 
 	return (
