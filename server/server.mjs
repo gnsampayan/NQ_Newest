@@ -8,8 +8,6 @@ import log from './middleware/logger.mjs';
 
 import multer from 'multer';
 
-
-
 // Create a MySQL connection pool
 const pool = createPool({
   host: config.get('server.host'),
@@ -58,6 +56,36 @@ app.get('/data', (req, res) => {
   });
 });
 
+//TESTING ITEM CREATION
+// Inside your Express server code
+const upload = multer({ storage: multer.memoryStorage() }); // Store files in memory
+app.post('/api/items', upload.single('image'), (req, res) => {
+  
+    // Check if the file exists and has data
+    if (!req.file || !req.file.buffer) {
+      res.status(400).json({ error: 'No image file provided or file buffer is empty.' });
+      return;
+  }
+  
+  const { title, description, price } = req.body;
+  const image = req.file.buffer; // Access the image's binary data
+
+  pool.query(
+    'INSERT INTO items (title, description, price, image) VALUES (?, ?, ?, ?)',
+    [title, description, price, image],
+    (err, results) => {
+      if (err) {
+        console.error('Error inserting data:', err);
+        res.status(500).json({ error: 'Error inserting data' });
+        return;
+      }
+
+      console.log('Item created successfully!');
+      res.json({ message: 'Item created successfully!', id: results.insertId });
+    }
+  );
+});
+
 app.listen(8081, () => {
   console.log('Server started on port 8081');
 });
@@ -102,32 +130,5 @@ app.listen(8081, () => {
 //   res.send(user);
 // });
 
-//TESTING ITEM CREATION
-// Inside your Express server code
-const upload = multer();
 
-app.post('/api/items', upload.single('image'), (req, res) => {
-    const { title, description, price } = req.body;
-    const image = req.file; // 'image' will be in req.file if you use 'upload.single'
-
-    app.post('/api/items', (req, res) => {
-    const { title, description, price, image } = req.body;
-
-    // Assuming 'items' is your table and it has columns 'title', 'description', 'price', 'image'
-    pool.query(
-      'INSERT INTO items (title, description, price, image) VALUES (?, ?, ?, ?)',
-      [title, description, price, image],
-      (err, results) => {
-        if (err) {
-          console.error('Error inserting data:', err);
-          res.status(500).json({ error: 'Error inserting data' });
-          return;
-        }
-
-        console.log('Item created successfully!');
-        res.json({ message: 'Item created successfully!', id: results.insertId });
-      }
-    );
-  });
-});
 

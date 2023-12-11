@@ -40,6 +40,35 @@ const ImagePreview = styled.img`
 `;
 
 
+const downsampleImage = (file: File, callback: (blob: Blob) => void) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxSideLength = 800; // Maximum side length
+            let scale = Math.min(maxSideLength / img.width, maxSideLength / img.height);
+            scale = scale > 1 ? 1 : scale; // Ensure scale is not greater than 1
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        callback(blob);
+                    }
+                }, 'image/jpeg', 0.85); // Adjust quality as needed
+            }
+        };
+        if (e.target?.result) {
+            img.src = e.target.result.toString();
+        }
+    };
+    reader.readAsDataURL(file);
+};
+
 const ItemCreation = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string>('');
@@ -51,8 +80,13 @@ const ItemCreation = () => {
         const files = e.target.files;
         if (files && files.length > 0) {
             const img = files[0];
-            setSelectedImage(img);
-            setPreview(URL.createObjectURL(img));
+            downsampleImage(img, (downsampledImage) => {
+                const newFile = new File([downsampledImage], 'downsampled.jpg', {
+                    type: 'image/jpeg',
+                });
+                setSelectedImage(newFile);
+                setPreview(URL.createObjectURL(newFile));
+            });
         }
     };
 
@@ -80,13 +114,13 @@ const ItemCreation = () => {
         if (selectedImage) {
             formData.append('image', selectedImage);
         }
-
+        
         try {
             const response = await fetch('http://localhost:8081/api/items', {
-              method: 'POST',
-              body: formData,
-            });
-        
+                method: 'POST',
+                body: formData,
+        });
+            
         const responseData = await response.json();
             console.log(responseData);
             // Handle response data
