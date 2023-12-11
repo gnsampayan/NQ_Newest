@@ -6,6 +6,9 @@ import config from 'config';
 import userRoutes from './routes/users.mjs';
 import log from './middleware/logger.mjs';
 
+import multer from 'multer';
+
+
 
 // Create a MySQL connection pool
 const pool = createPool({
@@ -98,4 +101,33 @@ app.listen(8081, () => {
 //   // Send the user object as the response
 //   res.send(user);
 // });
+
+//TESTING ITEM CREATION
+// Inside your Express server code
+const upload = multer();
+
+app.post('/api/items', upload.single('image'), (req, res) => {
+    const { title, description, price } = req.body;
+    const image = req.file; // 'image' will be in req.file if you use 'upload.single'
+
+    app.post('/api/items', (req, res) => {
+    const { title, description, price, image } = req.body;
+
+    // Assuming 'items' is your table and it has columns 'title', 'description', 'price', 'image'
+    pool.query(
+      'INSERT INTO items (title, description, price, image) VALUES (?, ?, ?, ?)',
+      [title, description, price, image],
+      (err, results) => {
+        if (err) {
+          console.error('Error inserting data:', err);
+          res.status(500).json({ error: 'Error inserting data' });
+          return;
+        }
+
+        console.log('Item created successfully!');
+        res.json({ message: 'Item created successfully!', id: results.insertId });
+      }
+    );
+  });
+});
 

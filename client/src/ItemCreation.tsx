@@ -70,16 +70,29 @@ const ItemCreation = () => {
 
     const displayPrice = price ? `$${price}` : '';
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // Implement upload logic here
         const formData = new FormData();
-        if (selectedImage) {
-            formData.append('image', selectedImage);
-        }
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price', price);
+        if (selectedImage) {
+            formData.append('image', selectedImage);
+        }
+
+        try {
+            const response = await fetch('http://localhost:8081/api/items', {
+              method: 'POST',
+              body: formData,
+            });
+        
+        const responseData = await response.json();
+            console.log(responseData);
+            // Handle response data
+          } catch (error) {
+            console.error('Error submitting form:', error);
+          }
 
         console.log(formData);
         // Further processing or server submission goes here
