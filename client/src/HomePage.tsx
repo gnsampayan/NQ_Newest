@@ -29,10 +29,11 @@ const Footer = styled.footer`
 `;
 
 const commonSectionStyles = css`
-  background-color: grey;
+  background-color: #3b3b3b;
   margin-bottom: 20px;
   text-align: center;
   color: white;
+  border-radius: 20px;
 `;
 
 const SectionContainer = styled.div`
@@ -50,7 +51,7 @@ const Section = styled.div`
   margin: 10px;
 
   &:hover {
-    background-color: #555;
+    border: solid 2px #a259ff;
     cursor: pointer;
   }
 `;
