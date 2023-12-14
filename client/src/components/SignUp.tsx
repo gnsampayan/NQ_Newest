@@ -3,8 +3,66 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
-	color: white;
+    color: #333; // Changing text color for better readability
+    background-color: #f4f4f4; // Light background color
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 40px auto;
+    font-family: 'Arial', sans-serif;
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    label {
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input[type='text'],
+    input[type='password'],
+    input[type='email'] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        width: 100%;
+    }
+
+    input[type='submit'] {
+        background-color: #0056b3;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    input[type='submit']:hover {
+        background-color: #003d82;
+    }
+
+	button {
+        background: none;
+        border: none;
+        color: #0056b3;
+        cursor: pointer;
+        padding: 0;
+        font-size: 16px;
+    }
 `;
+
+const Title = styled.h2`
+	text-align: center;
+  margin-bottom: 20px;
+`
+
 
 const SignUp = () => {
 	const [username, setUsername] = useState("");
@@ -57,6 +115,7 @@ const SignUp = () => {
 
 	return (
 		<Wrapper>
+			<Title>Join Us Today!</Title>
 			<form onSubmit={handleSubmit}>
 				<label>
 					Email:
@@ -83,6 +142,10 @@ const SignUp = () => {
 					/>
 				</label>
 				<input type="submit" value="Submit" />
+				<p>
+					Already a member?{" "}
+					<button onClick={() => navigate("/sign-in")}>Sign in</button>
+				</p>
 			</form>
 		</Wrapper>
 	);

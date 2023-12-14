@@ -52,6 +52,7 @@ const Section = styled.div`
 
   &:hover {
     border: solid 2px #a259ff;
+    background-color: #555;
     cursor: pointer;
   }
 `;

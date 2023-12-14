@@ -29,13 +29,14 @@ const ServiceContainer = styled.div`
 const ServiceBox = styled.div`
   background-color: #444;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 20px;
   width: 200px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
   &:hover {
     background-color: #555;
+    border: solid 2px #a259ff;
     cursor: pointer;
   }
 `;

@@ -39,16 +39,16 @@ const TextArea = styled.textarea`
 
 const SubmitButton = styled.button`
   padding: 10px 20px;
-  background-color: #0066cc;
   color: white;
-  border: none;
-  border-radius: 5px;
+  background-color: #3b3b3b;
+  border: solid 2px #a259ff;
+  border-radius: 100vw;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: rgba(162, 89, 255, 0.4);
   }
 `;
 
