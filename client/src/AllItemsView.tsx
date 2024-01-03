@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import ShopItem from "./components/ShopItem";
-import { Navigate } from "react-router-dom";
 
 const ItemsGroup = styled.div`
 	display: grid;

@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   color: white;
-  background-color: #333;
+  background-color: #f2f2f2;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -11,7 +11,7 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  color: #fff;
+  color: black;
   text-align: center;
   margin-bottom: 20px;
 `;
@@ -39,9 +39,9 @@ const TextArea = styled.textarea`
 
 const SubmitButton = styled.button`
   padding: 10px 20px;
-  color: white;
-  background-color: #3b3b3b;
-  border: solid 2px #a259ff;
+  color: black;
+  background-color: #dbdbdb;;
+  border: solid 1px black;
   border-radius: 100vw;
   cursor: pointer;
   font-size: 16px;

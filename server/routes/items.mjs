@@ -19,7 +19,7 @@ export default function(pool) {
       
       const { title, description, price } = req.body;
       const image = req.file.buffer; // Access the image's binary data
-    
+
       pool.query(
         'INSERT INTO items (title, description, price, image) VALUES (?, ?, ?, ?)',
         [title, description, price, image],
@@ -36,9 +36,21 @@ export default function(pool) {
       );
     });
 
-    // router.get('/', (req, res) => {
-    //     //get code here
-    // });
+    router.get('/', (req, res) => {
+      const query = 'SELECT id, title, description, price, image, quantity FROM items';
+      pool.query(query, (err, results) => {
+        if (err) {
+          console.error('Error fetching items:', err);
+          res.status(500).send('Error fetching items');
+        } else {
+          const itemsWithBase64Images = results.map(item => ({
+            ...item,
+            image: item.image ? Buffer.from(item.image).toString('base64') : null,
+          }));
+          res.json(itemsWithBase64Images);
+        }
+      });
+    });
 
     return router;
 }

@@ -3,8 +3,9 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   color: white;
-  background-color: #333;
+  background-color: #f2f2f2;
   padding: 20px;
+  padding-bottom: 40px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   max-width: 800px;
@@ -14,15 +15,16 @@ const Wrapper = styled.div`
   align-items: center;
 `
 const Title = styled.h2`
-  color: #fff;
+  color: black;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
+  margin-top: 20px;
 `
 const ActionButton = styled.button`
   padding: 10px 20px;
-  color: white;
-  background-color: #3b3b3b;
-  border: solid 2px #a259ff;
+  color: black;
+  background-color: white;
+  border: solid 1px black;
   border-radius: 100vw;
   cursor: pointer;
   font-size: 16px;
