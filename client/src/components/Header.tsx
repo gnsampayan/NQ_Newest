@@ -117,11 +117,10 @@ const StyledPersonIcon = styled(BsFillPersonFill)`
 `;
 
 interface HeaderProps {
-	membership: boolean;
 	ontoggleBladeVis: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ membership, ontoggleBladeVis } : HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 	const navItems = [
 		{ name: "Shop", path: "/store" },
 		{ name: "Services", path: "/services" },
@@ -129,6 +128,7 @@ const Header: React.FC<HeaderProps> = ({ membership, ontoggleBladeVis } : Header
 		{ name: "Sign in", path: "/sign-in" },
 	];
 	const navigate = useNavigate();
+	const token = localStorage.getItem('token');
 	return (
 		<NavBox>
 			<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
@@ -150,9 +150,9 @@ const Header: React.FC<HeaderProps> = ({ membership, ontoggleBladeVis } : Header
 
 					// Conditionally assign ItemComponent based on membership and item name
 					if (item.name === "Sign in") {
-					  ItemComponent = membership ? MemberItem : SignInItem;
+					  	ItemComponent = token ? MemberItem : SignInItem;
 					} else {
-					  ItemComponent = NavItem;
+					  	ItemComponent = NavItem;
 					}
 					return (
 						<ItemComponent
@@ -168,12 +168,12 @@ const Header: React.FC<HeaderProps> = ({ membership, ontoggleBladeVis } : Header
 								
 							}}
 						>
-							{item.name === "Sign in" && !membership && ( // Only show icon if not a member
+							{item.name === "Sign in" && !token && ( // Only show icon if not a member
 								<PersonIcon>
 									<StyledPersonIcon />
 								</PersonIcon>
 							)}
-							{ item.name === "Sign in" && membership ? "Member" : item.name}
+							{ item.name === "Sign in" && token ? "Member" : item.name}
 						</ItemComponent>
 					);
 				})}

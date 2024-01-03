@@ -39,19 +39,12 @@ const SignOutButton = styled(ActionButton)`
   }
 `
 
-
-
-interface MemberProps {
-  setMembership: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const Member: React.FC<MemberProps> = ({ setMembership }) => {
+const Member: React.FC = () => {
   const navigate = useNavigate();
 
   const SignOut = () => {
-    setMembership(false);
+    localStorage.removeItem('token');
     navigate("/");
-    localStorage.setItem('membership', JSON.stringify(false));
   };
 
   const handleCreateItemClick = () => {

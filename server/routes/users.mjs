@@ -1,9 +1,11 @@
-import express from "express"
+import express from "express";
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = 'your_very_secret_key'; // Replace with a real secret key later
+
 const router = express.Router();
 
 export default function(pool) {  // Export as a function that takes pool
-  const router = express.Router();
-  
   // Temp User Signup
   router.post('/', (req, res) => {
       const { name, password, email, type } = req.body;
@@ -44,7 +46,15 @@ export default function(pool) {  // Export as a function that takes pool
 
         if (results.length > 0) {
           // User exists in the database with matching credentials
-          res.status(200).json({ status: 'ok', message: 'Valid credentials' });
+           // Create a token
+          const token = jwt.sign(
+            { userId: results[0].id, username: results[0].user_name }, // Payload
+            JWT_SECRET,
+            { expiresIn: '1h' } // Token expires in 1 hour
+          );
+
+          res.status(200).json({ status: 'ok', token });
+
         } else {
           // Invalid credentials
           res.status(401).json({ error: 'Invalid credentials' });
@@ -55,5 +65,5 @@ export default function(pool) {  // Export as a function that takes pool
 
     // Temp User credentials DB check
     
-    return router;
+  return router;
 }

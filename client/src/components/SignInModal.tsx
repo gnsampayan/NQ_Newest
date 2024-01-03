@@ -61,14 +61,7 @@ const Title = styled.h2`
   margin-bottom: 20px;
 `
 
-
-interface SignInProps {
-	membership: boolean;
-	setMembership: React.Dispatch<React.SetStateAction<boolean>>;
-  }
-  
-
-const SignIn: React.FC<SignInProps> = ({ membership, setMembership }) => {
+const SignIn: React.FC = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
@@ -77,19 +70,28 @@ const SignIn: React.FC<SignInProps> = ({ membership, setMembership }) => {
 		event.preventDefault();
 		// Here you would typically send the form data to a server
 		try {
+
+			const encodedUsername = encodeURIComponent(username);
+        	const encodedPassword = encodeURIComponent(password);
+
 			// Make a GET request to check if the username and password are valid
 			const response = await fetch(
-				`http://localhost:8081/api/users?username=${username}&password=${password}`
+				`http://localhost:8081/api/users?username=${encodedUsername}&password=${encodedPassword}`,
+				{
+					method: 'GET',
+					headers: {
+						'Accept' : 'application/json',
+					},
+				}
 			);
 
 			const data = await response.json();
 
-			if (data.status === "ok") {
-				setMembership(true);
+			if (data.token) { // Assuming the JWT is returned in the token field
+				localStorage.setItem('token', data.token); // Storing the token
 				console.log("sign in sucessful")
-				localStorage.setItem('membership', JSON.stringify(true));
-				console.log('membership stored in local storage');
-				navigate("/member"); // Replace "/dashboard" with the desired path for the new page
+				console.log(data.token)
+				navigate("/member");
 			} else {
 				// Handle invalid credentials
 				console.error("Invalid credentials");
@@ -100,14 +102,14 @@ const SignIn: React.FC<SignInProps> = ({ membership, setMembership }) => {
 	};
 
 	useEffect(() => {
-		console.log("useEffect triggered: ", membership); // log the current state
-		localStorage.setItem('membership', JSON.stringify(membership));
-		if (membership) {
-			console.log("Sign in successful");
-			navigate("/member"); 
-			
+		const token = localStorage.getItem('token');
+		if (token) {
+			// Optionally, verify the token with your backend here
+			console.log("User is already signed in");
+			navigate("/member");
 		}
-	  }, [membership]);
+	}, [navigate]);
+	
 
 	return (
 		<Wrapper>
