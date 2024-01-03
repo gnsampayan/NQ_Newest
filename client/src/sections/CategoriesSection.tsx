@@ -58,7 +58,7 @@ const CategoryItem = styled.div<CategoryItemProps>`
 	background-repeat: no-repeat;
 	position: relative;
 	overflow: hidden;
-	border: solid 1px #a259ff;
+	border: solid 1px black;
 	cursor: pointer;
 	z-index: 3;
 
@@ -69,11 +69,11 @@ const CategoryItem = styled.div<CategoryItemProps>`
 `;
 
 const CategoryName = styled.h2`
-	color: white;
+	color: black;
 	font-size: 2em;
 	font-weight: 600;
 	z-index: 4;
-	background-color: rgba(0, 0, 0, 0.6);
+	background-color: rgba(255, 255, 255, 0.9);
 	padding: 2px 100% 8px 100%;
 `;
 

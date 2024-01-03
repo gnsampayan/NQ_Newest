@@ -10,20 +10,20 @@ const ItemGroup = styled.div`
 	padding: 0px 60px 0px 60px;
 `;
 const Title = styled.h1`
-	color: white;
+	color: black;
 	font-size: 2.3em;
 	margin-bottom: 10px;
 `;
 const Subtitle = styled.h2`
-	color: white;
+	color: black;
 	font-size: 1.3em;
-	font-weight: 300;
+	font-weight: 400;
 `;
 const SeeAllButton = styled.button`
 	all: unset;
 	font-size: 0.9em;
-	color: white;
-	border: solid 2px #a259ff;
+	color: black;
+	border: solid 1px black;
 	border-radius: 100vw;
 	font-weight: 600;
 	height: 50px;
@@ -31,6 +31,7 @@ const SeeAllButton = styled.button`
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background: #dbdbdb;
 	&:hover {
 		background-color: rgba(162, 89, 255, 0.4);
 	}
@@ -44,7 +45,7 @@ const SectionHeader = styled.div`
 `;
 const EyeIcon = styled(BsEye)`
 	all: unset;
-	fill: #a259ff;
+	fill: black;
 	margin-right: 10px;
 	width: 18px;
 `;

@@ -26,11 +26,11 @@ const ItemsSection = () => {
 		{ name: "Cement", image: Cement },
 	];
 	const sectionText = [
-		{ title: "Featured Finds", subtitle: "Browse Our Expertly Curated Selection of Must-Have Tools", description: "//add item description here" },
-		{ title: "New Arrivals", subtitle: "Explore the Newest Additions to Our Hardware Collection", description: "//add item description here" },
-		{ title: "Best Sellers", subtitle: "Check Out What's Trending in Hardware Today", description: "//add item description here" },
-		{ title: "Safety First", subtitle: "Essential Safety Gear and Equipment for Every Task", description: "//add item description here" },
-		{ title: "Eco-Friendly Choices", subtitle: "Sustainable and Green Solutions for Modern Building Needs", description: "//add item description here" }
+		{ subtitle: "Featured Finds", title: "Browse Our Expertly Curated Selection of Must-Have Tools", description: "//add item description here" },
+		{ subtitle: "New Arrivals", title: "Explore the Newest Additions to Our Hardware Collection", description: "//add item description here" },
+		{ subtitle: "Best Sellers", title: "Check Out What's Trending in Hardware Today", description: "//add item description here" },
+		{ subtitle: "Safety First", title: "Essential Safety Gear and Equipment for Every Task", description: "//add item description here" },
+		{ subtitle: "Eco-Friendly Choices", title: "Sustainable and Green Solutions for Modern Building Needs", description: "//add item description here" }
 	];
 
     const navigate = useNavigate();

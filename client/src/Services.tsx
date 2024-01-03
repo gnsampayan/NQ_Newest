@@ -2,8 +2,9 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   color: white;
-  background-color: #333;
+  background-color: #f2f2f2;
   padding: 20px;
+  padding-bottom: 40px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   max-width: 800px;
@@ -14,9 +15,10 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  color: #fff;
+  color: black;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
+  margin-top: 20px;
 `;
 
 const ServiceContainer = styled.div`
@@ -27,16 +29,16 @@ const ServiceContainer = styled.div`
 `;
 
 const ServiceBox = styled.div`
-  background-color: #444;
+  background-color: white;
   padding: 20px;
   border-radius: 20px;
   width: 200px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: black;
 
   &:hover {
-    background-color: #555;
-    border: solid 2px #a259ff;
+    background-color: rgba(162, 89, 255, 0.4);
     cursor: pointer;
   }
 `;

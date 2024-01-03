@@ -7,7 +7,8 @@ const BladeContents = styled.div<Props>`
     position: fixed;
     top: 76px;
     z-index: 2;
-    background-color: #D9D9D9;
+    background-color: white;
+    border-right: 1px solid black;
     width: 400px;
     height: calc(100vh - 76px);
     display: ${props => (props.isVisible ? 'block' : 'none')};

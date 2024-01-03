@@ -22,7 +22,7 @@ const Wrapper = styled.div`
   position: absolute;
   top: 0;
   z-index: 1;
-	background-color: rgb(43, 43, 43);
+	background-color: rgb(255, 255, 255);
 	min-height: calc(100vh - 80px);
   width: 100%;
   margin-top: 80px;

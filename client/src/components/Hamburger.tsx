@@ -13,7 +13,7 @@ const Hamburger = ( { ontoggleBladeVis } : Props ) => {
 
   return (
     <Wrapper onClick={ontoggleBladeVis}>
-      <RxHamburgerMenu color='white' />
+      <RxHamburgerMenu color='black' />
     </Wrapper>
   );
 };

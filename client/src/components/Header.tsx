@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
 
 const NavBox = styled.nav`
-	background-color: #221f27;
+	background-color: #ffffff;
 	height: auto;
 	position: fixed;
 	top: 0;
@@ -14,11 +14,12 @@ const NavBox = styled.nav`
 	display: flex;
 	justify-content: space-between;
 	z-index: 999;
+	border-bottom: 1px solid black;
 `;
 
 const NavMenu = styled.ul`
 	list-style: none;
-	color: white;
+	color: black;
 	display: flex;
 	justify-content: center;
 	margin-bottom: 0;
@@ -53,8 +54,12 @@ const NavItem = styled.button`
 `;
 
 const SignInItem = styled(NavItem)`
-	background: #a259ff;
+	background: #dbdbdb;
 	border-radius: 20px;
+	border: 1px solid black;
+	&:hover {
+		background-color: rgba(162, 89, 255, 0.4);
+	}
 `;
 const MemberItem = styled(NavItem)`
 	background: red;
@@ -80,10 +85,11 @@ const WaterMarkParent = styled.div`
 	display: flex;
 	width: 100%;
 	align-items: center;
-	cursor: pointer;
+	
 `;
 const WaterMark = styled.div`
-	color: white;
+	color: black;
+	cursor: pointer;
 `;
 const WordMarkMain = styled.h1`
 	font-size: 1em;
@@ -102,10 +108,11 @@ const MainIcon = styled.img`
 	width: 34px;
 	padding: 0;
 	margin-right: 10px;
+	cursor: pointer;
 `;
 const StyledPersonIcon = styled(BsFillPersonFill)`
 	all: unset;
-	fill: white;
+	fill: black;
 	transform: translateY(2px);
 `;
 

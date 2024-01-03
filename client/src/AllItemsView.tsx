@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import ShopItem from "./components/ShopItem";
+import { Navigate } from "react-router-dom";
 
 const ItemsGroup = styled.div`
 	display: grid;
@@ -56,6 +57,7 @@ const AllItemsView = ({ itemsList }: Props) => {
 						itemName={item.name}
 						itemDescription={item.description}
 						price={item.price}
+						itemOnClick={() => console.log('clicked all items view item')}
 					/>
 				))}
 			</ItemsGroup>

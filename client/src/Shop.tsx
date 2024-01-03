@@ -10,26 +10,26 @@ const Wrapper = styled.div<ShopProps>`
 	margin-bottom: 100px;
 `;
 
-const HeroContainer = styled.div`
-	width: 100%;
-	height: 640px;
-	overflow: hidden;
-	background-image: url(${heroImage});
-    background-position: center;
-	background-repeat: no-repeat;
-	background-size: 200%;
-	margin-bottom: 80px;
-	position: absolute;
-	z-index: 1;
-`
-const Overlay = styled.div`
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(43, 43, 43, 0.8);
-`
+// const HeroContainer = styled.div`
+// 	width: 100%;
+// 	height: 640px;
+// 	overflow: hidden;
+// 	background-image: url(${heroImage});
+//     background-position: center;
+// 	background-repeat: no-repeat;
+// 	background-size: 200%;
+// 	margin-bottom: 80px;
+// 	position: absolute;
+// 	z-index: 1;
+// `
+// const Overlay = styled.div`
+// 	position: absolute;
+// 	top: 0;
+// 	left: 0;
+// 	width: 100%;
+// 	height: 100%;
+// 	background-color: rgba(43, 43, 43, 0.8);
+// `
 
 interface ShopProps {
 	margin: string;
@@ -39,9 +39,9 @@ const Shop: React.FC<ShopProps> = ({ margin }) => {
 
 	return (
 	<>
-		<HeroContainer>
+		{/* <HeroContainer>
 			<Overlay/>
-		</HeroContainer>
+		</HeroContainer> */}
 		<Wrapper margin={margin}>
 			<CategoriesSection />
 			<ItemsSection />
