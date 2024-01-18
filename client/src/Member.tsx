@@ -46,7 +46,7 @@ const Member: React.FC = () => {
 
   const SignOut = () => {
     localStorage.removeItem('token');
-    navigate("/");
+    navigate("/sign-in");
   };
 
   const handleCreateItemClick = () => {
@@ -58,6 +58,7 @@ const Member: React.FC = () => {
     console.log('clicked view stock');
     navigate("/view-stock");
   }
+
 
   return (
     <Wrapper>

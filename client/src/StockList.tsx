@@ -39,6 +39,10 @@ const ItemInfo = styled.div`
   margin-top: 10px;
 `;
 
+const DeleteItem = styled.button`
+
+`
+
 const StockList: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
 
@@ -59,6 +63,30 @@ const StockList: React.FC = () => {
     fetchItems();
   }, []);
 
+  const handleItemDelete = async (itemId: number) => {
+    console.log("Deleting item with ID:", itemId);
+
+    try {
+      const response = await fetch(`http://localhost:8081/api/items/${itemId}`, {
+        method: 'DELETE',
+        // If your API requires headers (like Content-Type, Authorization), add them here
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data.message);
+      // Updating the state to remove the deleted item
+      setItems(currentItems => currentItems.filter(item => item.id !== itemId));
+      
+    } catch (error) {
+      console.error("Deletion failed:", error);
+    }
+  }
+
+
   return (
     <Grid>
       {items.map(item => (
@@ -70,6 +98,7 @@ const StockList: React.FC = () => {
             <p>Description: {item.description}</p>
             <p>Quantity: {item.quantity}</p>
           </ItemInfo>
+          <DeleteItem onClick={() => handleItemDelete(item.id)}>Delete</DeleteItem>
         </ItemCard>
       ))}
     </Grid>

@@ -52,5 +52,34 @@ export default function(pool) {
       });
     });
 
+    router.delete('/:itemId', async (req, res) => {
+      try {
+        const itemId = req.params.itemId;
+        // Perform the delete operation with itemId
+        const deleteQuery = 'DELETE FROM items WHERE id = ?';
+        
+        pool.query(deleteQuery, [itemId], (err, results) => {
+          if (err) {
+            console.error('Error deleting item:', err);
+            res.status(500).json({ error: 'Error deleting item' });
+            return;
+          }
+    
+          // Check if the item was actually found and deleted
+          if (results.affectedRows === 0) {
+            res.status(404).json({ message: 'Item not found' });
+            return;
+          }
+    
+          res.status(200).json({ message: 'Item deleted successfully' });
+        });
+      } catch (error) {
+        console.error('Server error:', error);
+        res.status(500).json({ error: 'Server error' });
+      }
+    });
+    
+    
+
     return router;
 }

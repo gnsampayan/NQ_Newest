@@ -14,16 +14,6 @@ const BladeContents = styled.div<Props>`
     display: ${props => (props.isVisible ? 'block' : 'none')};
     padding-bottom: 40px;
     overflow-y: scroll;
-
-    /* Hide scrollbar for Chrome, Safari and Opera */
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* Hide scrollbar for IE, Edge and Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-    
 `;
 
 const Text = styled.h5`
@@ -34,9 +24,17 @@ const Text = styled.h5`
     font-size: 1.375rem;
     margin-left: 40px;
     margin-bottom: 20px;
+    cursor: pointer;
+    &:hover {
+        color: #a259ff;
+        font-weight: 400;
+    }
 `;
 const Promo = styled(Text)`
   font-weight: 400;
+  &:hover {
+    font-weight: 600;
+  }
 `;
 const TitleTxt = styled.h3`
     color: #2B2B2B;
