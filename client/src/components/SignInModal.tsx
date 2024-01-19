@@ -58,7 +58,7 @@ const Wrapper = styled.div`
 
 const Title = styled.h2`
 	text-align: center;
-  margin-bottom: 20px;
+	margin-bottom: 20px;
 `
 
 const SignIn: React.FC = () => {

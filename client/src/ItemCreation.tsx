@@ -6,7 +6,7 @@ const Wrapper = styled.div`
     padding: 20px;
     max-width: 500px;
     margin: auto;
-    color: white;
+    color: black;
 `;
 
 const Form = styled.form`
@@ -32,6 +32,20 @@ const Button = styled.button`
         background-color: #0056b3;
     }
 `;
+
+const Tag = styled.div`
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+`
+const AddTagBtn = styled(Button)`
+    width: 100px;
+    margin-left: calc(100% - 100px);
+`
+const DeleteTagBtn = styled.button`
+    width: 60px;
+`
 
 const ImagePreview = styled.img`
     max-width: 300px;
@@ -75,6 +89,8 @@ const ItemCreation = () => {
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [price, setPrice] = useState('');
+    const [tag, setTag] = useState<string>('');
+    const [tags, setTags] = useState<string[]>([]);
 
     const handleImageChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const files = e.target.files;
@@ -104,6 +120,26 @@ const ItemCreation = () => {
 
     const displayPrice = price ? `$${price}` : '';
 
+    const handleTagChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        setTag(e.target.value);
+    }
+    const handleTagAdd = () => {
+        //put tag into tagArray
+        if (tag && !tags.includes(tag)) {
+            setTags([...tags, tag]);
+            setTag(''); //Reset the tag input field
+        }
+    }
+    const handleKeyPress: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();  // Prevents the default form submit behavior
+            handleTagAdd();
+        }
+    };
+    const handleTagDelete = (tagToDelete: string) => {
+        setTags(tags.filter(tag => tag !== tagToDelete));
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // Implement upload logic here
@@ -120,7 +156,7 @@ const ItemCreation = () => {
                 method: 'POST',
                 body: formData,
         });
-            
+
         const responseData = await response.json();
             console.log(responseData);
             // Handle response data
@@ -164,6 +200,23 @@ const ItemCreation = () => {
                     value={displayPrice}
                     onChange={handlePriceChange}
                 />
+                <h4>Tags:</h4>
+                <div>
+                    {tags.map((tag, index) => (
+                        <Tag key={index}>
+                            {tag}
+                            <DeleteTagBtn onClick={() => handleTagDelete(tag)}>Delete</DeleteTagBtn>
+                        </Tag>
+                    ))}
+                </div>
+                <Input
+                    type="text"
+                    placeholder="search tags"
+                    value={tag}
+                    onChange={handleTagChange}
+                    onKeyDown={handleKeyPress}
+                />
+                <AddTagBtn type="button" onClick={handleTagAdd}>Add tag</AddTagBtn>
                 <Button type="submit">Create Item</Button>
             </Form>
         </Wrapper>

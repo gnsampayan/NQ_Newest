@@ -40,7 +40,10 @@ const ItemInfo = styled.div`
 `;
 
 const DeleteItem = styled.button`
-
+  //add delte style button here
+`
+const EditItem = styled.button`
+  //edit styles button here
 `
 
 const StockList: React.FC = () => {
@@ -99,6 +102,7 @@ const StockList: React.FC = () => {
             <p>Quantity: {item.quantity}</p>
           </ItemInfo>
           <DeleteItem onClick={() => handleItemDelete(item.id)}>Delete</DeleteItem>
+          <EditItem>Edit</EditItem>
         </ItemCard>
       ))}
     </Grid>

@@ -30,10 +30,7 @@ const Wrapper = styled.div`
 
 function MainApp() {
   const [vis , setVis] = useState(false);
-  const [membership, setMembership] = useState(() => {
-    const savedMembership = localStorage.getItem('membership');
-    return savedMembership ? JSON.parse(savedMembership) : false;
-  });
+  
 
   const [ margin, setMargin ] = useState('auto');
   const toggleBladeVis = () => {
@@ -44,7 +41,7 @@ function MainApp() {
   return (
     
     <>
-      <Header membership={membership} ontoggleBladeVis={toggleBladeVis}/>
+      <Header ontoggleBladeVis={toggleBladeVis}/>
       <Blade isVisible={vis} />
       <Wrapper>
         <Routes>
@@ -54,10 +51,10 @@ function MainApp() {
           <Route path="/store" element={<Shop margin={margin} />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/sign-in" element={<SignIn setMembership={setMembership} membership={membership}/>} />
+          <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/page" element={<Page sectionElement={TestContents()} />} />
-          <Route path="/member" element={<Member setMembership={setMembership}/>} />
+          <Route path="/member" element={<Member />} />
           <Route path="/item-creation" element={<ItemCreation />} />
           <Route path="/view-stock" element={<StockList />} />
         </Routes>
