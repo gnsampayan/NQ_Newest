@@ -53,36 +53,6 @@ const ImagePreview = styled.img`
     margin-top: 10px;
 `;
 
-
-const downsampleImage = (file: File, callback: (blob: Blob) => void) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const maxSideLength = 800; // Maximum side length
-            let scale = Math.min(maxSideLength / img.width, maxSideLength / img.height);
-            scale = scale > 1 ? 1 : scale; // Ensure scale is not greater than 1
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
-
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        callback(blob);
-                    }
-                }, 'image/jpeg', 0.85); // Adjust quality as needed
-            }
-        };
-        if (e.target?.result) {
-            img.src = e.target.result.toString();
-        }
-    };
-    reader.readAsDataURL(file);
-};
-
 const ItemCreation = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string>('');
@@ -91,6 +61,36 @@ const ItemCreation = () => {
     const [price, setPrice] = useState('');
     const [tag, setTag] = useState<string>('');
     const [tags, setTags] = useState<string[]>([]);
+    const [quantity, setQuantity] = useState<number>(0);
+    
+    const downsampleImage = (file: File, callback: (blob: Blob) => void) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxSideLength = 800; // Maximum side length
+                let scale = Math.min(maxSideLength / img.width, maxSideLength / img.height);
+                scale = scale > 1 ? 1 : scale; // Ensure scale is not greater than 1
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+    
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            callback(blob);
+                        }
+                    }, 'image/jpeg', 0.85); // Adjust quality as needed
+                }
+            };
+            if (e.target?.result) {
+                img.src = e.target.result.toString();
+            }
+        };
+        reader.readAsDataURL(file);
+    };
 
     const handleImageChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const files = e.target.files;
@@ -139,6 +139,11 @@ const ItemCreation = () => {
     const handleTagDelete = (tagToDelete: string) => {
         setTags(tags.filter(tag => tag !== tagToDelete));
     }
+    
+    const handleQuantityChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        const newQuantity = parseInt(e.target.value);
+        setQuantity(newQuantity)
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -147,6 +152,8 @@ const ItemCreation = () => {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price', price);
+        formData.append('tags', JSON.stringify(tags));
+        formData.append('quantity', quantity.toString());
         if (selectedImage) {
             formData.append('image', selectedImage);
         }
@@ -167,6 +174,7 @@ const ItemCreation = () => {
         console.log(formData);
         // Further processing or server submission goes here
     };
+
 
     return (
         <Wrapper>
@@ -200,7 +208,7 @@ const ItemCreation = () => {
                     value={displayPrice}
                     onChange={handlePriceChange}
                 />
-                <h4>Tags:</h4>
+                <p>Tags</p>
                 <div>
                     {tags.map((tag, index) => (
                         <Tag key={index}>
@@ -217,6 +225,13 @@ const ItemCreation = () => {
                     onKeyDown={handleKeyPress}
                 />
                 <AddTagBtn type="button" onClick={handleTagAdd}>Add tag</AddTagBtn>
+                <p>Item quantity</p>
+                <Input
+                    type='number'
+                    placeholder='0'
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                />
                 <Button type="submit">Create Item</Button>
             </Form>
         </Wrapper>

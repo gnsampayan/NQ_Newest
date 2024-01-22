@@ -17,12 +17,21 @@ export default function(pool) {
           return;
       }
       
-      const { title, description, price } = req.body;
+      const { title, description, price, quantity } = req.body;
       const image = req.file.buffer; // Access the image's binary data
 
+      // Parse tags from JSON string to array/object
+      let parsedTags;
+      try {
+          parsedTags = JSON.parse(req.body.tags);
+      } catch (err) {
+          res.status(400).json({ error: 'Invalid tags format' });
+          return;
+      }
+
       pool.query(
-        'INSERT INTO items (title, description, price, image) VALUES (?, ?, ?, ?)',
-        [title, description, price, image],
+        'INSERT INTO items (title, description, price, image, tags, quantity) VALUES (?, ?, ?, ?, ?, ?)',
+        [title, description, price, image, JSON.stringify(parsedTags), quantity],
         (err, results) => {
           if (err) {
             console.error('Error inserting data:', err);

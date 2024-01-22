@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
+import EditItemModal from './components/EditItemModal';
 
 
 interface Item {
@@ -9,6 +10,7 @@ interface Item {
   quantity: number;
   price: number;
   description: string;
+  tags: string;
   // Add more item properties as needed
 }
 
@@ -89,8 +91,18 @@ const StockList: React.FC = () => {
     }
   }
 
+  const [vis, setVis] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<number | null>(null);
+
+    const openModal = (itemId : number) => {
+      setEditingItemId(itemId);
+      setVis(true);
+      console.log('edit modal clicked, for item: ' + itemId);
+    }
 
   return (
+    <>
+    <EditItemModal isVisible={vis} onClose={() => setVis(false)} editingItemId={editingItemId}/>
     <Grid>
       {items.map(item => (
         <ItemCard key={item.id}>
@@ -99,13 +111,15 @@ const StockList: React.FC = () => {
             <h3>{item.title}</h3>
             <p>Price: {item.price}</p>
             <p>Description: {item.description}</p>
+            <p>Tags: {item.tags}</p>
             <p>Quantity: {item.quantity}</p>
           </ItemInfo>
           <DeleteItem onClick={() => handleItemDelete(item.id)}>Delete</DeleteItem>
-          <EditItem>Edit</EditItem>
+          <EditItem onClick={() => openModal(item.id)}>Edit</EditItem>
         </ItemCard>
       ))}
     </Grid>
+  </>
   );
 };
 
