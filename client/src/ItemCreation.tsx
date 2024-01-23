@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { ItemType } from './context/Types';
 
 // Styled components
 const Wrapper = styled.div`
@@ -53,7 +54,12 @@ const ImagePreview = styled.img`
     margin-top: 10px;
 `;
 
-const ItemCreation = () => {
+interface ItemCreationProps {
+    isEditing: boolean;
+    itemData?: ItemType;
+}
+
+const ItemCreation = ({ isEditing, itemData } : ItemCreationProps ) => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string>('');
     const [title, setTitle] = useState<string>('');
@@ -62,6 +68,25 @@ const ItemCreation = () => {
     const [tag, setTag] = useState<string>('');
     const [tags, setTags] = useState<string[]>([]);
     const [quantity, setQuantity] = useState<number>(0);
+
+
+    useEffect(() => {
+        if (isEditing && itemData) {
+            setTitle(itemData.title || '');
+            setDescription(itemData.description || '');
+            setPrice(itemData.price.toString() || '');
+            setTags(itemData.tags || []);
+            setQuantity(itemData.quantity || 0);
+            
+            if (itemData.image) {
+                // Assuming itemData.image is a Base64 string from the backend
+                setPreview(`data:image/jpeg;base64,${itemData.image}`);
+                } else {
+                    setPreview('');
+                }
+            }
+
+      }, [isEditing, itemData]);
     
     const downsampleImage = (file: File, callback: (blob: Blob) => void) => {
         const reader = new FileReader();
@@ -159,20 +184,38 @@ const ItemCreation = () => {
         }
         
         try {
-            const response = await fetch('http://localhost:8081/api/items', {
-                method: 'POST',
-                body: formData,
-        });
-
-        const responseData = await response.json();
+            // Check if item exists if creating a new item
+            if (!isEditing) {
+                const checkExistsResponse = await fetch(`http://localhost:8081/api/items/check-exists?title=${encodeURIComponent(title)}`);
+                const checkExistsData = await checkExistsResponse.json();
+                if (checkExistsData.exists) {
+                    console.error('Error: Item already exists');
+                    return;
+                }
+            }
+    
+            // Create or update item
+            let response;
+            if (isEditing && itemData) {
+                formData.append('id', itemData.id.toString());
+                response = await fetch(`http://localhost:8081/api/items/${itemData.id}`, {
+                    method: 'PUT',
+                    body: formData,
+                });
+                console.log('Perform update operation');
+            } else {
+                response = await fetch('http://localhost:8081/api/items', {
+                    method: 'POST',
+                    body: formData,
+                });
+                console.log('Perform create operation');
+            }
+    
+            const responseData = await response.json();
             console.log(responseData);
-            // Handle response data
-          } catch (error) {
+        } catch (error) {
             console.error('Error submitting form:', error);
-          }
-
-        console.log(formData);
-        // Further processing or server submission goes here
+        }
     };
 
 

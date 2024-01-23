@@ -28,6 +28,7 @@ const Wrapper = styled.div`
   margin-top: 80px;
 `;
 
+
 function MainApp() {
   const [vis , setVis] = useState(false);
   
@@ -54,9 +55,10 @@ function MainApp() {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/page" element={<Page sectionElement={TestContents()} />} />
+          <Route path="/item-creation" element={<ItemCreation isEditing={false}  />} />
           <Route path="/member" element={<Member />} />
-          <Route path="/item-creation" element={<ItemCreation />} />
           <Route path="/view-stock" element={<StockList />} />
+          {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </Wrapper>
     </>

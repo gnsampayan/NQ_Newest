@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import EditItemModal from './components/EditItemModal';
+import { ItemType } from './context/Types';
 
 
 interface Item {
@@ -8,9 +9,9 @@ interface Item {
   title: string;
   image: string; // Base64 string
   quantity: number;
-  price: number;
+  price: string;
   description: string;
-  tags: string;
+  tags: string[];
   // Add more item properties as needed
 }
 
@@ -93,16 +94,35 @@ const StockList: React.FC = () => {
 
   const [vis, setVis] = useState(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
+  const [currentItemData, setCurrentItemData] = useState<ItemType | null>(null);
 
-    const openModal = (itemId : number) => {
-      setEditingItemId(itemId);
-      setVis(true);
-      console.log('edit modal clicked, for item: ' + itemId);
+  const openModal = (itemId: number) => {
+    setEditingItemId(itemId);
+    setVis(true);
+    const itemData = items.find(item => item.id === itemId);
+  
+    if (itemData) {
+      let itemDataForState: ItemType = {
+        ...itemData,
+        price: itemData.price.toString() // Convert price to a string
+      };
+      setCurrentItemData(itemDataForState);
+    } else {
+      setCurrentItemData(null);
     }
+  
+    console.log('Edit modal clicked, for item: ' + itemId);
+  };
 
   return (
     <>
-    <EditItemModal isVisible={vis} onClose={() => setVis(false)} editingItemId={editingItemId}/>
+    <EditItemModal 
+      isVisible={vis} 
+      onClose={() => setVis(false)} 
+      editingItemId={editingItemId}
+      itemData={currentItemData} 
+      isEditMode={editingItemId !== null}
+    />
     <Grid>
       {items.map(item => (
         <ItemCard key={item.id}>
@@ -111,7 +131,7 @@ const StockList: React.FC = () => {
             <h3>{item.title}</h3>
             <p>Price: {item.price}</p>
             <p>Description: {item.description}</p>
-            <p>Tags: {item.tags}</p>
+            <p>Tags: {item.tags && item.tags.length > 0 ? item.tags.join(', ') : 'none'}</p>
             <p>Quantity: {item.quantity}</p>
           </ItemInfo>
           <DeleteItem onClick={() => handleItemDelete(item.id)}>Delete</DeleteItem>

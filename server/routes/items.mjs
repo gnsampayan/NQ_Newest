@@ -46,7 +46,7 @@ export default function(pool) {
     });
 
     router.get('/', (req, res) => {
-      const query = 'SELECT id, title, description, price, image, quantity FROM items';
+      const query = 'SELECT id, title, description, price, image, tags, quantity FROM items';
       pool.query(query, (err, results) => {
         if (err) {
           console.error('Error fetching items:', err);
