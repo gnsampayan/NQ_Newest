@@ -80,7 +80,7 @@ interface Props {
 	itemImage: string;
 	itemName: string;
 	itemDescription: string;
-	price: number;
+	price: string;
 	itemOnClick: () => void;
 }
 
@@ -98,7 +98,7 @@ const ShopItem = ({ itemImage, itemName, itemDescription, price, itemOnClick }: 
 				<BottomDetails>
 					<div>
 						<PriceTitle>Price</PriceTitle>
-						<Price>${price.toString()}</Price>
+						<Price>${price}</Price>
 					</div>
 					<AddToCartButton>
 						<StyledCartIcon />

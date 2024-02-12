@@ -60,6 +60,26 @@ export default function(pool) {
         }
       });
     });
+    router.get('/check-exists', (req, res) => {
+      const { title } = req.query;
+  
+      if (!title) {
+          res.status(400).json({ error: 'Title is required' });
+          return;
+      }
+  
+      const query = 'SELECT COUNT(*) AS count FROM items WHERE title = ?';
+      pool.query(query, [title], (err, results) => {
+          if (err) {
+              console.error('Error checking item existence:', err);
+              res.status(500).json({ error: 'Error checking item existence' });
+              return;
+          }
+  
+          const exists = results[0].count > 0;
+          res.json({ exists });
+      });
+    });
 
     router.delete('/:itemId', async (req, res) => {
       try {
@@ -87,8 +107,57 @@ export default function(pool) {
         res.status(500).json({ error: 'Server error' });
       }
     });
-    
-    
 
+    router.put('/:itemId', upload.single('image'), async (req, res) => {
+      const itemId = req.params.itemId;
+  
+      // Handle the incoming data similar to the POST route
+      const { title, description, price, quantity } = req.body;
+      let image, parsedTags;
+  
+      // Check and process the image if it's provided
+      if (req.file && req.file.buffer) {
+          image = req.file.buffer;
+      }
+  
+      // Parse tags from JSON string to array/object
+      try {
+          parsedTags = JSON.parse(req.body.tags);
+      } catch (err) {
+          res.status(400).json({ error: 'Invalid tags format' });
+          return;
+      }
+  
+      // Update query
+      let updateQuery = 'UPDATE items SET title = ?, description = ?, price = ?, quantity = ?, tags = ?';
+      let queryParams = [title, description, price, quantity, JSON.stringify(parsedTags)];
+  
+      // Add image to query if it exists
+      if (image) {
+          updateQuery += ', image = ?';
+          queryParams.push(image);
+      }
+  
+      updateQuery += ' WHERE id = ?';
+      queryParams.push(itemId);
+  
+      try {
+          const [results] = await pool.promise().query(updateQuery, queryParams);
+  
+          // Check if the item was actually found and updated
+          if (results.affectedRows === 0) {
+              res.status(404).json({ message: 'Item not found' });
+              return;
+          }
+  
+          res.status(200).json({ message: 'Item updated successfully' });
+      } catch (err) {
+          console.error('Error updating item:', err);
+          res.status(500).json({ error: 'Error updating item' });
+      }
+  });
+  
+  
+  
     return router;
 }

@@ -17,7 +17,8 @@ const Overlay = styled.div<OverlayProps>`
     background-color: rgba(0, 0, 0, 0.8);
     position: absolute;
     width: 100vw;
-    height: 100vh;
+    height: calc(100% + 68px);
+    top: -68px;
     display: ${props => (props.isVisible ? 'block' : 'none')};
 `
 
@@ -43,18 +44,24 @@ interface Props {
     editingItemId: number | null;
     itemData?: ItemType | null;
     isEditMode: boolean;
+    onItemUpdated: () => void;
 }
 
-const EditItemModal = ({ isVisible, onClose, editingItemId, itemData, isEditMode } : Props) => {
+const EditItemModal = ({ isVisible, onClose, editingItemId, itemData, isEditMode, onItemUpdated } : Props) => {
 
     const hideModal = () => {
         onClose();
         console.log('clicked hide modal');
     }
 
+    const handleItemUpdate = () => {
+        onItemUpdated();
+        onClose(); // You might also want to close the modal after updating
+    };
+
   return (
     <>
-        <Overlay isVisible={isVisible}/>
+        <Overlay isVisible={isVisible} onClick={hideModal}/>
         <Wrapper isVisible={isVisible}>
             {isVisible && 
                 <>
@@ -65,6 +72,7 @@ const EditItemModal = ({ isVisible, onClose, editingItemId, itemData, isEditMode
             <ItemCreation
                 isEditing={isEditMode}
                 itemData={itemData || undefined}
+                onSuccessfulUpdate={handleItemUpdate} // Passing the new callback
             />
         </Wrapper>
     </>

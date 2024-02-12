@@ -52,6 +52,19 @@ const EditItem = styled.button`
 const StockList: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
 
+  const refreshItems = async () => {
+    try {
+      const response = await fetch('http://localhost:8081/api/items');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data: Item[] = await response.json();
+      setItems(data);
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -122,6 +135,7 @@ const StockList: React.FC = () => {
       editingItemId={editingItemId}
       itemData={currentItemData} 
       isEditMode={editingItemId !== null}
+      onItemUpdated={refreshItems}
     />
     <Grid>
       {items.map(item => (

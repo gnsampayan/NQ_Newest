@@ -3,8 +3,9 @@ import { BsFillPersonFill } from "react-icons/bs";
 import storeFront from "../assets/Storefront.svg";
 import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
+import { useEffect, useState } from "react";
 
-const NavBox = styled.nav`
+const NavBox = styled.nav<NavBoxProps>`
 	background-color: #ffffff;
 	height: auto;
 	position: fixed;
@@ -15,6 +16,8 @@ const NavBox = styled.nav`
 	justify-content: space-between;
 	z-index: 999;
 	border-bottom: 1px solid black;
+	transition: transform 0.3s ease-in-out;
+	transform: ${({ isHidden }) => (isHidden ? 'translateY(-100%)' : 'translateY(0)')};
 `;
 
 const NavMenu = styled.ul`
@@ -119,6 +122,9 @@ const StyledPersonIcon = styled(BsFillPersonFill)`
 interface HeaderProps {
 	ontoggleBladeVis: () => void;
 }
+interface NavBoxProps {
+	isHidden: boolean;
+}
 
 const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 	const navItems = [
@@ -129,8 +135,26 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 	];
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
+
+	const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+	const [lastScrollY, setLastScrollY] = useState(0);
+
+	const handleScroll = () => {
+		const currentScrollY = window.scrollY;
+		setIsHeaderHidden(currentScrollY > lastScrollY);
+		setLastScrollY(currentScrollY);
+	};
+
+	useEffect(() => {
+		window.addEventListener('scroll', handleScroll, { passive: true});
+
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	}, [lastScrollY]);
+
 	return (
-		<NavBox>
+		<NavBox isHidden={isHeaderHidden}>
 			<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
 			<WaterMarkParent onClick={() => {
 				navigate("/");

@@ -57,9 +57,10 @@ const ImagePreview = styled.img`
 interface ItemCreationProps {
     isEditing: boolean;
     itemData?: ItemType;
+    onSuccessfulUpdate: () => void;
 }
 
-const ItemCreation = ({ isEditing, itemData } : ItemCreationProps ) => {
+const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreationProps ) => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string>('');
     const [title, setTitle] = useState<string>('');
@@ -172,7 +173,7 @@ const ItemCreation = ({ isEditing, itemData } : ItemCreationProps ) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Implement upload logic here
+    
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
@@ -182,16 +183,20 @@ const ItemCreation = ({ isEditing, itemData } : ItemCreationProps ) => {
         if (selectedImage) {
             formData.append('image', selectedImage);
         }
-        
+    
         try {
             // Check if item exists if creating a new item
             if (!isEditing) {
                 const checkExistsResponse = await fetch(`http://localhost:8081/api/items/check-exists?title=${encodeURIComponent(title)}`);
+                if (!checkExistsResponse.ok) {
+                    throw new Error(`Error: Failed to check if item exists. Status: ${checkExistsResponse.status}`);
+                }            
                 const checkExistsData = await checkExistsResponse.json();
                 if (checkExistsData.exists) {
                     console.error('Error: Item already exists');
                     return;
                 }
+                console.log(checkExistsData);
             }
     
             // Create or update item
@@ -211,12 +216,20 @@ const ItemCreation = ({ isEditing, itemData } : ItemCreationProps ) => {
                 console.log('Perform create operation');
             }
     
-            const responseData = await response.json();
-            console.log(responseData);
+            if (response.ok) {
+                const responseData = await response.json();
+                console.log(responseData);
+    
+                // Call onSuccessfulUpdate after successful response
+                onSuccessfulUpdate();
+            } else {
+                console.error(`Error: ${response.status}`, await response.json());
+            }
         } catch (error) {
             console.error('Error submitting form:', error);
         }
     };
+    
 
 
     return (
@@ -275,7 +288,7 @@ const ItemCreation = ({ isEditing, itemData } : ItemCreationProps ) => {
                     value={quantity}
                     onChange={handleQuantityChange}
                 />
-                <Button type="submit">Create Item</Button>
+                <Button type="submit">{isEditing ? 'Submit Changes' : 'Create Item'}</Button>
             </Form>
         </Wrapper>
     );

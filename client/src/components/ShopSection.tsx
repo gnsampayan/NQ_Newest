@@ -55,7 +55,7 @@ interface Props {
 	subtitle: string;
 	itemImage: Array<string>;
 	description: string;
-	amount: number;
+	amount: Array<string>;
 	name: Array<string>;
 	goToPage: () => void;
 	onClick: (itemName: string) => void;
@@ -92,7 +92,7 @@ const ShopSection = ({
 		return () => {
 			window.removeEventListener("resize", handleResize);
 		};
-	}, []);
+	}, [itemImage]);
 	return (
 		<>
 			<SectionHeader>
@@ -113,7 +113,7 @@ const ShopSection = ({
 						itemImage={item}
 						itemName={name[index]}
 						itemDescription={description}
-						price={amount}
+						price={amount[index]}
 						itemOnClick={() => onClick(name[index])}
 					/>
 				))}
