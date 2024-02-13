@@ -11,7 +11,7 @@ const BladeContents = styled.div<Props>`
     border-right: 1px solid black;
     width: 400px;
     height: calc(100vh - 76px);
-    display: ${props => (props.isVisible ? 'block' : 'none')};
+    display: ${props => (props.$isVisible ? 'block' : 'none')};
     padding-bottom: 40px;
     overflow-y: scroll;
 `;
@@ -45,12 +45,12 @@ const TitleTxt = styled.h3`
 `;
 
 interface Props {
-    isVisible: boolean;
+    $isVisible: boolean;
   }
 
-const Blade = ({ isVisible } : Props) => {
-    return <BladeContents isVisible={isVisible} >
-        {isVisible && 
+const Blade = ({ $isVisible } : Props) => {
+    return <BladeContents $isVisible={$isVisible} >
+        {$isVisible && 
             <>
                 <SearchBar/>
                 <section>

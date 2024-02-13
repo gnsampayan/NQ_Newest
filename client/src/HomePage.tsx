@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 
 const Wrapper = styled.div<HomePageProps>`
   position: relative;
-  margin-left: ${props => props.margin};
+  margin-left: ${props => props.$margin};
   margin-right: auto;
   margin-bottom: 100px;
   z-index: 20;
@@ -89,14 +89,14 @@ const ProductCard = styled.div`
 `;
 
 interface HomePageProps {
-  margin: string;
+  $margin: string;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ margin }) => {
+const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
   return (
     <>
       <Header>Hardware Store - Everything You Need</Header>
-      <Wrapper margin={margin}>
+      <Wrapper $margin={$margin}>
         <DeviceDetector />
         <SectionContainer>
           <Section>Featured Products</Section>

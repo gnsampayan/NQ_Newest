@@ -3,7 +3,7 @@ import ItemCreation from "../ItemCreation";
 
 const Wrapper = styled.div<WrapperProps>`
     border: 1px solid black;
-    display: ${props => (props.isVisible ? 'block' : 'none')};
+    display: ${props => (props.$isVisible ? 'block' : 'none')};
     position: absolute;
     background-color: white;
     width: 600px;
@@ -19,14 +19,14 @@ const Overlay = styled.div<OverlayProps>`
     width: 100vw;
     height: calc(100% + 68px);
     top: -68px;
-    display: ${props => (props.isVisible ? 'block' : 'none')};
+    display: ${props => (props.$isVisible ? 'block' : 'none')};
 `
 
 interface WrapperProps {
-    isVisible: boolean;
+    $isVisible: boolean;
 }
 interface OverlayProps {
-    isVisible: boolean;
+    $isVisible: boolean;
 }
 
 interface ItemType {
@@ -39,7 +39,7 @@ interface ItemType {
 }
 
 interface Props {
-    isVisible: boolean;
+    $isVisible: boolean;
     onClose: () => void;
     editingItemId: number | null;
     itemData?: ItemType | null;
@@ -47,7 +47,7 @@ interface Props {
     onItemUpdated: () => void;
 }
 
-const EditItemModal = ({ isVisible, onClose, editingItemId, itemData, isEditMode, onItemUpdated } : Props) => {
+const EditItemModal = ({ $isVisible, onClose, editingItemId, itemData, isEditMode, onItemUpdated } : Props) => {
 
     const hideModal = () => {
         onClose();
@@ -61,9 +61,9 @@ const EditItemModal = ({ isVisible, onClose, editingItemId, itemData, isEditMode
 
   return (
     <>
-        <Overlay isVisible={isVisible} onClick={hideModal}/>
-        <Wrapper isVisible={isVisible}>
-            {isVisible && 
+        <Overlay $isVisible={$isVisible} onClick={hideModal}/>
+        <Wrapper $isVisible={$isVisible}>
+            {$isVisible && 
                 <>
                     <div>Item: {editingItemId}</div>
                     <button onClick={hideModal}>click to close</button>

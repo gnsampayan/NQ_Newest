@@ -57,7 +57,7 @@ const ImagePreview = styled.img`
 interface ItemCreationProps {
     isEditing: boolean;
     itemData?: ItemType;
-    onSuccessfulUpdate: () => void;
+    onSuccessfulUpdate?: () => void;
 }
 
 const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreationProps ) => {
@@ -69,6 +69,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     const [tag, setTag] = useState<string>('');
     const [tags, setTags] = useState<string[]>([]);
     const [quantity, setQuantity] = useState<number>(0);
+    const [inputKey, setInputKey] = useState(Date.now());
 
 
     useEffect(() => {
@@ -221,7 +222,23 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                 console.log(responseData);
     
                 // Call onSuccessfulUpdate after successful response
-                onSuccessfulUpdate();
+                if (typeof onSuccessfulUpdate === 'function') {
+                    onSuccessfulUpdate();
+                }
+                // Clearing input fields after creating item
+                if (!isEditing) {
+                    setTitle('');
+                    setDescription('');
+                    setPrice('');
+                    setTags([]);
+                    setQuantity(0);
+                    setSelectedImage(null);
+                    setPreview('');
+                    setTag('');
+                    setInputKey(Date.now());  // This will change the key and reset the input
+                    console.log("Form reset executed");
+                }
+
             } else {
                 console.error(`Error: ${response.status}`, await response.json());
             }
@@ -237,6 +254,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             <Form onSubmit={handleSubmit}>
                 <h5>Upload Item Image</h5>
                 <Input 
+                    key={inputKey}
                     type="file" 
                     accept="image/*" 
                     onChange={handleImageChange}
@@ -269,7 +287,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     {tags.map((tag, index) => (
                         <Tag key={index}>
                             {tag}
-                            <DeleteTagBtn onClick={() => handleTagDelete(tag)}>Delete</DeleteTagBtn>
+                            <DeleteTagBtn type='button' onClick={() => handleTagDelete(tag)}>Delete</DeleteTagBtn>
                         </Tag>
                     ))}
                 </div>

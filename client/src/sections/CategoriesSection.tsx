@@ -42,7 +42,7 @@ const Overlay = styled.div`
 `;
 
 interface CategoryItemProps {
-	image: string;
+	$image: string;
 }
 
 const CategoryItem = styled.div<CategoryItemProps>`
@@ -52,7 +52,7 @@ const CategoryItem = styled.div<CategoryItemProps>`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-image: ${(props) => `url(${props.image})`};
+	background-image: ${(props) => `url(${props.$image})`};
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -94,7 +94,7 @@ const CategoriesSection = () => {
 			<GroupWrapper>
 				<CategoriesGroup>
 					{categories.map((category, index) => (
-						<CategoryItem key={index} image={category.image}>
+						<CategoryItem key={index} $image={category.image}>
 							<CategoryName>{category.name}</CategoryName>
 							<Overlay />
 						</CategoryItem>

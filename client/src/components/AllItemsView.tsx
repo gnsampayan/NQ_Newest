@@ -41,7 +41,7 @@ interface Props {
 		image: string;
 		name: string;
 		description: string;
-		price: number;
+		price: string;
 		onClick: () => void;
 	}[];
 }

@@ -17,7 +17,7 @@ const NavBox = styled.nav<NavBoxProps>`
 	z-index: 999;
 	border-bottom: 1px solid black;
 	transition: transform 0.3s ease-in-out;
-	transform: ${({ isHidden }) => (isHidden ? 'translateY(-100%)' : 'translateY(0)')};
+	transform: ${({ $isHidden }) => ($isHidden ? 'translateY(-100%)' : 'translateY(0)')};
 `;
 
 const NavMenu = styled.ul`
@@ -123,7 +123,7 @@ interface HeaderProps {
 	ontoggleBladeVis: () => void;
 }
 interface NavBoxProps {
-	isHidden: boolean;
+	$isHidden: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
@@ -154,7 +154,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 	}, [lastScrollY]);
 
 	return (
-		<NavBox isHidden={isHeaderHidden}>
+		<NavBox $isHidden={isHeaderHidden}>
 			<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
 			<WaterMarkParent onClick={() => {
 				navigate("/");

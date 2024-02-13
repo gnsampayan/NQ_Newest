@@ -130,7 +130,7 @@ const StockList: React.FC = () => {
   return (
     <>
     <EditItemModal 
-      isVisible={vis} 
+      $isVisible={vis} 
       onClose={() => setVis(false)} 
       editingItemId={editingItemId}
       itemData={currentItemData} 
