@@ -36,10 +36,31 @@ const ActionButton = styled.button`
 `
 const SignOutButton = styled(ActionButton)`
   border: solid 2px red;
+  margin-top: 40px;
   &:hover {
     background-color: rgba(255, 0, 0, 0.4);
   }
 `
+ const Box = styled.div`
+  background-color: white;
+  padding: 20px 20px 0px 20px;
+  border-radius: 20px;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: black;
+`
+
+const BoxTitle = styled.h4`
+  margin-bottom: 20px;
+`
+
+const BoxContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+`;
 
 const Member: React.FC = () => {
   const navigate = useNavigate();
@@ -57,14 +78,22 @@ const Member: React.FC = () => {
   const handleViewStockClick = () => {
     console.log('clicked view stock');
     navigate("/view-stock");
-  }
-
+  };
 
   return (
     <Wrapper>
       <Title>Member Area</Title>
-      <ActionButton onClick={handleCreateItemClick}>Create an Item</ActionButton>
-      <ActionButton onClick={handleViewStockClick}>View Stock</ActionButton>
+      <BoxContainer>
+        <Box>
+          <BoxTitle>Home Page Setup</BoxTitle>
+          <ActionButton>Edit Images</ActionButton>
+        </Box>
+        <Box>
+          <BoxTitle>Shop Options</BoxTitle>
+          <ActionButton onClick={handleCreateItemClick}>Create an Item</ActionButton>
+          <ActionButton onClick={handleViewStockClick}>View Stock</ActionButton>
+        </Box>
+      </BoxContainer>
       <SignOutButton onClick={SignOut}>Sign Out</SignOutButton>
     </Wrapper>
   )

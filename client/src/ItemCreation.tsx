@@ -54,10 +54,34 @@ const ImagePreview = styled.img`
     margin-top: 10px;
 `;
 
+const Dropdown = styled.div`
+    position: absolute;
+    background-color: #f6f6f6;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 99;
+`;
+
+const DropdownItem = styled.div`
+    padding: 8px;
+    cursor: pointer;
+    &:hover {
+        background-color: #ddd;
+    }
+`;
+
 interface ItemCreationProps {
     isEditing: boolean;
     itemData?: ItemType;
     onSuccessfulUpdate?: () => void;
+}
+
+interface TagResponse {
+    tag: string;
 }
 
 const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreationProps ) => {
@@ -70,6 +94,9 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     const [tags, setTags] = useState<string[]>([]);
     const [quantity, setQuantity] = useState<number>(0);
     const [inputKey, setInputKey] = useState(Date.now());
+
+    const [databaseTags, setDatabaseTags] = useState<string[]>([]);
+    const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -87,8 +114,32 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     setPreview('');
                 }
             }
-
-      }, [isEditing, itemData]);
+            
+            const fetchTags = async () => {
+                try {
+                    const response = await fetch('http://localhost:8081/api/all_tags');
+                    if (!response.ok) {
+                        throw new Error(`Error: Failed to fetch tags. Status: ${response.status}`);
+                    }
+            
+                    const responseText = await response.text();
+                    console.log('Response Text:', responseText); // Log the raw response text
+            
+                    // Only parse JSON if the response text is not empty
+                    if (responseText) {
+                        const data: TagResponse[] = JSON.parse(responseText);
+                        const tags = data.map(item => item.tag);
+                        setDatabaseTags(tags);
+                    } else {
+                        console.error('Empty response from the server');
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch tags:', error);
+                }
+            };
+            
+            fetchTags();
+    }, [isEditing, itemData]);
     
     const downsampleImage = (file: File, callback: (blob: Blob) => void) => {
         const reader = new FileReader();
@@ -147,16 +198,13 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
 
     const displayPrice = price ? `$${price}` : '';
 
-    const handleTagChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setTag(e.target.value);
-    }
     const handleTagAdd = () => {
-        //put tag into tagArray
         if (tag && !tags.includes(tag)) {
             setTags([...tags, tag]);
-            setTag(''); //Reset the tag input field
+            setTag(''); // Reset the tag input field
+            setShowDropdown(false); // Hide the dropdown
         }
-    }
+    };
     const handleKeyPress: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();  // Prevents the default form submit behavior
@@ -247,6 +295,24 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         }
     };
     
+    // Filter tags based on input
+    const filteredTags = databaseTags ? databaseTags.filter(
+        dbTag => dbTag.toLowerCase().includes(tag.toLowerCase()) && !tags.includes(dbTag)
+    ) : [];
+
+    const handleTagInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        setTag(e.target.value);
+        setShowDropdown(e.target.value !== '');
+    };
+
+    const handleTagSelection = (selectedTag: string) => {
+        if (!tags.includes(selectedTag)) {
+            setTags(prevTags => [...prevTags, selectedTag]);
+        }
+        setTag('');
+        setShowDropdown(false); // Hide the dropdown
+    };
+
 
 
     return (
@@ -258,7 +324,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     type="file" 
                     accept="image/*" 
                     onChange={handleImageChange}
-                    />
+                />
                 {preview && <ImagePreview src={preview} alt="Preview" />}
                 <h5>Item Details</h5>
                 <p>Item title</p>
@@ -283,6 +349,25 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     onChange={handlePriceChange}
                 />
                 <p>Tags</p>
+                <div style={{ position: 'relative' }}>
+                    <Input
+                        type="text"
+                        placeholder="search tags"
+                        value={tag}
+                        onChange={handleTagInputChange}
+                        onKeyDown={handleKeyPress}
+                    />
+                    {showDropdown && (
+                        <Dropdown>
+                            {filteredTags.map((filteredTag, index) => (
+                                <DropdownItem key={index} onClick={() => handleTagSelection(filteredTag)}>
+                                    {filteredTag}
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
+                    )}
+                </div>
+                <AddTagBtn type="button" onClick={handleTagAdd}>Add tag</AddTagBtn>
                 <div>
                     {tags.map((tag, index) => (
                         <Tag key={index}>
@@ -291,14 +376,6 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                         </Tag>
                     ))}
                 </div>
-                <Input
-                    type="text"
-                    placeholder="search tags"
-                    value={tag}
-                    onChange={handleTagChange}
-                    onKeyDown={handleKeyPress}
-                />
-                <AddTagBtn type="button" onClick={handleTagAdd}>Add tag</AddTagBtn>
                 <p>Item quantity</p>
                 <Input
                     type='number'
@@ -310,6 +387,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             </Form>
         </Wrapper>
     );
+    
 }
 
 export default ItemCreation;
