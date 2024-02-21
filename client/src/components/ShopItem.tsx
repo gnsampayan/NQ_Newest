@@ -88,7 +88,7 @@ const ShopItem = ({ itemImage, itemName, itemDescription, price, itemOnClick }: 
 	return (
 		<ItemContainer >
 			<ImageContainer onClick={itemOnClick}>
-				<Image src={itemImage} />
+				<Image src={itemImage} alt={itemName} />
 			</ImageContainer>
 			<ItemDetails>
 				<TopDetails>

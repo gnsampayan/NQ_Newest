@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ItemsSection from "./sections/ItemsSection";
+import ShopSection from "./sections/ShopSection";
 import CategoriesSection from "./sections/CategoriesSection";
 
 const Wrapper = styled.div<ShopProps>`
@@ -19,7 +19,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 	<>
 		<Wrapper $margin={$margin}>
 			<CategoriesSection />
-			<ItemsSection />
+			<ShopSection />
 		</Wrapper>
 	</>
 	);

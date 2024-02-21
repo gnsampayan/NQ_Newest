@@ -1,8 +1,47 @@
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import EditItemModal from './components/EditItemModal';
+import CreateItemModal from './components/CreateItemModal';
 import { ItemType } from './context/Types';
 
+const Grid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  color: black;
+  `;
+
+const ItemCard = styled.div`
+  width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  `;
+
+const ItemImage = styled.img`
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  `;
+
+const ItemInfo = styled.div`
+  margin-top: 10px;
+  `;
+
+const DeleteItem = styled.button`
+  //add delte style button here
+  `
+const EditItem = styled.button`
+  //edit styles button here
+  `
+const CreateModalButton = styled.button`
+  margin-top: 20px;
+  margin-left: 20px;
+  padding: 10px;
+  border-radius: 6px;
+`
 
 interface Item {
   id: number;
@@ -16,43 +55,10 @@ interface Item {
 }
 
 
-const Grid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px;
-  color: black;
-`;
-
-const ItemCard = styled.div`
-  width: 200px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
-`;
-
-const ItemImage = styled.img`
-  width: 100%;
-  height: auto;
-  border-radius: 4px;
-`;
-
-const ItemInfo = styled.div`
-  margin-top: 10px;
-`;
-
-const DeleteItem = styled.button`
-  //add delte style button here
-`
-const EditItem = styled.button`
-  //edit styles button here
-`
-
 const StockList: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
-
-  const refreshItems = async () => {
+  
+  const fetchItems = async () => {
     try {
       const response = await fetch('http://localhost:8081/api/items');
       if (!response.ok) {
@@ -64,21 +70,8 @@ const StockList: React.FC = () => {
       console.error('Fetch error:', error);
     }
   };
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await fetch('http://localhost:8081/api/items');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: Item[] = await response.json();
-        setItems(data);
-      } catch (error) {
-        console.error('Fetch error:', error);
-      }
-    };
   
+  useEffect(() => {
     fetchItems();
   }, []);
 
@@ -127,6 +120,11 @@ const StockList: React.FC = () => {
     console.log('Edit modal clicked, for item: ' + itemId);
   };
 
+  const [createModalVis, setCreateModalVis] = useState(false);
+  const openCreateModal = () => {
+    setCreateModalVis(true);
+  }
+
   return (
     <>
     <EditItemModal 
@@ -135,8 +133,14 @@ const StockList: React.FC = () => {
       editingItemId={editingItemId}
       itemData={currentItemData} 
       isEditMode={editingItemId !== null}
-      onItemUpdated={refreshItems}
+      onItemUpdated={fetchItems}
     />
+    <CreateItemModal
+      $isVisible={createModalVis}
+      onClose={() => setCreateModalVis(false)}
+      finishedCreatingItems={fetchItems}
+    />
+    <CreateModalButton onClick={openCreateModal}>Create New Item</CreateModalButton>
     <Grid>
       {items.map(item => (
         <ItemCard key={item.id}>

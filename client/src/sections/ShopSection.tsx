@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import ShopSection from "../components/ShopSection";
+import ShopSectionTemplate from "../components/ShopSectionTemplate";
 
 
 const Wrapper = styled.div`
@@ -13,9 +13,10 @@ interface Item {
 	image: string;
 	price: string;
 	tags: string[];
+	description:string;
 }
 
-const ItemsSection: React.FC = () => {
+const ShopSection: React.FC = () => {
 
 	const [items, setItems] = useState<Item[]>([]);
 	const navigate = useNavigate();
@@ -39,11 +40,11 @@ const ItemsSection: React.FC = () => {
 	}, []);
 
 	const sectionText = [
-		{ subtitle: "Featured Finds", title: "Browse Our Expertly Curated Selection of Must-Have Tools", description: "//add item description here" },
-		{ subtitle: "New Arrivals", title: "Explore the Newest Additions to Our Hardware Collection", description: "//add item description here" },
-		{ subtitle: "Best Sellers", title: "Check Out What's Trending in Hardware Today", description: "//add item description here" },
-		{ subtitle: "Safety First", title: "Essential Safety Gear and Equipment for Every Task", description: "//add item description here" },
-		{ subtitle: "Eco-Friendly Choices", title: "Sustainable and Green Solutions for Modern Building Needs", description: "//add item description here" }
+		{ subtitle: "Featured Finds", title: "Browse Our Expertly Curated Selection of Must-Have Tools"},
+		{ subtitle: "New Arrivals", title: "Explore the Newest Additions to Our Hardware Collection"},
+		{ subtitle: "Best Sellers", title: "Check Out What's Trending in Hardware Today"},
+		{ subtitle: "Safety First", title: "Essential Safety Gear and Equipment for Every Task"},
+		{ subtitle: "Eco-Friendly Choices", title: "Sustainable and Green Solutions for Modern Building Needs"}
 	];
 
     
@@ -55,16 +56,20 @@ const ItemsSection: React.FC = () => {
 		// Filter items that include the section's subtitle in their tags
 		const filteredItems = items.filter(item => item.tags && item.tags.includes(section.subtitle));
 
+		const handleSeeAll = (filteredItems: Item[]) => {
+			navigate('/filtered', { state: { filteredItems } });
+		};
+
 		return (
-			<ShopSection
+			<ShopSectionTemplate
 				key={index}
 				title={section.title}
 				subtitle={section.subtitle}
 				itemImage={filteredItems.map(item => `data:image/jpeg;base64,${item.image}`)}
-				description={section.description}
+				itemDescription={filteredItems.map(item => item.description)}
 				amount={filteredItems.map(item => item.price)}
 				name={filteredItems.map(item => item.title)}
-				goToPage={() => navigate("/featured")}
+				goToPage={() => handleSeeAll(filteredItems)}
 				onClick={(itemName) => handleItemClick(itemName)}
 			/>
 		);
@@ -77,4 +82,4 @@ const ItemsSection: React.FC = () => {
 	);
 }
 
-export default ItemsSection
+export default ShopSection

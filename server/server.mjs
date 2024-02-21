@@ -43,21 +43,6 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
-// Retrieve data from a table and log it in the console
-
-app.get('/data', (req, res) => {
-  pool.query('SELECT * FROM featured', (err, results) => {
-    if (err) {
-      console.error('Error retrieving data:', err);
-      res.status(500).json({ error: 'Error retrieving data' });
-      return;
-    }
-    
-    console.log('Data retrieved from the table:');
-    console.log(results);
-    res.json(results);
-  });
-});
 
 app.listen(8081, () => {
   console.log('Server started on port 8081');

@@ -54,22 +54,24 @@ interface Props {
 	title: string;
 	subtitle: string;
 	itemImage: Array<string>;
-	description: string;
+	itemDescription: Array<string>;
 	amount: Array<string>;
 	name: Array<string>;
-	goToPage: () => void;
+	goToPage?: () => void;
 	onClick: (itemName: string) => void;
+	showSeeAllButton?: boolean;
 }
 
-const ShopSection = ({
+const ShopSectionTemplate = ({
 	title,
 	subtitle,
 	itemImage,
-	description,
+	itemDescription,
 	amount,
 	name,
 	goToPage,
 	onClick,
+	showSeeAllButton = true, // Default to true
 }: Props) => {
 	const [visibleItems, setVisibleItems] = useState(itemImage);
 	useEffect(() => {
@@ -100,10 +102,12 @@ const ShopSection = ({
 					<Title>{title}</Title>
 					<Subtitle>{subtitle}</Subtitle>
 				</div>
-				<SeeAllButton onClick={goToPage}>
-					<EyeIcon />
-					See All
-				</SeeAllButton>
+				{showSeeAllButton && (
+					<SeeAllButton onClick={goToPage}>
+						<EyeIcon />
+						See All
+					</SeeAllButton>
+				)}
 			</SectionHeader>
 
 			<ItemGroup>
@@ -112,7 +116,7 @@ const ShopSection = ({
 						key={item}
 						itemImage={item}
 						itemName={name[index]}
-						itemDescription={description}
+						itemDescription={itemDescription[index]}
 						price={amount[index]}
 						itemOnClick={() => onClick(name[index])}
 					/>
@@ -122,4 +126,4 @@ const ShopSection = ({
 	);
 };
 
-export default ShopSection;
+export default ShopSectionTemplate;

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import ShopItem from "./components/ShopItem";
+import { useEffect, useState } from "react";
 
 const ItemsGroup = styled.div`
 	display: grid;
@@ -35,33 +36,50 @@ const ItemsGroup = styled.div`
 	}
 `;
 
-interface Props {
-	itemsList: {
-		item_id: number;
-		image: string;
-		name: string;
-		description: string;
-		price: number;
-	}[];
-}
-
-const AllItemsView = ({ itemsList }: Props) => {
-	return (
+interface ItemsList {
+	id: number;
+	title: string;
+	description: string;
+	price: string;
+	image: string; // Blob URL for the image
+  }
+  
+  const AllItemsView = () => {
+	const [itemsList, setItemsList] = useState<ItemsList[]>([]);
+  
+	useEffect(() => {
+		const fetchItems = async () => {
+		  try {
+			const response = await fetch('http://localhost:8081/api/items');
+			if (!response.ok) {
+			  throw new Error('Network response was not ok');
+			}
+			const items = await response.json();
+			setItemsList(items);
+		  } catch (error) {
+			console.error('Fetch error:', error);
+		  }
+		};
+	
+		fetchItems();
+	  }, []);
+  
+	  return (
 		<>
-			<ItemsGroup>
-				{itemsList.map((item) => (
-					<ShopItem
-						key={item.item_id}
-						itemImage={item.image}
-						itemName={item.name}
-						itemDescription={item.description}
-						price={item.price}
-						itemOnClick={() => console.log('clicked all items view item')}
-					/>
-				))}
-			</ItemsGroup>
+		  <ItemsGroup>
+			{itemsList.map((item) => (
+			  <ShopItem
+				key={item.id}
+				itemImage={`data:image/jpeg;base64,${item.image}`} // Using Base64 image
+				itemName={item.title}
+				itemDescription={item.description}
+				price={item.price}
+				itemOnClick={() => console.log('clicked all items view item', item.id)}
+			  />
+			))}
+		  </ItemsGroup>
 		</>
-	);
-};
-
-export default AllItemsView;
+	  );
+	};
+	
+	export default AllItemsView;

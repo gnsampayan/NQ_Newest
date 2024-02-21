@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import Header from "./components/Header";
 import HomePage from "./HomePage";
-import FeaturedPage from "./FeaturedPage";
+import FilteredPage from "./FilteredPage";
 import NewItemsPage from "./NewItemsPage";
 import Shop from "./Shop";
 import ContactUs from "./ContactUs";
@@ -45,7 +45,7 @@ function MainApp() {
       <Wrapper>
         <Routes>
           <Route path="/" element={<HomePage $margin={margin} />} />
-          <Route path="/featured" element={<FeaturedPage />} />
+          <Route path="/filtered" element={<FilteredPage />} />
           <Route path="/new" element={<NewItemsPage />} />
           <Route path="/store" element={<Shop $margin={margin} />} />
           <Route path="/services" element={<Services />} />
