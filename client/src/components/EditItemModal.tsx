@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import ItemCreation from "../ItemCreation";
+import ReactDOM from "react-dom";
 
 const Wrapper = styled.div<WrapperProps>`
     border: 1px solid black;
@@ -8,14 +9,14 @@ const Wrapper = styled.div<WrapperProps>`
     background-color: white;
     width: 600px;
     margin-left: calc(50vw - 300px);
-    margin-top: 0px;
-    height: calc(100vh - 100px);
+    margin-top: 20px;
+    height: calc(100vh - 40px);
     overflow-y: scroll;
     overflow-x: hidden;
 `
 const Overlay = styled.div<OverlayProps>`
     background-color: rgba(0, 0, 0, 0.8);
-    position: absolute;
+    position: fixed;
     width: 100vw;
     height: calc(100% + 68px);
     top: -68px;
@@ -59,8 +60,8 @@ const EditItemModal = ({ $isVisible, onClose, editingItemId, itemData, isEditMod
         onClose(); // You might also want to close the modal after updating
     };
 
-  return (
-    <>
+    const modalContent = (
+        <>
         <Overlay $isVisible={$isVisible} onClick={hideModal}/>
         <Wrapper $isVisible={$isVisible}>
             {$isVisible && 
@@ -76,7 +77,12 @@ const EditItemModal = ({ $isVisible, onClose, editingItemId, itemData, isEditMod
             />
         </Wrapper>
     </>
-  )
+    );
+    // Only render the portal if the modal is visible          
+    return $isVisible ? ReactDOM.createPortal(
+        modalContent,
+        document.getElementById('edit-modal-root')!  // Portal target
+      ) : null;
 }
 
 export default EditItemModal
