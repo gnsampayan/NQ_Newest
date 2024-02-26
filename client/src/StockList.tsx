@@ -73,7 +73,7 @@ const StockList: React.FC = () => {
   
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [items]);
 
   const handleItemDelete = async (itemId: number) => {
     console.log("Deleting item with ID:", itemId);
@@ -138,7 +138,6 @@ const StockList: React.FC = () => {
     <CreateItemModal
       $isVisible={createModalVis}
       onClose={() => setCreateModalVis(false)}
-      finishedCreatingItems={fetchItems}
     />
     <CreateModalButton onClick={openCreateModal}>Create New Item</CreateModalButton>
     <Grid>

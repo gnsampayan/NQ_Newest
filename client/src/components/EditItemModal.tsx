@@ -4,7 +4,7 @@ import ItemCreation from "../ItemCreation";
 const Wrapper = styled.div<WrapperProps>`
     border: 1px solid black;
     display: ${props => (props.$isVisible ? 'block' : 'none')};
-    position: absolute;
+    position: fixed;
     background-color: white;
     width: 600px;
     margin-left: calc(50vw - 300px);

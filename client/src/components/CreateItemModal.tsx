@@ -32,14 +32,12 @@ interface OverlayProps {
 interface Props {
     $isVisible: boolean;
     onClose: () => void;
-    finishedCreatingItems: () => void;
 }
 
-const CreateItemModal = ({ $isVisible, onClose, finishedCreatingItems } : Props ) => { 
+const CreateItemModal = ({ $isVisible, onClose } : Props ) => { 
 
     const hideModal = () => {
         onClose();
-        finishedCreatingItems();
         console.log('clicked hide modal');
     }
 

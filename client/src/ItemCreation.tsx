@@ -197,23 +197,6 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     };
 
     const displayPrice = price ? `$${price}` : '';
-
-    const handleTagAdd = () => {
-        if (tag && !tags.includes(tag)) {
-            setTags([...tags, tag]);
-            setTag(''); // Reset the tag input field
-            setShowDropdown(false); // Hide the dropdown
-        }
-    };
-    const handleKeyPress: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();  // Prevents the default form submit behavior
-            handleTagAdd();
-        }
-    };
-    const handleTagDelete = (tagToDelete: string) => {
-        setTags(tags.filter(tag => tag !== tagToDelete));
-    }
     
     const handleQuantityChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const newQuantity = parseInt(e.target.value);
@@ -304,6 +287,33 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         setTag(e.target.value);
         setShowDropdown(e.target.value !== '');
     };
+    const handleTagAdd = () => {
+        if (tag && !tags.includes(tag)) {
+            setTags([...tags, tag]);
+            setTag(''); // Reset the tag input field
+            setShowDropdown(false); // Hide the dropdown
+        }
+    };
+    const handleKeyPress: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();  // Prevents the default form submit behavior
+            handleTagAdd();
+        }
+    };
+    const handleTagDelete = (tagToDelete: string) => {
+        setTags(tags.filter(tag => tag !== tagToDelete));
+    }
+
+    const handleTagInputFocus: React.FocusEventHandler<HTMLInputElement> = () => {
+        setShowDropdown(true);
+    };
+
+    const handleTagInputBlur: React.FocusEventHandler<HTMLInputElement> = () => {
+        // Use a timeout to allow time for handleTagSelection to be called on click
+        setTimeout(() => {
+            setShowDropdown(false);
+        }, 100);
+    };
 
     const handleTagSelection = (selectedTag: string) => {
         if (!tags.includes(selectedTag)) {
@@ -312,7 +322,6 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         setTag('');
         setShowDropdown(false); // Hide the dropdown
     };
-
 
 
     return (
@@ -356,6 +365,8 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                         value={tag}
                         onChange={handleTagInputChange}
                         onKeyDown={handleKeyPress}
+                        onFocus={handleTagInputFocus}
+                        onBlur={handleTagInputBlur}
                     />
                     {showDropdown && (
                         <Dropdown>
