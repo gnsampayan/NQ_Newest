@@ -16,8 +16,10 @@ const Title = styled.h1`
 `;
 const Subtitle = styled.h2`
 	color: black;
-	font-size: 1.3em;
-	font-weight: 400;
+	font-size: 1.8rem;
+	font-weight: 600;
+	color: rgb(0, 0, 0, 0.5);
+	text-transform: uppercase;
 `;
 const SeeAllButton = styled.button`
 	all: unset;

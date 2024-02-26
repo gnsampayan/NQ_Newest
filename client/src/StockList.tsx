@@ -37,10 +37,9 @@ const EditItem = styled.button`
   //edit styles button here
   `
 const CreateModalButton = styled.button`
-  margin-top: 20px;
-  margin-left: 20px;
   padding: 10px;
   border-radius: 6px;
+  margin: 20px 0px 0px 20px;
 `
 
 interface Item {

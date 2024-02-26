@@ -284,7 +284,10 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     ) : [];
 
     const handleTagInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setTag(e.target.value);
+        const value = e.target.value;
+        // Capitalize the first letter and add the rest of the string
+        const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
+        setTag(capitalizedValue);
         setShowDropdown(e.target.value !== '');
     };
     const handleTagAdd = () => {
