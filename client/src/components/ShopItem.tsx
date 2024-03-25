@@ -8,8 +8,9 @@ const ItemContainer = styled.div`
 	position: relative;
 	overflow: hidden;
 	cursor: pointer;
+	flex-shrink: 0;
 	&:hover {
-		border: solid 2px #a259ff;
+	border: solid 2px #a259ff;
 	}
 `;
 const ImageContainer = styled.div`
@@ -33,18 +34,17 @@ const ItemName = styled.h1`
 	font-size: 1.4em;
 	color: white;
 `;
-const ItemDescription = styled.p`
-	font-size: 0.9em;
-	color: white;
-	line-height: 1.2;
-	font-weight: 300;
-`;
 const TopDetails = styled.div`
 	margin-bottom: 10px;
 `;
 const BottomDetails = styled.div`
 	display: flex;
 	justify-content: space-between;
+	position: absolute; 
+	bottom: 20px;       
+	left: 0;            
+	right: 0;           
+	padding: 0 30px;    
 `;
 const PriceTitle = styled.h2`
 	font-size: 0.9em;
@@ -84,7 +84,7 @@ interface Props {
 	itemOnClick: () => void;
 }
 
-const ShopItem = ({ itemImage, itemName, itemDescription, price, itemOnClick }: Props) => {
+const ShopItem = ({ itemImage, itemName, price, itemOnClick }: Props) => {
 	return (
 		<ItemContainer >
 			<ImageContainer onClick={itemOnClick}>
@@ -93,7 +93,6 @@ const ShopItem = ({ itemImage, itemName, itemDescription, price, itemOnClick }: 
 			<ItemDetails>
 				<TopDetails>
 					<ItemName onClick={itemOnClick}>{itemName}</ItemName>
-					<ItemDescription>{itemDescription}</ItemDescription>
 				</TopDetails>
 				<BottomDetails>
 					<div>

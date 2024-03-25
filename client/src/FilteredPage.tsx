@@ -37,6 +37,8 @@ const FilteredPage = () => {
                 name={filteredItems.map((item: ItemType) => item.title)}
                 onClick={(itemName: string) => { console.log('onClick is Clicked' + itemName)}}
 				showSeeAllButton={false}
+				stackedLayout={true}
+				enableWrap={true}
             />
         </Wrapper>
     );

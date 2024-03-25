@@ -1,13 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ShopItem from "./ShopItem";
 import styled from "styled-components";
 import { BsEye } from "react-icons/bs";
 
-const ItemGroup = styled.div`
+const ItemGroup = styled.div<{ enableWrap: boolean }>`
 	display: flex;
 	gap: 30px;
-	justify-content: center;
+	justify-content: start;
 	padding: 0px 60px 0px 60px;
+	overflow-x: auto;
+	flex-wrap: ${({ enableWrap }) => enableWrap ? 'wrap' : 'nowrap'};
+	// Ensure the children (ShopItem) do not shrink and maintain their size
+    & > * {
+        flex-shrink: 0;
+    }
 `;
 const Title = styled.h1`
 	color: black;
@@ -62,6 +68,8 @@ interface Props {
 	goToPage?: () => void;
 	onClick: (itemName: string) => void;
 	showSeeAllButton?: boolean;
+	stackedLayout?: boolean;
+	enableWrap?: boolean;
 }
 
 const ShopSectionTemplate = ({
@@ -74,8 +82,20 @@ const ShopSectionTemplate = ({
 	goToPage,
 	onClick,
 	showSeeAllButton = true, // Default to true
+	stackedLayout = false,
+	enableWrap,
 }: Props) => {
+	
+	const Container = styled.div`
+	display: ${stackedLayout ? 'flex' : 'block'};
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	`;
+	const itemGroupRef = useRef<HTMLDivElement>(null);
+
 	const [visibleItems, setVisibleItems] = useState(itemImage);
+
 	useEffect(() => {
 		const handleResize = () => {
 			const breakpoints = [
@@ -97,8 +117,9 @@ const ShopSectionTemplate = ({
 			window.removeEventListener("resize", handleResize);
 		};
 	}, [itemImage]);
+
 	return (
-		<>
+		<Container>
 			<SectionHeader>
 				<div>
 					<Title>{title}</Title>
@@ -112,7 +133,7 @@ const ShopSectionTemplate = ({
 				)}
 			</SectionHeader>
 
-			<ItemGroup>
+			<ItemGroup enableWrap={enableWrap ?? false} ref={itemGroupRef}>
 				{visibleItems.map((item: string, index: number) => (
 					<ShopItem
 						key={item}
@@ -124,7 +145,7 @@ const ShopSectionTemplate = ({
 					/>
 				))}
 			</ItemGroup>
-		</>
+		</Container>
 	);
 };
 
