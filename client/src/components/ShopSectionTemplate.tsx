@@ -94,29 +94,6 @@ const ShopSectionTemplate = ({
 	`;
 	const itemGroupRef = useRef<HTMLDivElement>(null);
 
-	const [visibleItems, setVisibleItems] = useState(itemImage);
-
-	useEffect(() => {
-		const handleResize = () => {
-			const breakpoints = [
-				{ width: 710, itemImage: 1 },
-				{ width: 1100, itemImage: 2 },
-				{ width: 1400, itemImage: 3 },
-				{ width: 1680, itemImage: 4 },
-				{ width: 2300, itemImage: 5 },
-			];
-			const width = window.innerWidth;
-			const breakpoint = breakpoints.find((bp) => width < bp.width);
-			setVisibleItems(
-				breakpoint ? itemImage.slice(0, breakpoint.itemImage) : itemImage
-			);
-		};
-		handleResize();
-		window.addEventListener("resize", handleResize);
-		return () => {
-			window.removeEventListener("resize", handleResize);
-		};
-	}, [itemImage]);
 
 	return (
 		<Container>
@@ -134,7 +111,7 @@ const ShopSectionTemplate = ({
 			</SectionHeader>
 
 			<ItemGroup enableWrap={enableWrap ?? false} ref={itemGroupRef}>
-				{visibleItems.map((item: string, index: number) => (
+				{itemImage.map((item: string, index: number) => (
 					<ShopItem
 						key={item}
 						itemImage={item}

@@ -2,6 +2,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import DeviceDetector from "./DeviceDetector";
 import styled, { css } from "styled-components";
 
+import FeaturedImg from "./assets/items/homepage_img1.webp";
+import NewArrival from "./assets/items/homepage_img2.webp";
+import SpecialOffers from "./assets/items/homepage_img3.webp";
+import DIYTnt from "./assets/items/homepage_img4.webp";
+import CustomerStories from './assets/items/homepage_img5.webp';
+
+import Product1 from "./assets/items/allen_keys.png";
+import Product2 from "./assets/items/battery.png";
+import Product3 from "./assets/items/circuit_breaker.png";
+import Product4 from "./assets/items/hammer.png";
+import Product5 from "./assets/items/hollow-block.png";
+import Product6 from "./assets/items/capacitor.png";
+
+import Pano from "./assets/items/homepage_pano.webp";
+
 const Wrapper = styled.div<HomePageProps>`
   position: relative;
   margin-left: ${props => props.$margin};
@@ -41,34 +56,65 @@ const SectionContainer = styled.div`
   justify-content: space-around;
   flex-wrap: wrap;
   margin-bottom: 20px;
+  position: relative;
 `;
+
+const Title = styled.h1`
+  color: white;
+  position: absolute;
+`
 
 const Section = styled.div`
   ${commonSectionStyles}
   flex-basis: calc(33% - 20px);
   height: 200px;
-  line-height: 200px;
   margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 
   &:hover {
     border: solid 2px #a259ff;
-    background-color: #555;
+    background-color: #a259ff;
     cursor: pointer;
   }
+
+  img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    opacity: 70%;
+  }
 `;
+
 
 const ServicesSection = styled(Section)`
   flex-basis: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+  background-image: url(${Pano});
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  filter: blur(4px);
 `;
 
-const Service = styled.div`
+const Service = styled.h3`
   flex-basis: calc(25% - 20px);
   height: 150px;
   margin: 10px;
   line-height: 150px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.8); // Optional: for better visibility over blur
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const NewsletterSection = styled(Section)`
@@ -86,6 +132,26 @@ const ProductGrid = styled.div`
 const ProductCard = styled.div`
   ${commonSectionStyles}
   height: 300px;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &:hover {
+    border: solid 2px #a259ff;
+    background-color: #a259ff;
+    cursor: pointer;
+  }
+
+  img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    opacity: 70%;
+  }
 `;
 
 interface HomePageProps {
@@ -93,25 +159,43 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
+
+  const sectionData = [
+    { title: "Featured Products", imageUrl: FeaturedImg },
+    { title: "New Arrivals", imageUrl: NewArrival },
+    { title: "Special Offers", imageUrl: SpecialOffers },
+    { title: "DIY Tips & Tricks", imageUrl: DIYTnt },
+    { title: "Customer Stories", imageUrl: CustomerStories },
+  ];
+  const productData = [
+    { title: "Allen Keys", imageUrl: Product1 },
+    { title: "Batteries", imageUrl: Product2 },
+    { title: "Circuit Breakers", imageUrl: Product3 },
+    { title: "Hammers", imageUrl: Product4 },
+    { title: "Hollow Blocks", imageUrl: Product5 },
+    { title: "Capacitors", imageUrl: Product6 },
+  ];
+
   return (
     <>
       <Header>Hardware Store - Everything You Need</Header>
       <Wrapper $margin={$margin}>
         <DeviceDetector />
         <SectionContainer>
-          <Section>Featured Products</Section>
-          <Section>New Arrivals</Section>
-          <Section>Special Offers</Section>
-          <Section>DIY Tips & Tricks</Section>
-          <Section>Customer Stories</Section>
+          {sectionData.map((item, index) => (
+            <Section key={index}>
+              <img src={item.imageUrl} alt={item.title} />
+              <Title>{item.title}</Title>
+            </Section>
+          ))}
         </SectionContainer>
         <ProductGrid>
-          <ProductCard>Product 1</ProductCard>
-          <ProductCard>Product 2</ProductCard>
-          <ProductCard>Product 3</ProductCard>
-          <ProductCard>Product 4</ProductCard>
-          <ProductCard>Product 5</ProductCard>
-          <ProductCard>Product 6</ProductCard>
+          {productData.map((item, index) => (
+            <ProductCard key={index}>
+              <img src={item.imageUrl} alt={item.title} />
+              <Title>{item.title}</Title>
+            </ProductCard>
+          ))}
         </ProductGrid>
         <ServicesSection>
           <Service>Deliveries</Service>
@@ -119,7 +203,7 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
           <Service>Tool Rentals</Service>
           <Service>Installation Services</Service>
         </ServicesSection>
-        <NewsletterSection>Subscribe to Our Newsletter</NewsletterSection>
+        <NewsletterSection >Subscribe to Our Newsletter</NewsletterSection>
       </Wrapper>
       <Footer>© 2023 Hardware Store. All rights reserved.</Footer>
     </>
