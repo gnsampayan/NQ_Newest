@@ -197,7 +197,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 									<StyledPersonIcon />
 								</PersonIcon>
 							)}
-							{ item.name === "Sign in" && token ? "Member" : item.name}
+							{ item.name === "Sign in" && token ? "{memberType} Area" : item.name}
 						</ItemComponent>
 					);
 				})}

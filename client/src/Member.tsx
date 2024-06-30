@@ -82,16 +82,16 @@ const Member: React.FC = () => {
 
   return (
     <Wrapper>
-      <Title>Member Area</Title>
+      <Title>memberType Area</Title>
       <BoxContainer>
         <Box>
           <BoxTitle>Home Page Setup</BoxTitle>
-          <ActionButton>Edit Images</ActionButton>
+          <ActionButton>Edit</ActionButton>
         </Box>
         <Box>
           <BoxTitle>Shop Options</BoxTitle>
-          <ActionButton onClick={handleCreateItemClick}>Create an Item</ActionButton>
-          <ActionButton onClick={handleViewStockClick}>View Stock</ActionButton>
+          <ActionButton onClick={handleCreateItemClick}>Add New Item</ActionButton>
+          <ActionButton onClick={handleViewStockClick}>View All Items</ActionButton>
         </Box>
       </BoxContainer>
       <SignOutButton onClick={SignOut}>Sign Out</SignOutButton>

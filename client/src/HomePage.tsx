@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import DeviceDetector from "./DeviceDetector";
 import styled, { css } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import FeaturedImg from "./assets/items/homepage_img1.webp";
 import NewArrival from "./assets/items/homepage_img2.webp";
@@ -90,19 +91,43 @@ const Section = styled.div`
   }
 `;
 
-
-const ServicesSection = styled(Section)`
-  flex-basis: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+const ServicesContainer = styled.div`
   position: relative;
-  overflow: hidden;
+`;
+
+const BackgroundSection = styled(Section)`
+  position: relative;
   background-image: url(${Pano});
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   filter: blur(4px);
+  z-index: 2;
+  flex-basis: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  overflow: hidden;
+`;
+
+const ServicesSection = styled.div`
+  flex-basis: 100%;
+  justify-content: space-around;
+  overflow: hidden;
+  background-color: none;
+  background: none;
+  z-index: 99999;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: 200px;
+  margin-bottom: 20px;
+  text-align: center;
+  color:  white;
+  border-radius: 20px;
+  padding: 20px;
 `;
 
 const Service = styled.h3`
@@ -111,9 +136,10 @@ const Service = styled.h3`
   margin: 10px;
   line-height: 150px;
   border-radius: 6px;
-  background-color: rgba(255, 255, 255, 0.8); // Optional: for better visibility over blur
+  background-color: rgba(138, 138, 138, 0.7);
   &:hover {
     cursor: pointer;
+    background-color: rgba(162, 89, 255, .7);
   }
 `;
 
@@ -176,6 +202,8 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
     { title: "Capacitors", imageUrl: Product6 },
   ];
 
+  const navigate = useNavigate();
+
   return (
     <>
       <Header>Hardware Store - Everything You Need</Header>
@@ -197,12 +225,16 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
             </ProductCard>
           ))}
         </ProductGrid>
-        <ServicesSection>
-          <Service>Deliveries</Service>
-          <Service>Contractor Services</Service>
-          <Service>Tool Rentals</Service>
-          <Service>Installation Services</Service>
-        </ServicesSection>
+        <ServicesContainer>
+          <BackgroundSection></BackgroundSection>
+          <ServicesSection>
+            <Service onClick={() => navigate("/services")}>Deliveries</Service>
+            <Service>Contractor Services</Service>
+            <Service>Tool Rentals</Service>
+            <Service>Installation Services</Service>
+          </ServicesSection>
+        </ServicesContainer>
+        
         <NewsletterSection >Subscribe to Our Newsletter</NewsletterSection>
       </Wrapper>
       <Footer>© 2023 Hardware Store. All rights reserved.</Footer>
