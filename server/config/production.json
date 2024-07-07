@@ -2,5 +2,12 @@
     "name": "My Express App - Production",
     "mail": {
         "host": "prod-mail-server"
+    },
+    "server": {
+        "host": "162.241.218.79",
+        "user": "glennsam_admin",
+        "password": "mrbonkers123",
+        "database": "glennsam_NQ",
+        "port" : 3306
     }
 }

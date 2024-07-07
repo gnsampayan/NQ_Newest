@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import config from "../config";
 
 const Wrapper = styled.div`
     color: #333; // Changing text color for better readability
@@ -76,7 +77,7 @@ const SignUp = () => {
 		try {
 			// First, check if the user already exists
 			const checkResponse = await fetch(
-				`http://localhost:8081/users?email=${email}`
+				`${config.API_URL}/users?email=${email}`
 			);
 			const checkData = await checkResponse.json();
 
@@ -86,7 +87,7 @@ const SignUp = () => {
 			}
 
 			// If not, create a new user
-			const response = await fetch("http://localhost:8081/users", {
+			const response = await fetch(`${config.API_URL}/users`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

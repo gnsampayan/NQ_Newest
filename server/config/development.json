@@ -4,10 +4,11 @@
         "host": "dev-mail-server"
     },
     "server": {
-        "host": "localhost",
-        "user": "root",
+        "host": "162.241.218.79",
+        "user": "glennsam_admin",
         "password": "mrbonkers123",
-        "database": "dev_featured"
+        "database": "glennsam_NQ",
+        "port" : 3306
     }
     
 }

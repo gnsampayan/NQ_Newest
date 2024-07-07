@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import {  useRef } from "react";
 import ShopItem from "./ShopItem";
 import styled from "styled-components";
 import { BsEye } from "react-icons/bs";
 
-const ItemGroup = styled.div<{ enableWrap: boolean }>`
+const ItemGroup = styled.div<{ $enableWrap: boolean }>`
 	display: flex;
 	gap: 30px;
 	justify-content: start;
 	padding: 0px 60px 0px 60px;
 	overflow-x: auto;
-	flex-wrap: ${({ enableWrap }) => enableWrap ? 'wrap' : 'nowrap'};
+	flex-wrap: ${({ $enableWrap }) => $enableWrap ? 'wrap' : 'nowrap'};
 	// Ensure the children (ShopItem) do not shrink and maintain their size
     & > * {
         flex-shrink: 0;
@@ -57,6 +57,13 @@ const EyeIcon = styled(BsEye)`
 	margin-right: 10px;
 	width: 18px;
 `;
+const Container = styled.div<{ $stackedLayout: boolean }>`
+	display: ${props => (props.$stackedLayout ? 'flex' : 'block')};
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+`;
+
 
 interface Props {
 	title: string;
@@ -86,17 +93,13 @@ const ShopSectionTemplate = ({
 	enableWrap,
 }: Props) => {
 	
-	const Container = styled.div`
-	display: ${stackedLayout ? 'flex' : 'block'};
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	`;
+	
+	
 	const itemGroupRef = useRef<HTMLDivElement>(null);
 
 
 	return (
-		<Container>
+		<Container $stackedLayout={stackedLayout}>
 			<SectionHeader>
 				<div>
 					<Title>{title}</Title>
@@ -110,7 +113,7 @@ const ShopSectionTemplate = ({
 				)}
 			</SectionHeader>
 
-			<ItemGroup enableWrap={enableWrap ?? false} ref={itemGroupRef}>
+			<ItemGroup $enableWrap={enableWrap ?? false} ref={itemGroupRef}>
 				{itemImage.map((item: string, index: number) => (
 					<ShopItem
 						key={item}

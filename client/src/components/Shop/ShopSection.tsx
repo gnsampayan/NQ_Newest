@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import ShopSectionTemplate from "../components/ShopSectionTemplate";
-import { sectionText } from '../components/sectionText';
+import ShopSectionTemplate from "./ShopSectionTemplate";
+import { sectionText } from './sectionText';
+import config from "../../config";
 
 
 const Wrapper = styled.div`
@@ -25,7 +26,7 @@ const ShopSection: React.FC = () => {
 	useEffect(() => {
 		const fetchItems = async () => {
 			try {
-				const response = await fetch('http://localhost:8081/api/items');
+				const response = await fetch(`${config.API_URL}/items`);
 				const data = await response.json();
 				// Ensure each item has a 'tags' field initialized as an array
 				const itemsWithTags = data.map((item: Item) => ({

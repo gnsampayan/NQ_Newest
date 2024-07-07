@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import ShopItem from "./components/ShopItem";
+import config from './config';
+import ShopItem from "./components/Shop/ShopItem";
 import { useEffect, useState } from "react";
 
 const ItemsGroup = styled.div`
@@ -50,7 +51,7 @@ interface ItemsList {
 	useEffect(() => {
 		const fetchItems = async () => {
 		  try {
-			const response = await fetch('http://localhost:8081/api/items');
+			const response = await fetch(`${config.API_URL}/items`);
 			if (!response.ok) {
 			  throw new Error('Network response was not ok');
 			}

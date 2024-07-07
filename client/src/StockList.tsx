@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import EditItemModal from './components/EditItemModal';
 import CreateItemModal from './components/CreateItemModal';
 import { ItemType } from './context/Types';
+import config from './config';
 
 const Grid = styled.div`
   display: flex;
@@ -59,7 +60,7 @@ const StockList: React.FC = () => {
   
   const fetchItems = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/items');
+      const response = await fetch(`${config.API_URL}/items`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -78,7 +79,7 @@ const StockList: React.FC = () => {
     console.log("Deleting item with ID:", itemId);
 
     try {
-      const response = await fetch(`http://localhost:8081/api/items/${itemId}`, {
+      const response = await fetch(`${config.API_URL}/items/${itemId}`, {
         method: 'DELETE',
         // If your API requires headers (like Content-Type, Authorization), add them here
       });

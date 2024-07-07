@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import ShopSection from "./sections/ShopSection";
-import CategoriesSection from "./sections/CategoriesSection";
+import ShopSection from "./components/Shop/ShopSection";
+import CategoriesSection from "./components/CategoriesSection";
 
 const Wrapper = styled.div<ShopProps>`
 	color: white;

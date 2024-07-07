@@ -17,7 +17,7 @@ const pool = createPool({
   database: config.get('server.database'),
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 const app = express();
@@ -43,7 +43,8 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
-
-app.listen(8081, () => {
-  console.log('Server started on port 8081');
+const port = 8081;
+app.listen(port, () => {
+  console.log('Server started on port' + port);
 });
+
