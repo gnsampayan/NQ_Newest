@@ -1,20 +1,8 @@
-import {  useRef } from "react";
-import ShopItem from "./ShopItem";
 import styled from "styled-components";
 import { BsEye } from "react-icons/bs";
+import LargeItemGroup from "./itemgroup/LargeItemGroup";
 
-const ItemGroup = styled.div<{ $enableWrap: boolean }>`
-	display: flex;
-	gap: 30px;
-	justify-content: start;
-	padding: 0px 60px 0px 60px;
-	overflow-x: auto;
-	flex-wrap: ${({ $enableWrap }) => $enableWrap ? 'wrap' : 'nowrap'};
-	// Ensure the children (ShopItem) do not shrink and maintain their size
-    & > * {
-        flex-shrink: 0;
-    }
-`;
+
 const Title = styled.h1`
 	color: black;
 	font-size: 2.3em;
@@ -48,8 +36,8 @@ const SectionHeader = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: end;
-	padding: 100px 60px 20px 60px;
-	margin: 0px 0px 60px 0px;
+	padding: 40px 0px 0px 60px;
+	margin: 0px 0px 40px 0px;
 `;
 const EyeIcon = styled(BsEye)`
 	all: unset;
@@ -68,35 +56,30 @@ const Container = styled.div<{ $stackedLayout: boolean }>`
 interface Props {
 	title: string;
 	subtitle: string;
+	goToPage?: () => void;
+	showSeeAllButton?: boolean;
+	stackedLayout?: boolean;
 	itemImage: Array<string>;
 	itemDescription: Array<string>;
 	amount: Array<string>;
 	name: Array<string>;
-	goToPage?: () => void;
 	onClick: (itemName: string) => void;
-	showSeeAllButton?: boolean;
-	stackedLayout?: boolean;
 	enableWrap?: boolean;
 }
 
 const ShopSectionTemplate = ({
 	title,
 	subtitle,
+	goToPage,
+	showSeeAllButton = true, // Default to true
+	stackedLayout = false,
 	itemImage,
 	itemDescription,
 	amount,
 	name,
-	goToPage,
-	onClick,
-	showSeeAllButton = true, // Default to true
-	stackedLayout = false,
-	enableWrap,
+    onClick,
+    enableWrap,
 }: Props) => {
-	
-	
-	
-	const itemGroupRef = useRef<HTMLDivElement>(null);
-
 
 	return (
 		<Container $stackedLayout={stackedLayout}>
@@ -112,19 +95,15 @@ const ShopSectionTemplate = ({
 					</SeeAllButton>
 				)}
 			</SectionHeader>
-
-			<ItemGroup $enableWrap={enableWrap ?? false} ref={itemGroupRef}>
-				{itemImage.map((item: string, index: number) => (
-					<ShopItem
-						key={item}
-						itemImage={item}
-						itemName={name[index]}
-						itemDescription={itemDescription[index]}
-						price={amount[index]}
-						itemOnClick={() => onClick(name[index])}
-					/>
-				))}
-			</ItemGroup>
+			<LargeItemGroup 
+				itemImage={itemImage} 
+				itemDescription={itemDescription} 
+				amount={amount} 
+				name={name} 
+				onClick={onClick}
+				enableWrap={enableWrap}
+				/>
+			
 		</Container>
 	);
 };

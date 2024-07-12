@@ -1,7 +1,9 @@
 import styled from "styled-components";
-import ShopItem from "./Shop/ShopItem";
+import config from '../config';
+import { useEffect, useState } from "react";
+import ShopItem from "./Shop/shop-items/ShopItem";
 
-const ItemsGroup = styled.div`
+const LargeItemsGroup = styled.div`
 	display: grid;
 	gap: 30px;
 	padding: 0px 60px 0px 60px;
@@ -35,34 +37,52 @@ const ItemsGroup = styled.div`
 	}
 `;
 
-interface Props {
-	itemsList: {
-		item_id: number;
-		image: string;
-		name: string;
-		description: string;
-		price: string;
-		onClick: () => void;
-	}[];
-}
-
-const AllItemsView = ({ itemsList }: Props) => {
-	return (
+interface ItemsList {
+	id: number;
+	title: string;
+	description: string;
+	price: string;
+	image: string; // Blob URL for the image
+  }
+  
+  const AllItemsView = () => {
+	const [itemsList, setItemsList] = useState<ItemsList[]>([]);
+  
+	useEffect(() => {
+		const fetchItems = async () => {
+		  try {
+			const response = await fetch(`${config.API_URL}/items`);
+			if (!response.ok) {
+			  throw new Error('Network response was not ok');
+			}
+			const items = await response.json();
+			setItemsList(items);
+		  } catch (error) {
+			console.error('Fetch error:', error);
+		  }
+		};
+	
+		fetchItems();
+	  }, []);
+  
+	  return (
 		<>
-			<ItemsGroup>
-				{itemsList.map((item) => (
-					<ShopItem
-						key={item.item_id}
-						itemImage={item.image}
-						itemName={item.name}
-						itemDescription={item.description}
-						price={item.price}
-						itemOnClick={item.onClick}
+		  <LargeItemsGroup>
+			{itemsList.map((item) => (
+			  <ShopItem
+					key={item.id}
+					itemImage={`data:image/jpeg;base64,${item.image}`} // Using Base64 image
+					itemName={item.title}
+					itemDescription={item.description}
+					price={item.price}
+					itemOnClick={() => console.log('clicked all items view item', item.id)}
+					boxSize={"large"} 
+					cartVis={true}			  
 					/>
-				))}
-			</ItemsGroup>
+			))}
+		  </LargeItemsGroup>
 		</>
-	);
-};
-
-export default AllItemsView;
+	  );
+	};
+	
+	export default AllItemsView;

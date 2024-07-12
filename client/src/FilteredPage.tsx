@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import ShopSectionTemplate from "./components/Shop/ShopSectionTemplate";
 import { ItemType } from "./context/Types";
-import { sectionText } from "./components/Shop/sectionText";
+import { sectionText } from "./components/Shop/shop-params";
 
 const Wrapper = styled.div`
 	display: flex;

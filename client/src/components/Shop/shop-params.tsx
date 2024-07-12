@@ -5,3 +5,13 @@ export const sectionText = [
     { subtitle: "Safety First", title: "Essential Safety Gear and Equipment for Every Task"},
     { subtitle: "Eco-Friendly Choices", title: "Sustainable and Green Solutions for Modern Building Needs"}
 ];
+export const topFilter = [
+    { tags: [
+        "Tools", 
+        "Featured Finds", 
+        "Best Sellers", 
+        "Safety First", 
+        "New Arrivals", 
+        "Eco-Friendly Choices"
+    ] }
+]
