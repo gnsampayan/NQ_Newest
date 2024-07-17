@@ -17,10 +17,10 @@ const Wrapper = styled.div<ShopProps>`
 `;
 
 const Parent = styled.div`
-	width: 100vw;
+	width: calc(100vw - 20px);
 	justify-content: center;
 	display: inline-flex;	
-	padding: 60px 50px 00px 20px;
+	padding: 60px 30px 00px 20px;
 `;
 const Container = styled.div`
 	justify-content: center;
@@ -48,13 +48,15 @@ const Button = styled.button<{ isActive: boolean }>`
 `;
 const Floor = styled.div`
 	background-color: aliceblue;
-	width: 100vw;
+	width: calc(100vw - 20px);
 	display: flex;
 `
-const Filter = styled.div`
+const FilterColumn = styled.div`
 	background-color: antiquewhite;
 	height: auto;
 	width: 400px;
+	padding: 20px;
+	color: black;
 `
 const Items = styled.div`
 	background-color: #098181;
@@ -110,7 +112,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 		const filteredItems = items.filter(item => section.tags.some(tag => item.tags.includes(tag)));
 
 		return (
-			<SmallItemGroup
+			<SmallItemGroup 
 				key={index}
 				itemImage={filteredItems.map(item => `data:image/jpeg;base64,${item.image}`)}
 				itemDescription={filteredItems.map(item => item.description)}
@@ -149,21 +151,43 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 				<ShopSection selectedSection={selectedSection} />
 				<CategoriesSection />
 				<Floor>
-					<Filter></Filter>
-					<Items>
-						{items.map((item, index) => (
-							<ShopItem
-								key={index}
-								itemImage={`data:image/jpeg;base64,${item.image}`}
-								itemName={item.title}
-								itemDescription={item.description}
-								price={item.price}
-								itemOnClick={() => handleItemClick(item.title)}
-								boxSize="medium" // Adjust size as needed
-								cartVis={true} // Show cart button
-							/>
-						))}
-					</Items>
+					<FilterColumn>
+						<ul>
+							<h5>Tools
+								<h6>Wireless</h6>
+								<h6>Wired</h6>
+								<h6>Manual</h6>
+							</h5>
+							<h5>Materials
+								<h6>Concrete</h6>
+								<h6>Plywood</h6>
+								<h6>Lumber</h6>
+								<h6>Metals</h6>
+								<h6>Insulation</h6>
+							</h5>
+						</ul>
+						<h4>Brands</h4>
+						<h4>Price</h4>
+						<h4>Discount</h4>
+					</FilterColumn>
+					<div >
+						<button style={{ float: 'right', backgroundColor: 'red', marginRight: '40px' }} >Filter</button>
+						<Items>
+							{items.map((item, index) => (
+								<ShopItem
+									key={index}
+									itemImage={`data:image/jpeg;base64,${item.image}`}
+									itemName={item.title}
+									itemDescription={item.description}
+									price={item.price}
+									itemOnClick={() => handleItemClick(item.title)}
+									boxSize="medium" // Adjust size as needed
+									cartVis={true} // Show cart button
+								/>
+							))}
+						</Items>
+					</div>
+					
 				</Floor>
 			</Wrapper>
 		</>

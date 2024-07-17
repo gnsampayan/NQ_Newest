@@ -98,6 +98,9 @@ const SmallItemGroup = ({
   };
 
   const startAutoScroll = () => {
+    // Ensure no other interval is running
+    if (intervalIdRef.current) return;
+
     intervalIdRef.current = setInterval(() => {
       if (itemGroupRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = itemGroupRef.current;
@@ -121,6 +124,7 @@ const SmallItemGroup = ({
     return () => {
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
+        intervalIdRef.current = null; // Clear the reference
       }
     };
   }, []);
@@ -128,6 +132,7 @@ const SmallItemGroup = ({
   const stopAutoScroll = () => {
     if (intervalIdRef.current) {
       clearInterval(intervalIdRef.current);
+      intervalIdRef.current = null; // Clear the reference
     }
   };
 

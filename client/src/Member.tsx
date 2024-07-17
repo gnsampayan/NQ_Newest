@@ -85,13 +85,33 @@ const Member: React.FC = () => {
       <Title>memberType Area</Title>
       <BoxContainer>
         <Box>
-          <BoxTitle>Home Page Setup</BoxTitle>
+          <BoxTitle>White Label Configuration</BoxTitle>
           <ActionButton>Edit</ActionButton>
         </Box>
         <Box>
           <BoxTitle>Shop Options</BoxTitle>
           <ActionButton onClick={handleCreateItemClick}>Add New Item</ActionButton>
           <ActionButton onClick={handleViewStockClick}>View All Items</ActionButton>
+        </Box>
+        <Box>
+          <h3>Deliveries</h3>
+          <p>Fast and reliable product delivery service.</p>
+          <ActionButton>View</ActionButton>
+        </Box>
+        <Box>
+          <h3>Contractor Services</h3>
+          <p>Professional services for your construction needs.</p>
+          <ActionButton>View</ActionButton>
+        </Box>
+        <Box>
+          <h3>Tool Rentals</h3>
+          <p>A wide range of tools available for rent.</p>
+          <ActionButton>View</ActionButton>
+        </Box>
+        <Box>
+          <h3>Installation Services</h3>
+          <p>Expert installation services for various products.</p>
+          <ActionButton>View</ActionButton>
         </Box>
       </BoxContainer>
       <SignOutButton onClick={SignOut}>Sign Out</SignOutButton>

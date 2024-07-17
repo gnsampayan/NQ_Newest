@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ItemType } from './context/Types';
 import config from './config';
@@ -99,6 +99,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     const [databaseTags, setDatabaseTags] = useState<string[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
+    const tagInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (isEditing && itemData) {
@@ -289,7 +290,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         // Capitalize the first letter and add the rest of the string
         const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
         setTag(capitalizedValue);
-        setShowDropdown(e.target.value !== '');
+        setShowDropdown(true);
     };
     const handleTagAdd = () => {
         if (tag && !tags.includes(tag)) {
@@ -312,7 +313,11 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         setShowDropdown(true);
     };
 
-    const handleTagInputBlur: React.FocusEventHandler<HTMLInputElement> = () => {
+    const handleTagInputBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
+        // Check if the new focus target is inside the dropdown
+        if (e.relatedTarget && (e.relatedTarget as HTMLElement).closest('.dropdown-item')) {
+            return;
+        }
         // Use a timeout to allow time for handleTagSelection to be called on click
         setTimeout(() => {
             setShowDropdown(false);
@@ -325,8 +330,12 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         }
         setTag('');
         setShowDropdown(false); // Hide the dropdown
+        tagInputRef.current?.blur(); // Manually blur the input field
     };
 
+    const handleDropdownMouseDown: React.MouseEventHandler<HTMLDivElement> = (e) => {
+        e.preventDefault(); // Prevents the input from losing focus
+    };
 
     return (
         <Wrapper>
@@ -371,11 +380,12 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                         onKeyDown={handleKeyPress}
                         onFocus={handleTagInputFocus}
                         onBlur={handleTagInputBlur}
+                        ref={tagInputRef}
                     />
                     {showDropdown && (
-                        <Dropdown>
+                        <Dropdown onMouseDown={handleDropdownMouseDown}>
                             {filteredTags.map((filteredTag, index) => (
-                                <DropdownItem key={index} onClick={() => handleTagSelection(filteredTag)}>
+                                <DropdownItem key={index} onClick={() => handleTagSelection(filteredTag)} className="dropdown-item">
                                     {filteredTag}
                                 </DropdownItem>
                             ))}
@@ -402,7 +412,6 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             </Form>
         </Wrapper>
     );
-    
 }
 
 export default ItemCreation;
