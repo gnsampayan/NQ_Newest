@@ -12,7 +12,7 @@ const BladeContents = styled.div<Props>`
     width: 400px;
     height: 100vh;
     display: ${props => (props.$isVisible ? 'block' : 'none')};
-    padding-top: 76px;
+    padding-top: 100px;
     padding-bottom: 40px;
     overflow-y: auto;
 `;

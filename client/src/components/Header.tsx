@@ -16,7 +16,6 @@ const NavBox = styled.nav<NavBoxProps>`
 	display: flex;
 	justify-content: space-between;
 	z-index: 999;
-	border-bottom: 1px solid black;
 	transition: transform 0.3s ease-in-out;
 	transform: ${({ $isHidden }) => ($isHidden ? 'translateY(-100%)' : 'translateY(0)')};
 `;
@@ -24,38 +23,34 @@ const NavBox = styled.nav<NavBoxProps>`
 const NavMenu = styled.ul`
 	list-style: none;
 	color: white;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	margin-bottom: 0;
+	display: inline-flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 10px;
 `;
 
 const NavItem = styled.button`
 	all: unset;
-	padding-left: 12px;
-	padding-right: 12px;
-	padding-top: 6px;
-	padding-bottom: 10px;
-	font-size: 1em;
-	width: 140px;
-	display: flex;
-	justify-content: center;
+	width: auto;
 	cursor: pointer;
+	
+	display: flex;
+	height: 46px;
+	padding: 0px 20px;
+	justify-content: center;
+	align-items: center;
+	gap: 12px;
+	
+	color: #FFF;
+	text-align: center;
+	font-family: "Work Sans";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 140%; /* 22.4px */
 
-	@media (max-width: 600px) {
-		width: 110px;
-		font-size: 0.8em;
-	}
-
-	@media (min-width: 601px) and (max-width: 1200px) {
-		width: 120px;
-		font-size: 0.9em;
-	}
-
-	@media (min-width: 1201px) {
-		width: 140px;
-		font-size: 1em;
-	}
+	white-space: nowrap; /* Prevents text from wrapping */
 `;
 
 const SignInItem = styled(NavItem)`
@@ -63,7 +58,7 @@ const SignInItem = styled(NavItem)`
 	border-radius: 20px;
 	display: flex;
 	height: 60px;
-	padding: -2px 30px 2px 30px;
+	padding: 0px 30px 0px 30px;
 	justify-content: center;
 	align-items: center;
 	gap: 12px;
