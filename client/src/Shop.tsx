@@ -17,7 +17,7 @@ const Wrapper = styled.div<ShopProps>`
 `;
 
 const Parent = styled.div`
-	width: calc(100vw - 20px);
+	width: 100%;
 	justify-content: center;
 	display: inline-flex;	
 	padding: 60px 30px 00px 20px;
@@ -47,27 +47,40 @@ const Button = styled.button<{ isActive: boolean }>`
 	}
 `;
 const Floor = styled.div`
-	background-color: aliceblue;
-	width: calc(100vw - 20px);
+	background-color: #ebebeb;
+	width: 100%;
 	display: flex;
 `
 const FilterColumn = styled.div`
-	background-color: antiquewhite;
-	height: auto;
-	width: 400px;
-	padding: 20px;
-	color: black;
-`
+  background-color: white;
+  width: 600px;
+  padding: 20px;
+  color: black;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  margin: 20px;
+  height: 100%;
+  position: sticky;
+  top: 0;
+`;
 const Items = styled.div`
-	background-color: #098181;
-	width: calc(100vw - 400px);
+	background-color: none;
+	width: 100%;
 	height: auto;
 	display: flex;
-	flex-wrap: wrap; // Added this line to enable wrapping
+	flex-wrap: wrap;
 	padding: 20px;
 	gap: 20px;
 	overflow: hidden;
 `;
+const SortBtn = styled.button`
+	float: right;
+	background-color: #ffffff;
+	margin-right: 40px;
+	margin-top: 20px;
+	padding: 10px;
+	width: 80px;
+	border-radius: 40px;
+`
 
 interface ShopProps {
 	$margin: string;
@@ -84,7 +97,7 @@ interface Item {
 const Shop: React.FC<ShopProps> = ({ $margin }) => {
 	const [items, setItems] = useState<Item[]>([]);
 	const [selectedSection, setSelectedSection] = useState<string>(sectionText[0].subtitle);
-
+	
 	useEffect(() => {
 		const fetchItems = async () => {
 			try {
@@ -167,11 +180,23 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 							</h5>
 						</ul>
 						<h4>Brands</h4>
+							<h6>Dewalt</h6>
+							<h6>Milwaukee</h6>
+							<h6>Bosch</h6>
+							<h6>Makita</h6>
 						<h4>Price</h4>
+							<h6>$1 - $10</h6>
+							<h6>$11 - $50</h6>
+							<h6>$51 - $100</h6>
+							<h6>$101 - above</h6>
 						<h4>Discount</h4>
+							<h6>Clearance</h6>
+							<h6>Daily Deals</h6>
+							<h6>On Sale</h6>
+							<h6>Open Box</h6>
 					</FilterColumn>
 					<div >
-						<button style={{ float: 'right', backgroundColor: 'red', marginRight: '40px' }} >Filter</button>
+						<SortBtn>Sort</SortBtn>
 						<Items>
 							{items.map((item, index) => (
 								<ShopItem

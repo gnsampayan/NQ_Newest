@@ -4,10 +4,11 @@ import storeFront from "../assets/Storefront.svg";
 import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
 import { useEffect, useState } from "react";
+import { BsCart3 } from "react-icons/bs";
 
 const NavBox = styled.nav<NavBoxProps>`
-	background-color: #ffffff;
-	height: auto;
+	background-color: #221F27;
+	height: 100px;
 	position: fixed;
 	top: 0;
 	padding: 20px;
@@ -22,9 +23,10 @@ const NavBox = styled.nav<NavBoxProps>`
 
 const NavMenu = styled.ul`
 	list-style: none;
-	color: black;
+	color: white;
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	margin-bottom: 0;
 `;
 
@@ -57,41 +59,32 @@ const NavItem = styled.button`
 `;
 
 const SignInItem = styled(NavItem)`
-	background: #dbdbdb;
+	background: #A259FF;
 	border-radius: 20px;
-	border: 1px solid black;
+	display: flex;
+	height: 60px;
+	padding: -2px 30px 2px 30px;
+	justify-content: center;
+	align-items: center;
+	gap: 12px;
 	&:hover {
 		background-color: rgba(162, 89, 255, 0.4);
 	}
 `;
-const MemberItem = styled(NavItem)`
+const MemberItem = styled(SignInItem)`
 	background: red;
-	border-radius: 20px;
 `;
 const PersonIcon = styled.span`
-	margin-right: 10px;
-
-	@media (max-width: 600px) {
-		margin-right: 6px;
-	}
-
-	@media (min-width: 601px) and (max-width: 1200px) {
-		margin-right: 8px;
-	}
-
-	@media (min-width: 1201px) {
-		margin-right: 10px;
-	}
+	display: block;
 `;
 const WaterMarkParent = styled.div`
 	margin-left: 20px;
 	display: flex;
 	width: 100%;
 	align-items: center;
-	
 `;
 const WaterMark = styled.div`
-	color: black;
+	color: white;
 	cursor: pointer;
 `;
 const WordMarkMain = styled.h1`
@@ -115,8 +108,22 @@ const MainIcon = styled.img`
 `;
 const StyledPersonIcon = styled(BsFillPersonFill)`
 	all: unset;
-	fill: black;
+	fill: white;
+	width: 20px;
 	transform: translateY(2px);
+`;
+const Cart = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	margin: 0px 20px 0px 20px;
+	padding: 0px 20px 0px 20px;
+`;
+const BsCart = styled(BsCart3)`
+	height: 30px;
+	width: 30px; 
+	cursor: pointer;
 `;
 
 interface HeaderProps {
@@ -128,10 +135,10 @@ interface NavBoxProps {
 
 const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 	const navItems = [
-		{ name: "Shop", path: "/store" },
+		{ name: "Shop", path: "/shop" },
 		{ name: "Services", path: "/services" },
 		{ name: "Contact Us", path: "/contact-us" },
-		{ name: "Sign in", path: "/sign-in" },
+		{ name: "Members", path: "/sign-in" },
 	];
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
@@ -173,7 +180,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 					let ItemComponent;
 
 					// Conditionally assign ItemComponent based on membership and item name
-					if (item.name === "Sign in") {
+					if (item.name === "Members") {
 					  	ItemComponent = token ? MemberItem : SignInItem;
 					} else {
 					  	ItemComponent = NavItem;
@@ -182,26 +189,23 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 						<ItemComponent
 							key={item.name}
 							onClick={() => {
-								if (item.name === "Shop") {
-									console.log(`you clicked store`);
-									navigate(item.path);
-								} else {
-									console.log(`${item.name} clicked`);
-									navigate(item.path);
-								}
-								
+								console.log(`${item.name} clicked`);
+								navigate(item.path);
 							}}
 						>
-							{item.name === "Sign in" && !token && ( // Only show icon if not a member
+							{item.name === "Members" && (
 								<PersonIcon>
 									<StyledPersonIcon />
 								</PersonIcon>
 							)}
-							{ item.name === "Sign in" && token ? "{memberType} Area" : item.name}
+							{ item.name === "Members" && token ? "{userName}" : item.name}
 						</ItemComponent>
 					);
 				})}
 			</NavMenu>
+			<Cart>
+				<BsCart />
+			</Cart>
 		</NavBox>
 	);
 };

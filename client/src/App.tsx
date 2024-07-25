@@ -47,7 +47,7 @@ function MainApp() {
           <Route path="/" element={<HomePage $margin={margin} />} />
           <Route path="/filtered" element={<FilteredPage />} />
           <Route path="/new" element={<NewItemsPage />} />
-          <Route path="/store" element={<Shop $margin={margin} />} />
+          <Route path="/shop" element={<Shop $margin={margin} />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/sign-in" element={<SignIn />} />

@@ -5,15 +5,16 @@ import 'typeface-work-sans';
 
 const BladeContents = styled.div<Props>`
     position: fixed;
-    top: 76px;
+    top: 0;
     z-index: 2;
     background-color: white;
     border-right: 1px solid black;
     width: 400px;
-    height: calc(100vh - 76px);
+    height: 100vh;
     display: ${props => (props.$isVisible ? 'block' : 'none')};
+    padding-top: 76px;
     padding-bottom: 40px;
-    overflow-y: scroll;
+    overflow-y: auto;
 `;
 
 const Text = styled.h5`
