@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 import HeroImage from "../../assets/images/ToolsAndMaterials.png";
 import { useNavigate } from 'react-router';
+import { BsFillRocketTakeoffFill } from "react-icons/bs";
 
+
+const FillRocketTakeoffFill = styled(BsFillRocketTakeoffFill)`
+  fill: white;
+`
 const HeroSectionFrame = styled.div`
   display: flex;
   width: 1050px;
@@ -69,6 +74,11 @@ const Button = styled.button`
   font-style: normal;
   font-weight: 600;
   line-height: 140%; /* 22.4px */
+
+  &:hover {
+    background: #43236e;
+    border: 2px solid white;
+  }
 `
 const AdditionalInfo = styled.div`
   display: flex;
@@ -179,7 +189,10 @@ const HeroSection = () => {
                 craftsmen. Our selection ensures durability and efficiency, 
                 allowing you to bring your vision to life.
               </Subhead>
-              <Button onClick={() => {navigate('/shop');}}>Go to Shop</Button>
+              <Button onClick={() => {navigate('/shop');}}>
+                <FillRocketTakeoffFill />
+                Go to Shop
+              </Button>
               <AdditionalInfo>
                 <Group>
                   <GroupLabel1>100k+</GroupLabel1>

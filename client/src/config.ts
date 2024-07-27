@@ -3,7 +3,7 @@ interface Config {
 }
 
 const development: Config = {
-  API_URL: 'http://162.240.97.162:8081/api',
+  API_URL: 'http://localhost:8081/api',
 };
 
 const production: Config = {

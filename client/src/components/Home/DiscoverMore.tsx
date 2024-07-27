@@ -1,13 +1,12 @@
 import styled from "styled-components"
 import { BsEye } from "react-icons/bs";
-import ShopItem from "../Shop/shop-items/ShopItem";
+import ItemCard from "../Cards/ItemCard";
 import { useEffect, useState } from "react";
 import config from "../../config";
-import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     width: 1050px;
-    height: 620px;
+    height: auto;
     flex-shrink: 0;
     overflow: hidden;
 `
@@ -47,6 +46,12 @@ const P = styled.p`
     line-height: 160%; /* 35.2px */
     text-transform: capitalize;
 `
+const EyeIcon = styled(BsEye)`
+    all: unset;
+    fill: #A259FF;
+    margin-right: 10px;
+    width: 18px;
+`;
 const SeeAllButton = styled.button`
 	display: flex;
     height: 60px;
@@ -68,46 +73,58 @@ const SeeAllButton = styled.button`
 
     background-color: none;
     background: none;
-`;
-const EyeIcon = styled(BsEye)`
-	all: unset;
-	fill: #A259FF;
-	margin-right: 10px;
-	width: 18px;
+
+    &:hover {
+        background: #A259FF;
+
+        ${EyeIcon} {
+            fill: #FFF;
+        }
+    }
 `;
 const ItemCardsRow = styled.div`
     display: inline-flex;
     align-items: flex-start;
     gap: 30px;
+    height: auto;
 `
+
 interface Item {
-	title: string;
-	image: string;
-	price: string;
-	tags: string[];
-	description: string;
+    id: number;
+    image: string;
+    title: string;
+    price: number;
+    rating: number;
+    tags: string[];
 }
+
+
+const shuffleArray = (array: Item[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 const DiscoverMore = () => {
     const [items, setItems] = useState<Item[]>([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchItems = async () => {
             try {
                 const response = await fetch(`${config.API_URL}/items`);
                 const data = await response.json();
-                const itemsWithTags = data.map((item: Item) => ({
-                    ...item,
-                    tags: item.tags || [], // Initialize tags as an empty array if null/undefined
-                }));
-                console.log('Fetched items:', itemsWithTags); // Log the items to see the structure
-                setItems(itemsWithTags);
+                setItems(data);
             } catch (error) {
                 console.error('Error fetching items:', error);
             }
         };
         fetchItems();
     }, []);
+
+    let trendingItems = items.filter(i => i.tags.includes("Trending"));
+    trendingItems = shuffleArray(trendingItems).slice(0, 3);
 
     return (
         <Container>
@@ -122,16 +139,14 @@ const DiscoverMore = () => {
                 </SeeAllButton>
             </SectionHeadlineAndButton>
             <ItemCardsRow>
-                {items.map((item, index) => (
-                    <ShopItem 
-                        key={index}
-                        itemImage={`data:image/jpeg;base64,${item.image}`}
-                        itemName={item.title} 
-                        itemDescription={item.description} 
-                        price={item.price} 
-                        itemOnClick={() => { navigate('/'); }} 
-                        boxSize="large" 
-                        cartVis={false}
+                {trendingItems.map(i => (
+                    <ItemCard
+                        key={i.id}
+                        image={`data:image/jpeg;base64,${i.image}`}
+                        itemName={i.title}
+                        addToCart={() => { /* Add your addToCart functionality here */ }}
+                        price={i.price}
+                        rating={i.rating}
                     />
                 ))}
             </ItemCardsRow>

@@ -3,7 +3,11 @@ import DeviceDetector from "./DeviceDetector";
 import styled  from "styled-components";
 import HeroSection from "./components/Home/HeroSection";
 import DiscoverMore from "./components/Home/DiscoverMore";
-
+import ItemHighlight from "./components/Home/ItemHighlight";
+import { useEffect, useState } from "react";
+import config from "./config";
+import HighlightedItemConfig from "./components/Home/configHome";
+import ServicesSection from "./components/Home/ServicesSection";
 
 const Wrapper = styled.div<HomePageProps>`
   position: relative;
@@ -33,8 +37,30 @@ const Header = styled.header`
 interface HomePageProps {
   $margin: string;
 }
+interface Item {
+  title: string;
+  image: string;
+  price: number;
+}
 
 const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
+
+  const [highlightedItem, setHighlightedItem] = useState<Item | null>(null);
+  const { item } = HighlightedItemConfig;
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await fetch(`${config.API_URL}/items`);
+        const data: Item[] = await response.json();
+        const highlighted = data.find((i: Item) => i.title.includes(item));
+        setHighlightedItem(highlighted || null);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
+    };
+    fetchItems();
+  }, [item]);
 
   return (
     <>
@@ -42,6 +68,12 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
       <Wrapper $margin={$margin}>
         <HeroSection />
         <DiscoverMore />
+        {highlightedItem && <ItemHighlight 
+          image={`data:image/jpeg;base64,${highlightedItem.image}`}
+          name={highlightedItem.title}
+          price={highlightedItem.price}
+        />} 
+        <ServicesSection />
       </Wrapper>
       <DeviceDetector />
     </>

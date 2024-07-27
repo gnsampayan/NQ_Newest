@@ -6,6 +6,7 @@ import config from 'config';
 import userRoutes from './routes/users.mjs';
 import itemsRoutes from './routes/items.mjs';
 import tagRoutes from './routes/allTags.mjs';
+import salesRoutes from './routes/sales.mjs';
 import log from './middleware/logger.mjs';
 
 
@@ -28,6 +29,7 @@ app.use(json());
 app.use('/api/users', userRoutes(pool));
 app.use('/api/items', itemsRoutes(pool));
 app.use('/api/all_tags', tagRoutes(pool));
+app.use('/api/sales', salesRoutes(pool));
 //Configuration
 console.log('Application Name: ' + config.get('name'));
 console.log('Mail Server: ' + config.get('mail.host'));
