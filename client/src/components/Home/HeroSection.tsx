@@ -148,7 +148,7 @@ const Frame = styled.div`
   flex-shrink: 0;
   align-self: stretch;
   border-radius: 0px 0px 20px 20px;
-  background: var(--Background---Secondary, #3B3B3B);
+  background: #3B3B3B;
 `
 const H5 = styled.h5`
   align-self: stretch;

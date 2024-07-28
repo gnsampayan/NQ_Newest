@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 import config from "./config";
 import HighlightedItemConfig from "./components/Home/configHome";
 import ServicesSection from "./components/Home/ServicesSection";
+import SubscribeWidget from "./components/Home/SubscribeWidget/SubscribeWidget";
+import NewsletterGur from "./assets/images/Newsletter_guy.png";
+import Footer from "./components/Home/Footer";
 
 const Wrapper = styled.div<HomePageProps>`
   position: relative;
@@ -74,6 +77,8 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
           price={highlightedItem.price}
         />} 
         <ServicesSection />
+        <SubscribeWidget img={NewsletterGur} />
+        <Footer />
       </Wrapper>
       <DeviceDetector />
     </>
