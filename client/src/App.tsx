@@ -48,8 +48,8 @@ function MainApp() {
           <Route path="/filtered" element={<FilteredPage />} />
           <Route path="/new" element={<NewItemsPage />} />
           <Route path="/shop" element={<Shop $margin={margin} />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/services" element={<Services $margin={margin} />} />
+          <Route path="/contact-us" element={<ContactUs $margin={margin} />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/item-creation" element={<ItemCreation isEditing={false}  />} />

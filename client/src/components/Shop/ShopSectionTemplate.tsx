@@ -4,15 +4,20 @@ import LargeItemGroup from "./itemgroup/LargeItemGroup";
 
 
 const Title = styled.h1`
-	color: black;
+	color: white;
 	font-size: 2.3em;
 	margin-bottom: 10px;
 `;
 const Subtitle = styled.h2`
-	color: black;
+	color: white;
+	/* Body Text- Work Sans */
+	font-family: "Work Sans";
+	font-style: normal;
+	font-weight: 400;
+	line-height: 160%; /* 35.2px */
+	text-transform: capitalize;
 	font-size: 1.8rem;
 	font-weight: 600;
-	color: rgb(0, 0, 0, 0.5);
 	text-transform: uppercase;
 `;
 const SeeAllButton = styled.button`

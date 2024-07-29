@@ -11,10 +11,19 @@ const Card = styled.div`
     border-radius: 20px;
     background: #3B3B3B;
     width: 240px;
+
+    &:hover {
+        background: rgba(59, 59, 59, .5);
+        border: 2px solid #A259FF;
+    }
 `
 const Icon = styled.div`
     width: auto;
     height: auto;
+    padding: 40px;
+`
+const IconImg = styled.img`
+    width: 180px;
 `
 const CardDetails = styled.div`
     display: flex;
@@ -59,7 +68,7 @@ const ServiceCard = ({ icon, title, description } : Props) => {
   return (
     <>
         <Card>
-            <Icon>{icon}</Icon>
+            <Icon>{typeof icon === 'string' ? <IconImg src={icon} alt={title} /> : icon}</Icon>
             <CardDetails>
                 <H5>{title}</H5>
                 <P>{description}</P>

@@ -6,8 +6,8 @@ const styleConfig = {
 		imageHeight: '150px',
 		containerHeight: '210px',
 		containerWidth: '210px',
-		background: "none",
-		textColor: "black",
+		background: "#3B3B3B",
+		textColor: "white",
 		fontSize: "1em",
 		display: "none",
 		bottom: "0px",    
@@ -21,7 +21,7 @@ const styleConfig = {
 		imageHeight: '200px',
 		containerHeight: '400px',
 		containerWidth: '260px',
-		background: "#3b3b3b",
+		background: "#3B3B3B",
 		textColor: "white",
 		fontSize: "1.4em",
 		display: "block",
@@ -36,7 +36,7 @@ const styleConfig = {
 		imageHeight: '300px',
 		containerHeight: '450px',
 		containerWidth: '310px',
-		background: "#3b3b3b",
+		background: "#3B3B3B",
 		textColor: "white",
 		fontSize: "1.4em",
 		display: "block",
@@ -101,7 +101,7 @@ const BottomDetails = styled.div<{ boxSize: BoxSize }>`
 	bottom: ${(props) => styleConfig[props.boxSize].bottom};    
 	left: 0;            
 	right: 0;           
-	padding: 0 30px;    
+	padding: 0 30px;
 `;
 const PriceTitle = styled.h2<{ boxSize: BoxSize }>`
 	font-size: 0.9em;

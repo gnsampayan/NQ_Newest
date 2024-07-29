@@ -13,14 +13,13 @@ const Wrapper = styled.div`
 	position: relative;
 	padding: 0px 60px 0px 60px;
 	z-index: 5;
-	margin-bottom: 60px;
-	margin-top: 80px;
 `;
 
 const GroupWrapper = styled.div`
 	display: flex;
 	justify-content: center;
 	width: 100%;
+	margin-top: 40px;
 `;
 
 const CategoriesGroup = styled.div`
@@ -61,6 +60,7 @@ const CategoryItem = styled.div<CategoryItemProps>`
 	border: solid 1px black;
 	cursor: pointer;
 	z-index: 3;
+	border: 2px solid #A259FF;
 
 	&:hover ${Overlay} {
 		background-color: rgba(162, 89, 255, 0.4);
@@ -69,14 +69,46 @@ const CategoryItem = styled.div<CategoryItemProps>`
 `;
 
 const CategoryName = styled.h2`
-	color: black;
+	color: white;
 	font-size: 2em;
 	font-weight: 600;
 	z-index: 4;
-	background-color: rgba(255, 255, 255, 0.9);
+	background-color: rgba(59, 59, 59, 0.9);
 	padding: 2px 100% 8px 100%;
 `;
+const SectionHeadline = styled.div`
+    display: flex;
+    width: 1050px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+`
+const H3 = styled.h3`
+    align-self: stretch;
 
+    color: white;
+
+    /* H3 - Work Sans */
+    font-family: "Work Sans";
+    font-size: 38px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%; /* 45.6px */
+    text-transform: capitalize;
+`
+const P = styled.p`
+    align-self: stretch;
+
+    color: white;
+
+    /* Body Text- Work Sans */
+    font-family: "Work Sans";
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 160%; /* 35.2px */
+    text-transform: capitalize;
+`
 const CategoriesSection = () => {
 	const categories = [
 		{ name: "Electrical", image: Electrical },
@@ -91,6 +123,10 @@ const CategoriesSection = () => {
 
 	return (
 		<Wrapper>
+			<SectionHeadline>
+				<H3>Shop By Categories</H3>
+				<P>Explore Our Diverse Selection of Products</P>
+          	</SectionHeadline>
 			<GroupWrapper>
 				<CategoriesGroup>
 					{categories.map((category, index) => (

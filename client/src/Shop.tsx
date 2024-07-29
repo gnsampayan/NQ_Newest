@@ -23,19 +23,23 @@ const Parent = styled.div`
 	padding: 60px 30px 00px 20px;
 `;
 const Container = styled.div`
+	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 25%;
+	gap: 20px;
 `;
 const Button = styled.button<{ isActive: boolean }>`
 	width: 100%;
 	min-width: 160px;
-	border: none;
+	border: 2px solid #A259FF;
+	border-radius: 20px;
+	height: 60px;
 	padding: 10px 20px;
 	margin: 5px;
 	cursor: pointer;
-	color: ${props => (props.isActive ? 'black' : 'white')};
-	background-color: ${props => (props.isActive ? '#d3ebe8' : 'rgb(49, 46, 78)')};
+	color: white;
+	background-color: ${props => (props.isActive ? '#A259FF' : '#2B2B2B')};
 	transition: background-color 0.3s, transform 0.1s;
 
 	&:hover {
@@ -45,9 +49,14 @@ const Button = styled.button<{ isActive: boolean }>`
 	&:active {
 		transform: scale(0.95);
 	}
+	text-align: center;
+	font-family: "Work Sans";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 140%; /* 22.4px */
 `;
 const Floor = styled.div`
-	background-color: #ebebeb;
 	width: 100%;
 	display: flex;
 `

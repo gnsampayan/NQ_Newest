@@ -8,7 +8,6 @@ import config from "../../config";
 
 const Wrapper = styled.div`
 	z-index: 5;
-	background-color: #d3ebe8;
 	padding-bottom: 40px;
 `;
 

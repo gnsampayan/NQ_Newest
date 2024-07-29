@@ -1,5 +1,9 @@
 import styled from "styled-components"
 import ServiceCard from "../Cards/ServiceCard"
+import Truck from '../../assets/images/truck-icon.png';
+import Contractor from '../../assets/images/contractor-icon.png';
+import Rental from '../../assets/images/tool-rental-icon.png';
+import Installation from '../../assets/images/installation-icon.png';
 
 const Group = styled.div`
     width: 1050px;
@@ -17,6 +21,7 @@ const CardRow = styled.div`
     display: inline-flex;
     align-items: flex-start;
     gap: 30px;
+    margin-top: 40px;
 `
 const H3 = styled.h3`
     align-self: stretch;
@@ -47,10 +52,10 @@ const P = styled.p`
 const ServicesSection = () => {
 
     const servicesInfo  = [
-        {icon: "undefined", title: "Deliveries", description: "Fast and reliable product delivery service."},
-        {icon: "undefined", title: "Contractor Services", description: "Professional services for your construction needs."},
-        {icon: "undefined", title: "Tool Rentals", description: "A wide range of tools available for rent."},
-        {icon: "undefined", title: "Installation Services", description: "Expert installation services for various products."},
+        {icon: Truck, title: "Deliveries", description: "Fast and reliable product delivery service."},
+        {icon: Contractor, title: "Contractor Services", description: "Professional services for your construction needs."},
+        {icon: Rental, title: "Tool Rentals", description: "A wide range of tools available for rent."},
+        {icon: Installation, title: "Installation Services", description: "Expert installation services for various products."},
     ]
     return (
         <Group>

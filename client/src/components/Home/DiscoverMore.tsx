@@ -88,6 +88,12 @@ const ItemCardsRow = styled.div`
     gap: 30px;
     height: auto;
 `
+const NoItems = styled.div`
+  font-size: 18px;
+  color: gray;
+  text-align: center;
+  margin-top: 20px;
+`;
 
 interface Item {
     id: number;
@@ -139,16 +145,20 @@ const DiscoverMore = () => {
                 </SeeAllButton>
             </SectionHeadlineAndButton>
             <ItemCardsRow>
-                {trendingItems.map(i => (
-                    <ItemCard
-                        key={i.id}
-                        image={`data:image/jpeg;base64,${i.image}`}
-                        itemName={i.title}
-                        addToCart={() => { /* Add your addToCart functionality here */ }}
-                        price={i.price}
-                        rating={i.rating}
-                    />
-                ))}
+            {trendingItems && trendingItems.length > 0 ? (
+                trendingItems.map(i => (
+                <ItemCard
+                    key={i.id}
+                    image={`data:image/jpeg;base64,${i.image}`}
+                    itemName={i.title}
+                    addToCart={() => { }} // add addToCart funtion here
+                    price={i.price}
+                    rating={i.rating}
+                />
+                ))
+            ) : (
+                <NoItems>No items</NoItems>
+            )}
             </ItemCardsRow>
         </Container>
     );
