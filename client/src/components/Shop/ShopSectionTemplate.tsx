@@ -66,7 +66,7 @@ interface Props {
 	stackedLayout?: boolean;
 	itemImage: Array<string>;
 	itemDescription: Array<string>;
-	amount: Array<string>;
+	amount: Array<number>;
 	name: Array<string>;
 	onClick: (itemName: string) => void;
 	enableWrap?: boolean;

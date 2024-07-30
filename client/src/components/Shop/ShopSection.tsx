@@ -9,12 +9,13 @@ import config from "../../config";
 const Wrapper = styled.div`
 	z-index: 5;
 	padding-bottom: 40px;
+	width: 100%;
 `;
 
 interface Item {
 	title: string;
 	image: string;
-	price: string;
+	price: number;
 	tags: string[];
 	description: string;
 }

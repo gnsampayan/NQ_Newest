@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import { useRef, useState, useEffect } from "react";
-import ShopItem from "../shop-items/ShopItem";
+import ItemCard from "../../Cards/ItemCard";
 
 const CarouselWrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 `;
 
 const Group = styled.div<{ $enableWrap: boolean }>`
@@ -21,7 +22,7 @@ const Group = styled.div<{ $enableWrap: boolean }>`
     flex-shrink: 0;
   }
 
-  height: 220px;
+  height: 100%;
   width: 100%;
   user-select: none; // Prevent text selection
 
@@ -59,7 +60,7 @@ const RightButton = styled(Button)`
 interface Props {
   itemImage: Array<string>;
   itemDescription: Array<string>;
-  amount: Array<string>;
+  amount: Array<number>;
   name: Array<string>;
   onClick: (itemName: string) => void;
   enableWrap?: boolean;
@@ -67,10 +68,8 @@ interface Props {
 
 const SmallItemGroup = ({
   itemImage,
-  itemDescription,
   amount,
   name,
-  onClick,
   enableWrap,
 }: Props) => {
   const itemGroupRef = useRef<HTMLDivElement>(null);
@@ -187,16 +186,13 @@ const SmallItemGroup = ({
         onMouseMove={onMouseMove}
       >
         {itemImage.map((item: string, index: number) => (
-          <ShopItem
-            key={item}
-            itemImage={item}
+          <ItemCard 
+            image={item}
             itemName={name[index]}
-            itemDescription={itemDescription[index]}
+            addToCart={() => { } }
             price={amount[index]}
-            itemOnClick={() => onClick(name[index])}
-            boxSize={"small"}
-            cartVis={false}
-          />
+            rating={0} 
+            boxSize={"standard"} />
         ))}
       </Group>
       <RightButton onClick={scrollRight}>{">"}</RightButton>

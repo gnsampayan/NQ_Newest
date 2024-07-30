@@ -11,7 +11,7 @@ import ServicesSection from "./components/Home/ServicesSection";
 import SubscribeWidget from "./components/Home/SubscribeWidget/SubscribeWidget";
 import NewsletterGur from "./assets/images/Newsletter_guy.png";
 import Footer from "./components/Home/Footer";
-import CategoriesSection from "./components/CategoriesSection";
+import CategoriesSection from "./components/Home/CategoriesSection";
 
 const Wrapper = styled.div<HomePageProps>`
   position: relative;
@@ -71,7 +71,7 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
       <Header>Anything You Need, We Have It!</Header>
       <Wrapper $margin={$margin}>
         <HeroSection />
-        <ServicesSection />
+        <CategoriesSection />
         <DiscoverMore />
         <SubscribeWidget img={NewsletterGur} />
         {highlightedItem && <ItemHighlight 
@@ -79,7 +79,7 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
           name={highlightedItem.title}
           price={highlightedItem.price}
           />} 
-        <CategoriesSection />
+        <ServicesSection />
         <Footer />
       </Wrapper>
       <DeviceDetector />

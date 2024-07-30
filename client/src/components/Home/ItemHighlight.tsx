@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import config from "../../config";
 import HighlightedItemConfig from "./configHome";
+import { BsEye } from "react-icons/bs";
 
 const Highlight = styled.div<{ image: string }>`
     display: flex;
@@ -57,16 +58,42 @@ const H2 = styled.h2`
     line-height: 110%;
     text-transform: capitalize;
 `;
+const EyeIcon = styled(BsEye)`
+    all: unset;
+    fill: black;
+    margin-right: 10px;
+    width: 18px;
+`;
 const Button = styled.button`
-    display: flex;
+	display: flex;
     height: 60px;
-    padding: 22px 50px;
+    padding: 0px 50px;
     justify-content: center;
     align-items: center;
     gap: 12px;
+
     border-radius: 20px;
+    border: 2px solid white;
+
+    color: black;
+    text-align: center;
+    font-family: "Work Sans";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%; /* 22.4px */
+
+    background-color: white;
     background: white;
-    border: none;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+
+        ${EyeIcon} {
+            fill: #FFF;
+        }
+    }
 `;
 const SaleTimer = styled.div`
     display: flex;
@@ -185,7 +212,7 @@ const ItemHighlight: React.FC<Props> = ({ image, name, price }) => {
                         <SalePrice>${price}</SalePrice>
                         <H2>{name}</H2>
                         <Button>
-                            <div>icon</div>
+                            <EyeIcon />
                             <div>See item</div>
                         </Button>
                     </ItemPriceNameAndButton>

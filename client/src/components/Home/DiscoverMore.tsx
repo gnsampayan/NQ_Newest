@@ -151,10 +151,11 @@ const DiscoverMore = () => {
                     key={i.id}
                     image={`data:image/jpeg;base64,${i.image}`}
                     itemName={i.title}
-                    addToCart={() => { }} // add addToCart funtion here
+                    addToCart={() => { } } // add addToCart funtion here
                     price={i.price}
-                    rating={i.rating}
-                />
+                    rating={i.rating} 
+                    boxSize={"large"}
+                    />
                 ))
             ) : (
                 <NoItems>No items</NoItems>

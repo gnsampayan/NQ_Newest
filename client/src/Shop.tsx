@@ -1,12 +1,12 @@
 // Shop.tsx
 import styled from "styled-components";
 import ShopSection from "./components/Shop/ShopSection";
-import CategoriesSection from "./components/CategoriesSection";
+import CategoriesSection from "./components/Home/CategoriesSection";
 import { useEffect, useState } from "react";
 import config from "./config";
 import { sectionText, topFilter } from "./components/Shop/shop-params";
 import SmallItemGroup from "./components/Shop/itemgroup/SmallItemGroup";
-import ShopItem from "./components/Shop/shop-items/ShopItem";
+import ItemCard from "./components/Cards/ItemCard";
 
 const Wrapper = styled.div<ShopProps>`
 	color: white;
@@ -14,6 +14,10 @@ const Wrapper = styled.div<ShopProps>`
 	margin-right: auto;
 	margin-bottom: 100px;
 	margin-top: 20px;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
 `;
 
 const Parent = styled.div`
@@ -98,7 +102,7 @@ interface ShopProps {
 interface Item {
 	title: string;
 	image: string;
-	price: string;
+	price: number;
 	tags: string[];
 	description: string;
 }
@@ -130,9 +134,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 	};
 
 	const SplitSections = topFilter.map((section, index) => {
-		// Filter items that include the section's subtitle in their tags
 		const filteredItems = items.filter(item => section.tags.some(tag => item.tags.includes(tag)));
-
 		return (
 			<SmallItemGroup 
 				key={index}
@@ -208,16 +210,14 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 						<SortBtn>Sort</SortBtn>
 						<Items>
 							{items.map((item, index) => (
-								<ShopItem
+								<ItemCard 
 									key={index}
-									itemImage={`data:image/jpeg;base64,${item.image}`}
+									image={`data:image/jpeg;base64,${item.image}`}
 									itemName={item.title}
-									itemDescription={item.description}
+									addToCart={() => { } }
 									price={item.price}
-									itemOnClick={() => handleItemClick(item.title)}
-									boxSize="medium" // Adjust size as needed
-									cartVis={true} // Show cart button
-								/>
+									rating={0} 
+									boxSize={"standard"} />
 							))}
 						</Items>
 					</div>

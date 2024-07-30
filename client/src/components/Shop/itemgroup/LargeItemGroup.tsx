@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useRef, useState } from "react";
-import ShopItem from "../shop-items/ShopItem";
+import ItemCard from "../../Cards/ItemCard";
 
 const CarouselWrapper = styled.div`
   position: relative;
@@ -61,7 +61,7 @@ const RightButton = styled(Button)`
 interface Props {
   itemImage: Array<string>;
   itemDescription: Array<string>;
-  amount: Array<string>;
+  amount: Array<number>;
   name: Array<string>;
   onClick: (itemName: string) => void;
   enableWrap?: boolean;
@@ -69,10 +69,8 @@ interface Props {
 
 const LargeItemGroup = ({
   itemImage,
-  itemDescription,
   amount,
   name,
-  onClick,
   enableWrap,
 }: Props) => {
   const itemGroupRef = useRef<HTMLDivElement>(null);
@@ -144,16 +142,14 @@ const LargeItemGroup = ({
         onMouseMove={onMouseMove}
       >
         {itemImage.map((item: string, index: number) => (
-          <ShopItem
+          <ItemCard 
             key={item}
-            itemImage={item}
-            itemName={name[index]}
-            itemDescription={itemDescription[index]}
-            price={amount[index]}
-            itemOnClick={() => onClick(name[index])}
-            boxSize={"large"}
-            cartVis={true}
-          />
+            image={item} 
+            itemName={name[index]} 
+            addToCart={() => {}} 
+            price={amount[index]} 
+            rating={0} 
+            boxSize={"large"} />
         ))}
       </Group>
       <RightButton onClick={scrollRightHandler}>{">"}</RightButton>
