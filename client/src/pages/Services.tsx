@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import ServicesSection from "./components/Home/ServicesSection";
-import Footer from "./components/Home/Footer";
+import ServicesSection from "../components/Widgets/ServicesWidget";
+import Footer from "../components/Widgets/FooterWidget";
 
 const Wrapper = styled.div<Props>`
   position: relative;

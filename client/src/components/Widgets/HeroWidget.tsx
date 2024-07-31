@@ -2,11 +2,9 @@ import styled from 'styled-components';
 import HeroImage from "../../assets/images/ToolsAndMaterials.png";
 import { useNavigate } from 'react-router';
 import { BsFillRocketTakeoffFill } from "react-icons/bs";
+import Button from '../Buttons/Button';
 
 
-const FillRocketTakeoffFill = styled(BsFillRocketTakeoffFill)`
-  fill: white;
-`
 const HeroSectionFrame = styled.div`
   display: flex;
   width: 1050px;
@@ -54,37 +52,12 @@ const Subhead = styled.h3`
   font-weight: 400;
   line-height: 160%; /* 35.2px */
 `
-const Button = styled.button`
-  display: flex;
-  height: 60px;
-  padding: 0px 50px;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0px 20px 0px;
-
-  border-radius: 20px;
-  background: #A259FF;
-
-  border: none;
-  color: white;
-  text-align: center;
-  font-family: "Work Sans";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 140%; /* 22.4px */
-
-  &:hover {
-    background: #43236e;
-    border: 2px solid white;
-  }
-`
 const AdditionalInfo = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 30px;
   align-self: stretch;
+  margin-top: 20px;
 `
 const Group = styled.div`
   display: flex;
@@ -189,10 +162,17 @@ const HeroSection = () => {
                 craftsmen. Our selection ensures durability and efficiency, 
                 allowing you to bring your vision to life.
               </Subhead>
-              <Button onClick={() => {navigate('/shop');}}>
-                <FillRocketTakeoffFill />
-                Go to Shop
-              </Button>
+              <Button 
+                asset={BsFillRocketTakeoffFill} 
+                title={'Go to Shop'} 
+                onClick={() => {navigate('/shop');}} 
+                bgColor={'#A259FF'}
+                fillColor={'white'}
+                fillHoverColor={'#A259FF'}
+                bgHoverColor={'white'}
+                borderHoverColor={'white'}
+                textHoverColor={'#A259FF'}
+                />
               <AdditionalInfo>
                 <Group>
                   <GroupLabel1>100k+</GroupLabel1>

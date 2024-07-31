@@ -3,18 +3,17 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 
 import Header from "./components/Header";
-import HomePage from "./HomePage";
-import FilteredPage from "./FilteredPage";
-import NewItemsPage from "./NewItemsPage";
-import Shop from "./Shop";
-import ContactUs from "./ContactUs";
+import HomePage from "./pages/HomePage";
+import Shop from "./pages/Shop";
+import ContactUs from "./pages/ContactUs";
 import SignIn from "./components/SignInModal";
 import SignUp from "./components/SignUp";
-import Member from './Member';
+import Member from './pages/MemberPage';
 import Blade from './components/Blade';
-import Services from './Services';
-import ItemCreation from './ItemCreation';
-import StockList from './StockList';
+import Services from './pages/Services';
+import ItemCreation from './pages/ItemCreation';
+import StockPage from './pages/StockPage';
+import TemplatePage from './pages/FilteredViewPage';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -45,8 +44,8 @@ function MainApp() {
       <Wrapper>
         <Routes>
           <Route path="/" element={<HomePage $margin={margin} />} />
-          <Route path="/filtered" element={<FilteredPage />} />
-          <Route path="/new" element={<NewItemsPage />} />
+          <Route path="/filtered" element={<TemplatePage />} />
+          <Route path="/trending" element={<TemplatePage />} />
           <Route path="/shop" element={<Shop $margin={margin} />} />
           <Route path="/services" element={<Services $margin={margin} />} />
           <Route path="/contact-us" element={<ContactUs $margin={margin} />} />
@@ -54,7 +53,7 @@ function MainApp() {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/item-creation" element={<ItemCreation isEditing={false}  />} />
           <Route path="/member" element={<Member />} />
-          <Route path="/view-stock" element={<StockList />} />
+          <Route path="/view-stock" element={<StockPage />} />
           {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </Wrapper>

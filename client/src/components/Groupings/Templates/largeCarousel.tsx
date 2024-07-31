@@ -60,7 +60,7 @@ const RightButton = styled(Button)`
 
 interface Props {
   itemImage: Array<string>;
-  itemDescription: Array<string>;
+  itemDescription?: Array<string>;
   amount: Array<number>;
   name: Array<string>;
   onClick: (itemName: string) => void;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Footer from "./components/Home/Footer";
+import Footer from "../components/Widgets/FooterWidget";
 
 const Wrapper = styled.div<Props>`
   position: relative;

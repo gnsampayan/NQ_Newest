@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { ItemType } from './context/Types';
-import config from './config';
+import { ItemType } from '../context/Types';
+import config from '../config';
 
 // Styled components
 const Wrapper = styled.div`

@@ -4,7 +4,7 @@ import Electrical from "../../assets/items/electrical.png";
 import Tools from "../../assets/items/tools.png";
 import Metals from "../../assets/items/metals_v2.png";
 import Pipes from "../../assets/items/pipes.png";
-import Carpentry from "../../assets/items/carpentry.png";
+import Lumber from "../../assets/items/carpentry.png";
 import Masonry from "../../assets/items/masonry.png";
 import Fixtures from "../../assets/items/fixtures.png";
 import Insulation from "../../assets/items/insulation.png";
@@ -23,9 +23,12 @@ import { BsTools } from "react-icons/bs";
 
 import CategoriesCard from "../Cards/CategoriesCard";
 
+// Utility function to split array into chunks
+import { chunkArray } from "../utilityFunctions";
+
 const Group = styled.div`
 	width: 1050px;
-	height: 768px;
+	height: auto;
 	flex-shrink: 0;
 `;
 const SectionHeadline = styled.div`
@@ -74,15 +77,7 @@ const CategoryCardsRow = styled.h2`
 	gap: 30px;
 	align-self: stretch;
 `;
-// Utility function to split array into chunks
-const chunkArray = <T,>(array: T[], chunkSize: number): T[][] => {
-	const chunks: T[][] = [];
-	for (let i = 0; i < array.length; i += chunkSize) {
-	  chunks.push(array.slice(i, i + chunkSize));
-	}
-	return chunks;
-  };
-  
+
   interface Category {
 	name: string;
 	image: string;
@@ -95,13 +90,13 @@ const chunkArray = <T,>(array: T[], chunkSize: number): T[][] => {
 	  { name: "Metals", image: Metals, icon: GiIBeam },
 	  { name: "Plumbing", image: Pipes, icon: GiWarpPipe  },
 	  { name: "Tools", image: Tools, icon: BsTools  },
-	  { name: "Carpentry", image: Carpentry, icon: GiWoodBeam },
+	  { name: "Lumber", image: Lumber, icon: GiWoodBeam },
 	  { name: "Masonry", image: Masonry, icon: GiTrowel },
 	  { name: "Fixtures", image: Fixtures, icon: GiCeilingLight },
 	  { name: "Insulation", image: Insulation, icon: GiThermometerHot },
 	];
 
-	// Split the categories into chunks of N
+	// Split the categories into chunks of n
 	const categoryChunks = chunkArray(categories, 4);
 
 	return (

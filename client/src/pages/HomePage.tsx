@@ -1,17 +1,17 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import DeviceDetector from "./DeviceDetector";
+import DeviceDetector from "../components/Widgets/DeviceDetector";
 import styled  from "styled-components";
-import HeroSection from "./components/Home/HeroSection";
-import DiscoverMore from "./components/Home/DiscoverMore";
-import ItemHighlight from "./components/Home/ItemHighlight";
+import HeroSection from "../components/Widgets/HeroWidget";
+import DiscoverMore from "../components/Widgets/DiscoverMoreWidget";
+import ItemHighlight from "../components/Widgets/HighlightWidget/ItemHighlight";
 import { useEffect, useState } from "react";
-import config from "./config";
-import HighlightedItemConfig from "./components/Home/configHome";
-import ServicesSection from "./components/Home/ServicesSection";
-import SubscribeWidget from "./components/Home/SubscribeWidget/SubscribeWidget";
-import NewsletterGur from "./assets/images/Newsletter_guy.png";
-import Footer from "./components/Home/Footer";
-import CategoriesSection from "./components/Home/CategoriesSection";
+import config from "../config";
+import HighlightedItemConfig from "../components/Widgets/HighlightWidget/highlightedItemConfig";
+import ServicesSection from "../components/Widgets/ServicesWidget";
+import SubscribeWidget from "../components/Widgets/SubscribeWidget/SubscribeWidget";
+import NewsletterGuy from "../assets/images/Newsletter_guy.png";
+import Footer from "../components/Widgets/FooterWidget";
+import CategoriesSection from "../components/Widgets/CategoriesWidget";
 
 const Wrapper = styled.div<HomePageProps>`
   position: relative;
@@ -73,7 +73,7 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
         <HeroSection />
         <CategoriesSection />
         <DiscoverMore />
-        <SubscribeWidget img={NewsletterGur} />
+        <SubscribeWidget img={NewsletterGuy} />
         {highlightedItem && <ItemHighlight 
           image={`data:image/jpeg;base64,${highlightedItem.image}`}
           name={highlightedItem.title}

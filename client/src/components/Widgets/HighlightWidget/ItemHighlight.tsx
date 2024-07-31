@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import config from "../../config";
-import HighlightedItemConfig from "./configHome";
+import config from "../../../config";
+import HighlightedItemConfig from "./highlightedItemConfig";
 import { BsEye } from "react-icons/bs";
 
 const Highlight = styled.div<{ image: string }>`

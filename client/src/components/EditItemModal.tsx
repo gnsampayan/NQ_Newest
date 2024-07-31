@@ -1,6 +1,7 @@
 import styled from "styled-components"
-import ItemCreation from "../ItemCreation";
+import ItemCreation from "../pages/ItemCreation";
 import ReactDOM from "react-dom";
+import { ItemType } from "../context/Types";
 
 const Wrapper = styled.div<WrapperProps>`
     border: 1px solid black;
@@ -28,15 +29,6 @@ interface WrapperProps {
 }
 interface OverlayProps {
     $isVisible: boolean;
-}
-
-interface ItemType {
-    id: number;
-    title: string;
-    description: string;
-    price: string;
-    tags: string[];
-    quantity: number;
 }
 
 interface Props {

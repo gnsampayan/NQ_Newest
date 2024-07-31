@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ItemCreation from "../ItemCreation"
+import ItemCreation from "../pages/ItemCreation"
 import ReactDOM from "react-dom";
 
 const Wrapper = styled.div<WrapperProps>`

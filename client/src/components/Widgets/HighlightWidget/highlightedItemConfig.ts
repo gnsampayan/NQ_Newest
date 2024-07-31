@@ -1,5 +1,5 @@
 import axios from 'axios';
-import config from "../../config";  // Make sure to update the path if necessary
+import config from "../../../config";  // Make sure to update the path if necessary
 
 const HighlightedItemConfig = {
   item: "Zipties" // Change this to any item name to test

@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
-import EditItemModal from './components/EditItemModal';
-import CreateItemModal from './components/CreateItemModal';
-import { ItemType } from './context/Types';
-import config from './config';
+import EditItemModal from '../components/EditItemModal';
+import CreateItemModal from '../components/CreateItemModal';
+import { ItemType } from '../context/Types';
+import config from '../config';
 
 const Grid = styled.div`
   display: flex;
@@ -48,14 +48,14 @@ interface Item {
   title: string;
   image: string; // Base64 string
   quantity: number;
-  price: string;
+  price: number;
   description: string;
   tags: string[];
   // Add more item properties as needed
 }
 
 
-const StockList: React.FC = () => {
+const StockPage: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
   
   const fetchItems = async () => {
@@ -110,7 +110,8 @@ const StockList: React.FC = () => {
     if (itemData) {
       let itemDataForState: ItemType = {
         ...itemData,
-        price: itemData.price.toString() // Convert price to a string
+        price: itemData.price,
+        rating: 0
       };
       setCurrentItemData(itemDataForState);
     } else {
@@ -160,5 +161,5 @@ const StockList: React.FC = () => {
   );
 };
 
-export default StockList;
+export default StockPage;
 

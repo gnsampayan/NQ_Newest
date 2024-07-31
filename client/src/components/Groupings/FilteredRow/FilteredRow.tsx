@@ -1,31 +1,26 @@
-// ShopSection.tsx
+// TabSection.tsx
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import ShopSectionTemplate from "./ShopSectionTemplate";
-import { sectionText } from './shop-params';
-import config from "../../config";
+import GenericRow from "../Templates/genericRow";
+import { sectionText } from './filterRowParams';
+import config from "../../../config";
+import { ItemType } from "../../../context/Types";
 
 const Wrapper = styled.div`
 	z-index: 5;
 	padding-bottom: 40px;
 	width: 100%;
+	border-top: 2px solid white;
+	margin-bottom: 50px;
 `;
 
-interface Item {
-	title: string;
-	image: string;
-	price: number;
-	tags: string[];
-	description: string;
-}
-
-interface ShopSectionProps {
+interface TabSectionProps {
 	selectedSection: string;
 }
 
-const ShopSection: React.FC<ShopSectionProps> = ({ selectedSection }) => {
-	const [items, setItems] = useState<Item[]>([]);
+const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
+	const [items, setItems] = useState<ItemType[]>([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -34,7 +29,7 @@ const ShopSection: React.FC<ShopSectionProps> = ({ selectedSection }) => {
 				const response = await fetch(`${config.API_URL}/items`);
 				const data = await response.json();
 				// Ensure each item has a 'tags' field initialized as an array
-				const itemsWithTags = data.map((item: Item) => ({
+				const itemsWithTags = data.map((item: ItemType) => ({
 					...item,
 					tags: item.tags || [], // If 'tags' is null/undefined, initialize as empty array
 				}));
@@ -58,17 +53,18 @@ const ShopSection: React.FC<ShopSectionProps> = ({ selectedSection }) => {
 
 	const filteredItems = items.filter(item => item.tags && item.tags.includes(filteredSection.subtitle));
 
-	const handleSeeAll = (filteredItems: Item[]) => {
-		navigate('/filtered', { state: { filteredItems } });
+	const heading : string = filteredSection.title;
+	const subhead : string = filteredSection.subtitle;
+	const handleSeeAll = (filteredItems: ItemType[]) => {
+		navigate('/filtered', { state: { relevantItems : filteredItems, heading, subhead } });
 	};
 
 	return (
 		<Wrapper>
-			<ShopSectionTemplate
-				title={filteredSection.title}
-				subtitle={filteredSection.subtitle}
+			<GenericRow
+				title={heading}
+				subtitle={subhead}
 				itemImage={filteredItems.map(item => `data:image/jpeg;base64,${item.image}`)}
-				itemDescription={filteredItems.map(item => item.description)}
 				amount={filteredItems.map(item => item.price)}
 				name={filteredItems.map(item => item.title)}
 				goToPage={() => handleSeeAll(filteredItems)}
@@ -78,4 +74,4 @@ const ShopSection: React.FC<ShopSectionProps> = ({ selectedSection }) => {
 	);
 };
 
-export default ShopSection;
+export default TabSection;

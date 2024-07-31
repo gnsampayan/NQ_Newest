@@ -3,6 +3,9 @@ import { BsEye } from "react-icons/bs";
 import ItemCard from "../Cards/ItemCard";
 import { useEffect, useState } from "react";
 import config from "../../config";
+import Button from "../Buttons/Button";
+import { useNavigate } from "react-router";
+import { ItemType } from "../../context/Types";
 
 const Container = styled.div`
     width: 1050px;
@@ -46,42 +49,6 @@ const P = styled.p`
     line-height: 160%; /* 35.2px */
     text-transform: capitalize;
 `
-const EyeIcon = styled(BsEye)`
-    all: unset;
-    fill: #A259FF;
-    margin-right: 10px;
-    width: 18px;
-`;
-const SeeAllButton = styled.button`
-	display: flex;
-    height: 60px;
-    padding: 0px 50px;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-
-    border-radius: 20px;
-    border: 2px solid #A259FF;
-
-    color: #FFF;
-    text-align: center;
-    font-family: "Work Sans";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 140%; /* 22.4px */
-
-    background-color: none;
-    background: none;
-
-    &:hover {
-        background: #A259FF;
-
-        ${EyeIcon} {
-            fill: #FFF;
-        }
-    }
-`;
 const ItemCardsRow = styled.div`
     display: inline-flex;
     align-items: flex-start;
@@ -95,17 +62,8 @@ const NoItems = styled.div`
   margin-top: 20px;
 `;
 
-interface Item {
-    id: number;
-    image: string;
-    title: string;
-    price: number;
-    rating: number;
-    tags: string[];
-}
 
-
-const shuffleArray = (array: Item[]) => {
+const shuffleArray = (array: ItemType[]) => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
@@ -114,7 +72,8 @@ const shuffleArray = (array: Item[]) => {
 };
 
 const DiscoverMore = () => {
-    const [items, setItems] = useState<Item[]>([]);
+    const [items, setItems] = useState<ItemType[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -129,24 +88,30 @@ const DiscoverMore = () => {
         fetchItems();
     }, []);
 
-    let trendingItems = items.filter(i => i.tags.includes("Trending"));
-    trendingItems = shuffleArray(trendingItems).slice(0, 3);
+   const trendingItems = items.filter(i => i.tags.includes("Trending"));
+    const curatedItems = shuffleArray(trendingItems).slice(0, 3);
+    if (curatedItems.length < 3) {
+        return <p>Not enough items in this section</p>;
+    }
+    const heading: string = "Discover More Items";
+    const subhead: string = "Explore New and Trending Items";
+	const handleSeeAll = (trendingItems: ItemType[]) => {
+        navigate('/trending', { state: { relevantItems: trendingItems, heading, subhead } });
+    };
+
 
     return (
         <Container>
             <SectionHeadlineAndButton>
                 <SectionHeadline>
-                    <H3>Discover More Items</H3>
-                    <P>Explore New and Trending Items</P>
+                    <H3>{heading}</H3>
+                    <P>{subhead}</P>
                 </SectionHeadline>
-                <SeeAllButton>
-                    <EyeIcon />
-                    See All
-                </SeeAllButton>
+                <Button asset={BsEye} title={"See All"} onClick={() => handleSeeAll(trendingItems)} />
             </SectionHeadlineAndButton>
             <ItemCardsRow>
-            {trendingItems && trendingItems.length > 0 ? (
-                trendingItems.map(i => (
+            {curatedItems && curatedItems.length > 0 ? (
+                curatedItems.map(i => (
                 <ItemCard
                     key={i.id}
                     image={`data:image/jpeg;base64,${i.image}`}
