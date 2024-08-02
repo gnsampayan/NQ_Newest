@@ -25,13 +25,11 @@ const Dropdown = styled.div<{ isVisible: boolean }>`
     border: 2px solid #858584;
     border-radius: 20px;
     width: auto;
-    visibility: ${(props) => (props.isVisible ? 'visible' : 'hidden')};
+    display: ${(props) => (props.isVisible ? 'flex' : 'none')};
     z-index: 1;
-    transition: height 0.5s ease, visibility 0.5s ease;
-    height: ${(props) => (props.isVisible ? '180px' : '0px')};
+    height: auto;
     overflow: hidden;
 
-    display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 20px;
@@ -41,20 +39,18 @@ const Dropdown = styled.div<{ isVisible: boolean }>`
         border-color: white;
         background-color: rgba(43, 43, 43, 1);
     }
-    
 `;
-const Option = styled.div`
-    height: 60px;
+const Option = styled.h5`
+    height: 100%;
     color: white;
     text-align: center;
 
     /* H5 - Work Sans */
     font-family: "Work Sans";
-    font-size: 22px;
+    font-size: 18px;
     font-style: normal;
-    font-weight: 600;
-    line-height: 140%; /* 30.8px */
-    text-transform: capitalize;
+    font-weight: 400;
+    cursor: pointer;
 `
 const Items = styled.div`
 	background-color: none;
@@ -131,9 +127,14 @@ const GenericSpread = ({ keywords }: Props) => {
                 <ButtonCounter onClick={handleOnClick} title={"All"} type={"default"} totalVisItemsCards={items.length} />
                 <Dropdown isVisible={isDropdownVisible}>
                     {/* Add dropdown content here */}
-                    <Option>Option 1asdfa</Option>
-                    <Option>Option 2</Option>
-                    <Option>Option 3af</Option>
+                    <Option>Featured</Option>
+                    <Option>Lowest Price</Option>
+                    <Option>Highest Price</Option>
+                    <Option>Best Deals</Option>
+                    <Option>Best Sellers</Option>
+                    <Option>Best Rating</Option>
+                    <Option>Most Reviews</Option>
+                    <Option>Biggest Discounts</Option>
                 </Dropdown>
             </ButtonContainer>
             <Items>

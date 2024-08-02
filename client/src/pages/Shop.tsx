@@ -27,34 +27,35 @@ const Parent = styled.div`
 	padding: 60px 20px 00px 20px;
 `;
 const TabButton = styled.button<{ isActive: boolean }>`
-	width: 100%;
-	min-width: 160px;
-	border: 2px;
-	border-style: solid;
-	border-color: ${props => (props.isActive ? 'rgba(162, 89, 255, .5)' : 'rgba(255, 255, 255, .5);')};
-	border-radius: 20px 20px 0px 0px;
-	border-bottom: none;
-	height: 40px;
-	padding: 10px 20px;
-	margin: 5px;
-	cursor: pointer;
-	color: rgb(255, 255, 255);
-	background-color: #2B2B2B;
-	transition: background-color 0.3s, transform 0.1s;
+	all: unset;
+	display: flex;
+	height: 60px;
+	padding: 0px 20px;
+	justify-content: center;
+	align-items: center;
+	gap: 12px;
 
-	&:hover {
-		background-color: ${props => (props.isActive ? 'rgba(162, 89, 255, 0.4)' : 'rgba(162, 89, 255, 0.4)')};
-	}
-
-	&:active {
-		transform: scale(0.95);
-	}
+	background: none;
+	color: ${props => props.isActive ? 'white' : '#858584'};
 	text-align: center;
 	font-family: "Work Sans";
 	font-size: 16px;
 	font-style: normal;
 	font-weight: 600;
 	line-height: 140%; /* 22.4px */
+
+	background-color: none;
+	position: relative; /* Needed for absolute positioning of the pseudo-element */
+
+    &:hover::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: ${props => props.isActive ? '#858584' : '#3B3B3B'};
+    }
 `;
 const Floor = styled.div`
 	width: 100%;
@@ -91,17 +92,33 @@ const Caption = styled.p`
 	color: #858584;
 `
 const Body = styled.p`
-	/* Base (Body) - Space Mono */
+	cursor: pointer;
+	/* H5 - Work Sans */
+	font-family: "Work Sans";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 140%; /* 22.4px */
+	padding-left: 20px;
+`
+const Row = styled.div`
+	width: 100%;
+`
+const Number = styled.div<{ isActive: boolean }>`
+    color: #FFF;
+
+    /* Base (Body) - Space Mono */
     font-family: "Space Mono";
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: 140%; /* 22.4px */
-	padding-left: 20px;
-`
-const Row = styled.div`
-	border-top: 2px solid rgba(255, 255, 255, .5);
-	width: 100%;
+	display: flex;
+    padding: 5px 10px;
+    align-items: center;
+    gap: 10px;
+    border-radius: 20px;
+    background:  ${props => props.isActive ? '#858584' : '#3B3B3B'};
 `
 interface ShopProps {
 	$margin: string;
@@ -111,6 +128,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 	const [items, setItems] = useState<ItemType[]>([]);
 	const [selectedSection, setSelectedSection] = useState<string>(TabWidgetParams[0].title);
 	const [visibleTitles, setVisibleTitles] = useState<string[]>([]);
+	const [itemCounts, setItemCounts] = useState<{ [key: string]: number }>({});
 
 	useEffect(() => {
 		const breakpoints = [
@@ -148,6 +166,18 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 					tags: item.tags || [], // If 'tags' is null/undefined, initialize as empty array
 				}));
 				setItems(itemsWithTags);
+				// Calculate item counts for each tab
+				const counts = TabWidgetParams.reduce((acc, tab) => {
+					const matchedItems = itemsWithTags.filter((item: ItemType) => {
+						return item.tags.some(tag => {
+							return tab.title.toLowerCase().includes(tag.toLowerCase());
+						});
+					});
+					acc[tab.title] = matchedItems.length;
+					return acc;
+				}, {} as { [key: string]: number });
+
+				setItemCounts(counts);
 			} catch (error) {
 				console.error('Error fetching items:', error);
 			}
@@ -173,15 +203,18 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 		);
 	});
 
-	const Tabs = visibleTitles.map((title, index) => (
-        <TabButton
-            key={index}
-            isActive={selectedSection === title}
-            onClick={() => setSelectedSection(title)}
-        >
-            {title}
-        </TabButton>
-    ));
+	const Tabs = visibleTitles.map((title, index) => {
+		return (
+			<TabButton
+				key={index}
+				isActive={selectedSection === title}
+				onClick={() => setSelectedSection(title)}
+			>
+				{title}
+				<Number isActive={selectedSection === title}>{itemCounts[title]}</Number>
+			</TabButton>
+		)
+	})
 
 	const KeyWords = ["trending", "tools", "NonExistentKeyword", "all"];
 
