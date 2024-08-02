@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { useRef, useState } from "react";
 import ItemCard from "../../Cards/ItemCard";
+import { BsArrowLeftCircle } from "react-icons/bs";
+import { BsArrowRightCircle } from "react-icons/bs";
 
 const CarouselWrapper = styled.div`
   position: relative;
@@ -51,12 +53,22 @@ const Button = styled.button`
 const LeftButton = styled(Button)`
   left: 0;
   z-index: 999;
+  border-radius: 0px 30px 30px 0px;
 `;
 
 const RightButton = styled(Button)`
   right: 0;
   z-index: 999;
+  border-radius: 30px 0px 0px 30px;
 `;
+const ArrowLeftIcon = styled(BsArrowLeftCircle)`
+  width: 40px;
+  height: 40px;
+`
+const ArrowRightIcon = styled(BsArrowRightCircle)`
+  width: 40px;
+  height: 40px;
+`
 
 interface Props {
   itemImage: Array<string>;
@@ -67,7 +79,7 @@ interface Props {
   enableWrap?: boolean;
 }
 
-const LargeItemGroup = ({
+const LargeCarousel = ({
   itemImage,
   amount,
   name,
@@ -132,7 +144,9 @@ const LargeItemGroup = ({
 
   return (
     <CarouselWrapper>
-      <LeftButton onClick={scrollLeftHandler}>{"<"}</LeftButton>
+      <LeftButton onClick={scrollLeftHandler}>
+        <ArrowLeftIcon/>
+      </LeftButton>
       <Group
         $enableWrap={enableWrap ?? false}
         ref={itemGroupRef}
@@ -152,9 +166,11 @@ const LargeItemGroup = ({
             boxSize={"large"} />
         ))}
       </Group>
-      <RightButton onClick={scrollRightHandler}>{">"}</RightButton>
+      <RightButton onClick={scrollRightHandler}>
+        <ArrowRightIcon />
+      </RightButton>
     </CarouselWrapper>
   );
 };
 
-export default LargeItemGroup;
+export default LargeCarousel;

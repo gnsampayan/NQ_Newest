@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { BsCartPlus, BsFillStarFill } from "react-icons/bs";
+import { useNavigate } from "react-router";
 
 const styleConfig = {
 	standard: {
@@ -214,6 +215,11 @@ interface Props {
 type BoxSize = 'standard' | 'large';
 
 const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props) => {
+    const navigate = useNavigate();
+
+    const handleItemClick = () => {
+        navigate(`/${itemName}`, { state: { image, itemName, price, rating } });
+    };
   return (
     <>
         <Card boxSize={boxSize}>
@@ -222,7 +228,7 @@ const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props
             </ImageContainer>
             <CardInfo boxSize={boxSize}>
                 <MainInfo>
-                    <H5 boxSize={boxSize}>{itemName}</H5>
+                    <H5 boxSize={boxSize} onClick={handleItemClick}>{itemName}</H5>
                     <Button boxSize={boxSize}>
                         <CartPlusIcon/>
                         <Btn onClick={addToCart}>Add to cart</Btn>

@@ -116,32 +116,31 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     setPreview('');
                 }
             }
-            
-            const fetchTags = async () => {
-                try {
-                    const response = await fetch(`${config.API_URL}/all_tags`);
-                    if (!response.ok) {
-                        throw new Error(`Error: Failed to fetch tags. Status: ${response.status}`);
-                    }
-            
-                    const responseText = await response.text();
-                    console.log('Response Text:', responseText); // Log the raw response text
-            
-                    // Only parse JSON if the response text is not empty
-                    if (responseText) {
-                        const data: TagResponse[] = JSON.parse(responseText);
-                        const tags = data.map(item => item.tag);
-                        setDatabaseTags(tags);
-                    } else {
-                        console.error('Empty response from the server');
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch tags:', error);
-                }
-            };
-            
             fetchTags();
     }, [isEditing, itemData]);
+
+    const fetchTags = async () => {
+        try {
+            const response = await fetch(`${config.API_URL}/all_tags`);
+            if (!response.ok) {
+                throw new Error(`Error: Failed to fetch tags. Status: ${response.status}`);
+            }
+    
+            const responseText = await response.text();
+            console.log('Response Text:', responseText); // Log the raw response text
+    
+            // Only parse JSON if the response text is not empty
+            if (responseText) {
+                const data: TagResponse[] = JSON.parse(responseText);
+                const tags = data.map(item => item.tag);
+                setDatabaseTags(tags);
+            } else {
+                console.error('Empty response from the server');
+            }
+        } catch (error) {
+            console.error('Failed to fetch tags:', error);
+        }
+    };
     
     const downsampleImage = (file: File, callback: (blob: Blob) => void) => {
         const reader = new FileReader();
@@ -271,7 +270,8 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     setInputKey(Date.now());  // This will change the key and reset the input
                     console.log("Form reset executed");
                 }
-
+                // Refetch the tags after successful submission
+                fetchTags();
             } else {
                 console.error(`Error: ${response.status}`, await response.json());
             }

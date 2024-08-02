@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { BsFillPersonFill } from "react-icons/bs";
-import storeFront from "../assets/Storefront.svg";
+import MainLogo from "../assets/images/NQ-temp-logo.png";
 import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
 import { useEffect, useState } from "react";
@@ -96,7 +96,7 @@ const WordMarkSecondary = styled.h1`
 	width: 100%;
 `;
 const MainIcon = styled.img`
-	width: 34px;
+	width: 120px;
 	padding: 0;
 	margin-right: 10px;
 	cursor: pointer;
@@ -162,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 				navigate("/");
 				}}>
 				<MainIcon
-					src={storeFront}
+					src={MainLogo}
 					alt="NQ logo of a minimal store front icon"
 				/>
 				<WaterMark>

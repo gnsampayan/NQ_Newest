@@ -4,6 +4,8 @@ import EditItemModal from '../components/EditItemModal';
 import CreateItemModal from '../components/CreateItemModal';
 import { ItemType } from '../context/Types';
 import config from '../config';
+import Button from '../components/Buttons/Button';
+import { IoCreateOutline } from "react-icons/io5";
 
 const Grid = styled.div`
   display: flex;
@@ -11,6 +13,7 @@ const Grid = styled.div`
   gap: 20px;
   padding: 20px;
   color: black;
+  padding-bottom: 100px;
   `;
 
 const ItemCard = styled.div`
@@ -37,10 +40,14 @@ const DeleteItem = styled.button`
 const EditItem = styled.button`
   //edit styles button here
   `
-const CreateModalButton = styled.button`
-  padding: 10px;
-  border-radius: 6px;
-  margin: 20px 0px 0px 20px;
+const CreateModalButton = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  opacity: 60%;
+  &:hover {
+    opacity: 100%;
+  }
 `
 
 interface Item {
@@ -140,7 +147,19 @@ const StockPage: React.FC = () => {
       $isVisible={createModalVis}
       onClose={() => setCreateModalVis(false)}
     />
-    <CreateModalButton onClick={openCreateModal}>Create New Item</CreateModalButton>
+    <CreateModalButton>
+      <Button 
+        asset={IoCreateOutline } 
+        title={'Create New'} 
+        onClick={openCreateModal} 
+        bgColor='white'
+        bgHoverColor='#A259FF'
+        textColor='#A259FF'
+        textHoverColor='white'
+        borderColor='white'
+        borderHoverColor='#A259FF'
+        />
+    </CreateModalButton>
     <Grid>
       {items.map(item => (
         <ItemCard key={item.id}>

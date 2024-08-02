@@ -2,16 +2,15 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import GenericRow from "../Templates/genericRow";
-import { sectionText } from './filterRowParams';
-import config from "../../../config";
-import { ItemType } from "../../../context/Types";
+import GenericRow from "./Templates/GenericRow"
+import { TabWidgetParams } from '../Params/filterRowParams';
+import config from "../../config";
+import { ItemType } from "../../context/Types";
 
 const Wrapper = styled.div`
 	z-index: 5;
 	padding-bottom: 40px;
 	width: 100%;
-	border-top: 2px solid white;
 	margin-bottom: 50px;
 `;
 
@@ -45,13 +44,13 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 		console.log(itemName);
 	};
 
-	const filteredSection = sectionText.find(section => section.subtitle === selectedSection);
+	const filteredSection = TabWidgetParams.find(section => section.title === selectedSection);
 
 	if (!filteredSection) {
 		return <p>No items available for this section</p>;
 	}
 
-	const filteredItems = items.filter(item => item.tags && item.tags.includes(filteredSection.subtitle));
+	const filteredItems = items.filter(item => item.tags && item.tags.includes(filteredSection.title));
 
 	const heading : string = filteredSection.title;
 	const subhead : string = filteredSection.subtitle;

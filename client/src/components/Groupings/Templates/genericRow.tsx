@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { BsEye } from "react-icons/bs";
-import LargeCarousel from "./largeCarousel";
+import LargeCarousel from "./LargeCarousel";
 import Button from "../../Buttons/Button";
 
 const H3 = styled.h3`
@@ -54,7 +54,7 @@ interface Props {
 	enableWrap?: boolean;
 }
 
-const genericRow = ({
+const GenericRow = ({
 	title,
 	subtitle,
 	goToPage,
@@ -100,4 +100,4 @@ const genericRow = ({
 		);
 };
 
-export default genericRow;
+export default GenericRow;

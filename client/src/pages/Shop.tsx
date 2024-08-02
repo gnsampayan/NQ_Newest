@@ -1,13 +1,13 @@
 // Shop.tsx
 import styled from "styled-components";
-import FilteredRow from "../components/Groupings/FilteredRow/FilteredRow";
+import FilteredRow from "../components/Groupings/FilteredRow";
 import CategoriesSection from "../components/Widgets/CategoriesWidget";
 import { useEffect, useState } from "react";
 import config from "../config";
-import { sectionText, topFilter } from "../components/Groupings/FilteredRow/filterRowParams";
-import SmallCarousel from "../components/Groupings/Templates/smallCarousel";
-import ItemCard from "../components/Cards/ItemCard";
-
+import { TabWidgetParams, carouselSmallParams } from "../components/Params/filterRowParams";
+import SmallCarousel from "../components/Groupings/Templates/SmallCarousel";
+import { ItemType } from "../context/Types";
+import GenericSpread from "../components/Groupings/Templates/GenericSpread";
 const Wrapper = styled.div<ShopProps>`
 	color: white;
 	margin-left: ${props => props.$margin};
@@ -26,27 +26,20 @@ const Parent = styled.div`
 	display: inline-flex;	
 	padding: 60px 20px 00px 20px;
 `;
-const Container = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 25%;
-	gap: 20px;
-`;
-const Button = styled.button<{ isActive: boolean }>`
+const TabButton = styled.button<{ isActive: boolean }>`
 	width: 100%;
 	min-width: 160px;
 	border: 2px;
 	border-style: solid;
-	border-color: #A259FF;
+	border-color: ${props => (props.isActive ? 'rgba(162, 89, 255, .5)' : 'rgba(255, 255, 255, .5);')};
 	border-radius: 20px 20px 0px 0px;
 	border-bottom: none;
-	height: 60px;
+	height: 40px;
 	padding: 10px 20px;
 	margin: 5px;
 	cursor: pointer;
-	color: white;
-	background-color: ${props => (props.isActive ? '#A259FF' : '#2B2B2B')};
+	color: rgb(255, 255, 255);
+	background-color: #2B2B2B;
 	transition: background-color 0.3s, transform 0.1s;
 
 	&:hover {
@@ -69,34 +62,16 @@ const Floor = styled.div`
 	margin-top: 40px;
 `
 const FilterColumn = styled.div`
-  width: 600px;
-  padding: 20px;
-  color: white;
-  height: 100%;
-  margin-top: 87px;
-  margin-left: 20px;
-  border-radius: 20px;
-  background: #3B3B3B;
-`;
-const Items = styled.div`
-	background-color: none;
-	width: 100%;
-	height: auto;
 	display: flex;
-	flex-wrap: wrap;
-	padding: 20px;
-	gap: 20px;
-	overflow: hidden;
+	flex-direction: column;
+	padding: 40px;
+	color: white;
+	height: 100%;
+	margin-top: 80px;
+	margin-left: 20px;
+	border-radius: 20px;
+	background: #3B3B3B;
 `;
-const SortBtn = styled.button`
-	float: right;
-	background-color: #ffffff;
-	margin-right: 40px;
-	margin-top: 20px;
-	padding: 10px;
-	width: 80px;
-	border-radius: 40px;
-`
 const H5 = styled.h4`
 	/* H5 - Work Sans */
     font-family: "Work Sans";
@@ -124,21 +99,43 @@ const Body = styled.p`
     line-height: 140%; /* 22.4px */
 	padding-left: 20px;
 `
+const Row = styled.div`
+	border-top: 2px solid rgba(255, 255, 255, .5);
+	width: 100%;
+`
 interface ShopProps {
 	$margin: string;
 }
 
-interface Item {
-	title: string;
-	image: string;
-	price: number;
-	tags: string[];
-	description: string;
-}
-
 const Shop: React.FC<ShopProps> = ({ $margin }) => {
-	const [items, setItems] = useState<Item[]>([]);
-	const [selectedSection, setSelectedSection] = useState<string>(sectionText[0].subtitle);
+	const [items, setItems] = useState<ItemType[]>([]);
+	const [selectedSection, setSelectedSection] = useState<string>(TabWidgetParams[0].title);
+	const [visibleTitles, setVisibleTitles] = useState<string[]>([]);
+
+	useEffect(() => {
+		const breakpoints = [
+			{ width: 900, maxTitles: 3 },
+			{ width: 1000, maxTitles: 4 },
+			{ width: 1380, maxTitles: 5 },
+		];
+		const handleResize = () => {
+			const width = window.innerWidth;
+			let maxTitles = TabWidgetParams.length;
+	
+			for (const breakpoint of breakpoints) {
+				if (width < breakpoint.width) {
+					maxTitles = breakpoint.maxTitles;
+					break;
+				}
+			}
+			setVisibleTitles(TabWidgetParams.slice(0, maxTitles).map(item => item.title));
+		};
+		window.addEventListener('resize', handleResize);
+		handleResize(); // Call initially to set up the initial state
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	}, []);
 	
 	useEffect(() => {
 		const fetchItems = async () => {
@@ -146,7 +143,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 				const response = await fetch(`${config.API_URL}/items`);
 				const data = await response.json();
 				// Ensure each item has a 'tags' field initialized as an array
-				const itemsWithTags = data.map((item: Item) => ({
+				const itemsWithTags = data.map((item: ItemType) => ({
 					...item,
 					tags: item.tags || [], // If 'tags' is null/undefined, initialize as empty array
 				}));
@@ -162,8 +159,8 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 		console.log(itemName);
 	};
 
-	const SplitSections = topFilter.map((section, index) => {
-		const filteredItems = items.filter(item => section.tags.some(tag => item.tags.includes(tag)));
+	const SplitSections = carouselSmallParams.map((section, index) => {
+		const filteredItems = items.filter(item => section.include.some(tag => item.tags.includes(tag)));
 		return (
 			<SmallCarousel 
 				key={index}
@@ -176,23 +173,17 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 		);
 	});
 
-	const Tabs = sectionText.map((category, index) => {
-		const subtitles = topFilter[0].tags.filter(tag => category.subtitle === tag);
+	const Tabs = visibleTitles.map((title, index) => (
+        <TabButton
+            key={index}
+            isActive={selectedSection === title}
+            onClick={() => setSelectedSection(title)}
+        >
+            {title}
+        </TabButton>
+    ));
 
-		return (
-			<Container key={index}>
-				{subtitles.map((subtitle, subIndex) => (
-					<Button
-						key={subIndex}
-						isActive={selectedSection === subtitle}
-						onClick={() => setSelectedSection(subtitle)}
-					>
-						{subtitle}
-					</Button>
-				))}
-			</Container>
-		);
-	});
+	const KeyWords = ["trending", "tools", "NonExistentKeyword", "all"];
 
 	return (
 		<>
@@ -201,7 +192,9 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 				<Parent>
 					{Tabs.length > 0 ? Tabs : <p>Loading items...</p>}
 				</Parent>
-				<FilteredRow selectedSection={selectedSection} />
+				<Row>
+					<FilteredRow selectedSection={selectedSection} />
+				</Row>
 				<CategoriesSection />
 				<Floor>
 					<FilterColumn>
@@ -234,22 +227,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 							<Body>On Sale</Body>
 							<Body>Open Box</Body>
 					</FilterColumn>
-					<div >
-						<SortBtn>Sort</SortBtn>
-						<Items>
-							{items.map((item, index) => (
-								<ItemCard 
-									key={index}
-									image={`data:image/jpeg;base64,${item.image}`}
-									itemName={item.title}
-									addToCart={() => { } }
-									price={item.price}
-									rating={0} 
-									boxSize={"standard"} />
-							))}
-						</Items>
-					</div>
-					
+					<GenericSpread keywords={KeyWords} />
 				</Floor>
 			</Wrapper>
 		</>
