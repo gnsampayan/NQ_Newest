@@ -10,11 +10,11 @@ import SignIn from "./components/SignInModal";
 import SignUp from "./components/SignUp";
 import Member from './pages/MemberPage';
 import Blade from './components/Blade';
-import Services from './pages/Services';
 import ItemCreation from './pages/ItemCreation';
 import StockPage from './pages/StockPage';
 import FilteredPage from './pages/FilteredPage';
 import ItemPage from './pages/ItemPage';
+import ServicesPage from './pages/Services/ServicesPage';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -47,14 +47,15 @@ function MainApp() {
           <Route path="/filtered" element={<FilteredPage />} />
           <Route path="/trending" element={<FilteredPage />} />
           <Route path="/shop" element={<Shop $margin={margin} />} />
-          <Route path="/services" element={<Services $margin={margin} />} />
+          <Route path="/services" element={<ServicesPage $margin={margin} />} />
           <Route path="/contact-us" element={<ContactUs $margin={margin} />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/item-creation" element={<ItemCreation isEditing={false}  />} />
           <Route path="/member" element={<Member />} />
           <Route path="/view-stock" element={<StockPage />} />
-          <Route path="/:id" element={<ItemPage />} />
+          <Route path="/item/:itenName" element={<ItemPage />} />
+          <Route path="/category/:categoryName" element={<FilteredPage />} />
           {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </Wrapper>

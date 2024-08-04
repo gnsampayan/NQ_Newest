@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ItemType } from '../context/Types';
-import config from '../config';
+import apiConfig from '../api-config';
 
 // Styled components
 const Wrapper = styled.div`
@@ -121,7 +121,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
 
     const fetchTags = async () => {
         try {
-            const response = await fetch(`${config.API_URL}/all_tags`);
+            const response = await fetch(`${apiConfig.API_URL}/all_tags`);
             if (!response.ok) {
                 throw new Error(`Error: Failed to fetch tags. Status: ${response.status}`);
             }
@@ -220,7 +220,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         try {
             // Check if item exists if creating a new item
             if (!isEditing) {
-                const checkExistsResponse = await fetch(`${config.API_URL}/items/check-exists?title=${encodeURIComponent(title)}`);
+                const checkExistsResponse = await fetch(`${apiConfig.API_URL}/items/check-exists?title=${encodeURIComponent(title)}`);
                 if (!checkExistsResponse.ok) {
                     throw new Error(`Error: Failed to check if item exists. Status: ${checkExistsResponse.status}`);
                 }            
@@ -236,13 +236,13 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             let response;
             if (isEditing && itemData) {
                 formData.append('id', itemData.id.toString());
-                response = await fetch(`${config.API_URL}/items/${itemData.id}`, {
+                response = await fetch(`${apiConfig.API_URL}/items/${itemData.id}`, {
                     method: 'PUT',
                     body: formData,
                 });
                 console.log('Perform update operation');
             } else {
-                response = await fetch(`${config.API_URL}/items`, {
+                response = await fetch(`${apiConfig.API_URL}/items`, {
                     method: 'POST',
                     body: formData,
                 });

@@ -147,7 +147,7 @@ const P = styled.p`
   margin-top: -10px;
 `
 
-const HeroSection = () => {
+const HeroWidget = () => {
     const navigate = useNavigate();
   return (
     <>
@@ -203,4 +203,4 @@ const HeroSection = () => {
   )
 }
 
-export default HeroSection
+export default HeroWidget

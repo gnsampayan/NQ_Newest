@@ -5,7 +5,7 @@ import HeroSection from "../components/Widgets/HeroWidget";
 import DiscoverMore from "../components/Widgets/DiscoverMoreWidget";
 import ItemHighlight from "../components/Widgets/HighlightWidget/ItemHighlight";
 import { useEffect, useState } from "react";
-import config from "../config";
+import apiConfig from "../api-config";
 import HighlightedItemConfig from "../components/Widgets/HighlightWidget/highlightedItemConfig";
 import ServicesSection from "../components/Widgets/ServicesWidget";
 import SubscribeWidget from "../components/Widgets/SubscribeWidget/SubscribeWidget";
@@ -55,7 +55,7 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await fetch(`${config.API_URL}/items`);
+        const response = await fetch(`${apiConfig.API_URL}/items`);
         const data: Item[] = await response.json();
         const highlighted = data.find((i: Item) => i.title.includes(item));
         setHighlightedItem(highlighted || null);

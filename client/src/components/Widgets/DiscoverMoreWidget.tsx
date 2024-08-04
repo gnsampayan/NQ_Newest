@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { BsEye } from "react-icons/bs";
 import ItemCard from "../Cards/ItemCard";
 import { useEffect, useState } from "react";
-import config from "../../config";
+import apiConfig from "../../api-config";
 import Button from "../Buttons/Button";
 import { useNavigate } from "react-router";
 import { ItemType } from "../../context/Types";
@@ -78,7 +78,7 @@ const DiscoverMore = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch(`${config.API_URL}/items`);
+                const response = await fetch(`${apiConfig.API_URL}/items`);
                 const data = await response.json();
                 setItems(data);
             } catch (error) {

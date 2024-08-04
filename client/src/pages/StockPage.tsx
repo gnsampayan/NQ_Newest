@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import EditItemModal from '../components/EditItemModal';
 import CreateItemModal from '../components/CreateItemModal';
 import { ItemType } from '../context/Types';
-import config from '../config';
+import apiConfig from '../api-config';
 import Button from '../components/Buttons/Button';
 import { IoCreateOutline } from "react-icons/io5";
 
@@ -67,7 +67,7 @@ const StockPage: React.FC = () => {
   
   const fetchItems = async () => {
     try {
-      const response = await fetch(`${config.API_URL}/items`);
+      const response = await fetch(`${apiConfig.API_URL}/items`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -86,7 +86,7 @@ const StockPage: React.FC = () => {
     console.log("Deleting item with ID:", itemId);
 
     try {
-      const response = await fetch(`${config.API_URL}/items/${itemId}`, {
+      const response = await fetch(`${apiConfig.API_URL}/items/${itemId}`, {
         method: 'DELETE',
         // If your API requires headers (like Content-Type, Authorization), add them here
       });

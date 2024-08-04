@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { ItemType } from "../../../context/Types";
-import config from "../../../config";
+import apiConfig from "../../../api-config";
 import ItemCard from "../../Cards/ItemCard";
 import ButtonCounter from "../../Buttons/ButtonCounter";
 
@@ -75,7 +75,7 @@ const GenericSpread = ({ keywords }: Props) => {
     useEffect(() => {
 		const fetchItems = async () => {
 			try {
-				const response = await fetch(`${config.API_URL}/items`);
+				const response = await fetch(`${apiConfig.API_URL}/items`);
 				const data = await response.json();
 				// Ensure each item has a 'tags' field initialized as an array
 				const itemsWithTags = data.map((item: ItemType) => ({

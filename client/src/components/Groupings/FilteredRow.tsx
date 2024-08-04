@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import GenericRow from "./Templates/GenericRow"
 import { TabWidgetParams } from '../Params/filterRowParams';
-import config from "../../config";
+import apiConfig from "../../api-config";
 import { ItemType } from "../../context/Types";
 
 const Wrapper = styled.div`
@@ -25,7 +25,7 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 	useEffect(() => {
 		const fetchItems = async () => {
 			try {
-				const response = await fetch(`${config.API_URL}/items`);
+				const response = await fetch(`${apiConfig.API_URL}/items`);
 				const data = await response.json();
 				// Ensure each item has a 'tags' field initialized as an array
 				const itemsWithTags = data.map((item: ItemType) => ({

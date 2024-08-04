@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router"
 import styled from "styled-components"
 
 const Card = styled.div`
@@ -65,9 +66,13 @@ interface Props {
     description: string;
 }
 const ServiceCard = ({ icon, title, description } : Props) => {
+    const navigate = useNavigate();
+    const handleOnClick = () => {
+        navigate(`/services`, { state: { serviceName : title } });
+    }
   return (
     <>
-        <Card>
+        <Card onClick={handleOnClick}>
             <Icon>{typeof icon === 'string' ? <IconImg src={icon} alt={title} /> : icon}</Icon>
             <CardDetails>
                 <H5>{title}</H5>

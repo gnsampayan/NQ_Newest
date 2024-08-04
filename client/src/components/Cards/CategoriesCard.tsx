@@ -1,5 +1,9 @@
 import { IconType } from "react-icons/lib";
+import { useNavigate } from "react-router";
 import styled from "styled-components";
+import { ItemType } from "../../context/Types";
+import { useEffect, useState } from "react";
+import apiConfig from "../../api-config";
 
 const Card = styled.div`
     display: flex;
@@ -9,6 +13,10 @@ const Card = styled.div`
 
     border-radius: 20px;
     background: #3B3B3B;
+    cursor: pointer;
+    &:hover {
+        box-shadow: 0 0 0 2px white;
+    }
 `
 const PhotoAndIcon = styled.div`
     display: flex;
@@ -82,9 +90,41 @@ interface Props {
     icon: IconType;
 }
 const CategoriesCard = ({ image, categoryName, icon: IconComponent } : Props) => {
+    const navigate = useNavigate();
+    const heading = categoryName;
+    const subhead = "Shop by Category";
+    const [items, setItems] = useState<ItemType[]>([]);
+    const [filteredItems, setFilteredItems] = useState<ItemType[]>([]);
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await fetch(`${apiConfig.API_URL}/items`);
+                const data = await response.json();
+                const itemsWithTags = data.map((item: ItemType) => ({
+                    ...item,
+                    tags: item.tags || [], // Ensure each item has a 'tags' field initialized as an array
+                }));
+                setItems(itemsWithTags);
+            } catch (error) {
+                console.error('Error fetching items:', error);
+            }
+        };
+        fetchItems();
+    }, []);
+    useEffect(() => {
+        if (items.length > 0 && categoryName) {
+            const filtered = items.filter(item => item.tags.includes(categoryName));
+            setFilteredItems(filtered);
+        }
+    }, [items, categoryName]);
+    const relevantItems: ItemType[] = filteredItems;
+    const handleOnClick = () => {
+        const encodedItemName = encodeURIComponent(categoryName);
+        navigate(`/category/${encodedItemName}`, { state: { relevantItems, heading, subhead } });
+    }
   return (
     <>
-        <Card>
+        <Card onClick={handleOnClick}>
             <PhotoAndIcon>
                 <ImageParent>
                     <Image src={image} alt={categoryName} />

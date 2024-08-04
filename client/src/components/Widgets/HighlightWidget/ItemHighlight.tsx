@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import config from "../../../config";
+import apiConfig from "../../../api-config";
 import HighlightedItemConfig from "./highlightedItemConfig";
 import { BsEye } from "react-icons/bs";
 
@@ -171,7 +171,7 @@ const ItemHighlight: React.FC<Props> = ({ image, name, price }) => {
     useEffect(() => {
         const fetchEndTime = async () => {
             try {
-                const response = await axios.get(`${config.API_URL}/sales/${HighlightedItemConfig.item}`);
+                const response = await axios.get(`${apiConfig.API_URL}/sales/${HighlightedItemConfig.item}`);
                 const saleEndTime = new Date(response.data.saleDuration).getTime();
                 startCountdown(saleEndTime);
             } catch (error) {

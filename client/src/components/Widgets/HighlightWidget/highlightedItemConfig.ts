@@ -1,5 +1,5 @@
 import axios from 'axios';
-import config from "../../../config";  // Make sure to update the path if necessary
+import apiConfig from "../../../api-config";  // Make sure to update the path if necessary
 
 const HighlightedItemConfig = {
   item: "Zipties" // Change this to any item name to test
@@ -7,7 +7,7 @@ const HighlightedItemConfig = {
 
 const fetchSaleConfig = async () => {
   try {
-    const response = await axios.get(`${config.API_URL}/sales/${HighlightedItemConfig.item}`);
+    const response = await axios.get(`${apiConfig.API_URL}/sales/${HighlightedItemConfig.item}`);
     const saleData = response.data;
 
     if (saleData) {

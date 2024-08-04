@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import config from "../config";
+import apiConfig from "../api-config";
 
 const Wrapper = styled.div`
     color: #333; /* Darker text for better readability */
@@ -77,7 +77,7 @@ const SignIn: React.FC = () => {
 
 			// Make a GET request to check if the username and password are valid
 			const response = await fetch(
-				`${config.API_URL}/users?username=${encodedUsername}&password=${encodedPassword}`,
+				`${apiConfig.API_URL}/users?username=${encodedUsername}&password=${encodedPassword}`,
 				{
 					method: 'GET',
 					headers: {

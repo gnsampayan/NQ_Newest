@@ -61,7 +61,7 @@ const NoItems = styled.div`
   margin-top: 20px;
 `;
 
-const TemplatePage = () => {
+const FilteredPage = () => {
     const location = useLocation();
     const { relevantItems, heading, subhead } = (location.state as { 
         relevantItems: ItemType[], 
@@ -84,7 +84,7 @@ const TemplatePage = () => {
                                 key={i.id}
                                 image={`data:image/jpeg;base64,${i.image}`}
                                 itemName={i.title}
-                                addToCart={() => { } } // add addToCart funtion here
+                                addToCart={() => { } } // add addToCart function here
                                 price={i.price}
                                 rating={i.rating} 
                                 boxSize={"large"}
@@ -99,4 +99,4 @@ const TemplatePage = () => {
     )
 }
 
-export default TemplatePage
+export default FilteredPage
