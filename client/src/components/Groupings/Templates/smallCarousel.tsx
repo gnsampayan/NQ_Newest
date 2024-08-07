@@ -53,12 +53,20 @@ const LeftButton = styled(Button)`
   left: 0;
   z-index: 999;
   border-radius: 0px 30px 30px 0px;
+  opacity: 0.1;
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 const RightButton = styled(Button)`
   right: 0;
   z-index: 999;
   border-radius: 30px 0px 0px 30px;
+  opacity: 0.1;
+  &:hover {
+    opacity: 1;
+  }
 `;
 const ArrowLeftIcon = styled(BsArrowLeftCircle)`
   width: 40px;

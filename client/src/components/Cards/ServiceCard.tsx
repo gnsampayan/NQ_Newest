@@ -67,9 +67,10 @@ interface Props {
 }
 const ServiceCard = ({ icon, title, description } : Props) => {
     const navigate = useNavigate();
+    const urlId = title.toLowerCase().replace(' ', '-');
     const handleOnClick = () => {
-        navigate(`/services`, { state: { serviceName : title } });
-    }
+        navigate(`/services/${urlId}`);
+    };
   return (
     <>
         <Card onClick={handleOnClick}>

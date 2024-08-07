@@ -70,6 +70,7 @@ const CategoryCardsGrid = styled.div`
 	flex-direction: column;
 	align-items: flex-start;
 	gap: 30px;
+	margin-top: 40px;
 `;
 const CategoryCardsRow = styled.h2`
 	display: flex;

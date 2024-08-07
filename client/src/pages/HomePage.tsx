@@ -12,6 +12,8 @@ import SubscribeWidget from "../components/Widgets/SubscribeWidget/SubscribeWidg
 import NewsletterGuy from "../assets/images/Newsletter_guy.png";
 import Footer from "../components/Widgets/FooterWidget";
 import CategoriesSection from "../components/Widgets/CategoriesWidget";
+import { BsFillRocketTakeoffFill } from "react-icons/bs";
+import HeroImage from "../assets/images/ToolsAndMaterials.png";
 
 const Wrapper = styled.div<HomePageProps>`
   position: relative;
@@ -66,11 +68,30 @@ const HomePage: React.FC<HomePageProps> = ({ $margin }) => {
     fetchItems();
   }, [item]);
 
+  const contents = {
+    headline: "Discover Materials & Tools",
+    subhead: `Explore the wide array of materials and tools we offer. 
+                From high-quality lumber to the latest power tools, we have 
+                everything you need for both DIY enthusiasts and professional 
+                craftsmen. Our selection ensures durability and efficiency, 
+                allowing you to bring your vision to life.`,
+    btnAsset: BsFillRocketTakeoffFill,
+    btnTitle: 'Go to Shop',
+    urlDestination: '/shop',
+  }
+  
   return (
     <>
       <Header>Anything You Need, We Have It!</Header>
       <Wrapper $margin={$margin}>
-        <HeroSection />
+        <HeroSection 
+          headline={contents.headline} 
+          subhead={contents.subhead} 
+          btnAsset={contents.btnAsset}
+          btnTitle={contents.btnTitle} 
+          urlDestination={contents.urlDestination}
+          heroImage={HeroImage}
+        />
         <CategoriesSection />
         <DiscoverMore />
         <SubscribeWidget img={NewsletterGuy} />

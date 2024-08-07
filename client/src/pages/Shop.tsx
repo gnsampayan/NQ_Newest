@@ -60,7 +60,6 @@ const TabButton = styled.button<{ isActive: boolean }>`
 const Floor = styled.div`
 	width: 100%;
 	display: flex;
-	margin-top: 40px;
 `
 const FilterColumn = styled.div`
 	display: flex;
@@ -103,6 +102,7 @@ const Body = styled.p`
 `
 const Row = styled.div`
 	width: 100%;
+	margin-bottom: 40px;
 `
 const Number = styled.div<{ isActive: boolean }>`
     color: #FFF;
@@ -119,6 +119,44 @@ const Number = styled.div<{ isActive: boolean }>`
     gap: 10px;
     border-radius: 20px;
     background:  ${props => props.isActive ? '#858584' : '#3B3B3B'};
+`
+const SectionHeadline = styled.div`
+	display: flex;
+	width: 1050px;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	margin-left: 60px;
+`
+const H3 = styled.h3`
+	align-self: stretch;
+
+	color: white;
+
+	/* H3 - Work Sans */
+	font-family: "Work Sans";
+	font-size: 38px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 120%; /* 45.6px */
+	text-transform: capitalize;
+`
+const P = styled.p`
+	align-self: stretch;
+
+	color: white;
+
+	/* Body Text- Work Sans */
+	font-family: "Work Sans";
+	font-size: 22px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 160%; /* 35.2px */
+	text-transform: capitalize;
+`
+const FloorSection = styled.div`
+	width: 100%;
+	margin-top: 100px;
 `
 interface ShopProps {
 	$margin: string;
@@ -229,39 +267,45 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 					<FilteredRow selectedSection={selectedSection} />
 				</Row>
 				<CategoriesSection />
-				<Floor>
-					<FilterColumn>
-						<H5>Type</H5>
-						<ul>
-							<Caption>Tools</Caption>
-								<Body>Wireless</Body>
-								<Body>Wired</Body>
-								<Body>Manual</Body>
-							<Caption>Materials</Caption>
-								<Body>Concrete</Body>
-								<Body>Plywood</Body>
-								<Body>Lumber</Body>
-								<Body>Metals</Body>
-								<Body>Insulation</Body>
-						</ul>
-						<H5>Brands</H5>
-							<Body>Dewalt</Body>
-							<Body>Milwaukee</Body>
-							<Body>Bosch</Body>
-							<Body>Makita</Body>
-						<H5>Price</H5>
-							<Body>$1 - $10</Body>
-							<Body>$11 - $50</Body>
-							<Body>$51 - $100</Body>
-							<Body>$101 - above</Body>
-						<H5>Discount</H5>
-							<Body>Clearance</Body>
-							<Body>Daily Deals</Body>
-							<Body>On Sale</Body>
-							<Body>Open Box</Body>
-					</FilterColumn>
-					<GenericSpread keywords={KeyWords} />
-				</Floor>
+				<FloorSection>
+					<SectionHeadline>
+						<H3>Find More Selections</H3>
+						<P>Browse Through A Wide Range Of Quality Items</P>
+					</SectionHeadline>
+					<Floor>
+						<FilterColumn>
+							<H5>Type</H5>
+							<ul>
+								<Caption>Tools</Caption>
+									<Body>Wireless</Body>
+									<Body>Wired</Body>
+									<Body>Manual</Body>
+								<Caption>Materials</Caption>
+									<Body>Concrete</Body>
+									<Body>Plywood</Body>
+									<Body>Lumber</Body>
+									<Body>Metals</Body>
+									<Body>Insulation</Body>
+							</ul>
+							<H5>Brands</H5>
+								<Body>Dewalt</Body>
+								<Body>Milwaukee</Body>
+								<Body>Bosch</Body>
+								<Body>Makita</Body>
+							<H5>Price</H5>
+								<Body>$1 - $10</Body>
+								<Body>$11 - $50</Body>
+								<Body>$51 - $100</Body>
+								<Body>$101 - above</Body>
+							<H5>Discount</H5>
+								<Body>Clearance</Body>
+								<Body>Daily Deals</Body>
+								<Body>On Sale</Body>
+								<Body>Open Box</Body>
+						</FilterColumn>
+						<GenericSpread keywords={KeyWords} />
+					</Floor>
+				</FloorSection>
 			</Wrapper>
 		</>
 	);

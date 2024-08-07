@@ -6,8 +6,8 @@ import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
 import Shop from "./pages/Shop";
 import ContactUs from "./pages/ContactUs";
-import SignIn from "./components/SignInModal";
-import SignUp from "./components/SignUp";
+import SignIn from "./pages/SignInPage";
+import SignUp from "./pages/SignUpPage";
 import Member from './pages/MemberPage';
 import Blade from './components/Blade';
 import ItemCreation from './pages/ItemCreation';
@@ -48,7 +48,8 @@ function MainApp() {
           <Route path="/trending" element={<FilteredPage />} />
           <Route path="/shop" element={<Shop $margin={margin} />} />
           <Route path="/services" element={<ServicesPage $margin={margin} />} />
-          <Route path="/contact-us" element={<ContactUs $margin={margin} />} />
+          <Route path="/services/:serviceType" element={<ServicesPage $margin={margin} />} />
+          <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/item-creation" element={<ItemCreation isEditing={false}  />} />

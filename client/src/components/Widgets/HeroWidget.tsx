@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import HeroImage from "../../assets/images/ToolsAndMaterials.png";
-import { useNavigate } from 'react-router';
-import { BsFillRocketTakeoffFill } from "react-icons/bs";
 import Button from '../Buttons/Button';
+import { IconType } from 'react-icons';
+import { useNavigate } from 'react-router-dom';
+import { BsFillRocketTakeoffFill } from 'react-icons/bs';
 
 
 const HeroSectionFrame = styled.div`
@@ -146,26 +146,29 @@ const P = styled.p`
   line-height: 140%; /* 22.4px */
   margin-top: -10px;
 `
-
-const HeroWidget = () => {
-    const navigate = useNavigate();
+interface Props {
+  headline: string;
+  subhead: string;
+  btnAsset?: IconType;
+  btnTitle: string;
+  urlDestination: string;
+  heroImage: string;
+}
+const HeroWidget = ({ headline, subhead, btnAsset: defaultAsset = BsFillRocketTakeoffFill, btnTitle, urlDestination, heroImage } : Props) => {
+  const navigate = useNavigate();
   return (
     <>
         <HeroSectionFrame>
           <HeroTextAndButtons>
             <HeadlineAndSubhead>
-              <Headline>Discover Materials & Tools</Headline>
+              <Headline>{headline}</Headline>
               <Subhead>
-                Explore the wide array of materials and tools we offer. 
-                From high-quality lumber to the latest power tools, we have 
-                everything you need for both DIY enthusiasts and professional 
-                craftsmen. Our selection ensures durability and efficiency, 
-                allowing you to bring your vision to life.
+                {subhead}
               </Subhead>
               <Button 
-                asset={BsFillRocketTakeoffFill} 
-                title={'Go to Shop'} 
-                onClick={() => {navigate('/shop');}} 
+                asset={defaultAsset} 
+                title={btnTitle} 
+                onClick={() => {navigate(urlDestination);}} 
                 bgColor={'#A259FF'}
                 fillColor={'white'}
                 fillHoverColor={'#A259FF'}
@@ -191,7 +194,7 @@ const HeroWidget = () => {
           </HeroTextAndButtons>
           <Centering>
             <HighlightedImage>
-              <Image src={HeroImage}></Image>
+              <Image src={heroImage}></Image>
               <Frame>
                 <H5>Title Here</H5>
                 <P>Description Here or Category</P>
