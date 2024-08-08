@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 
@@ -15,6 +15,8 @@ import StockPage from './pages/StockPage';
 import FilteredPage from './pages/FilteredPage';
 import ItemPage from './pages/ItemPage';
 import ServicesPage from './pages/Services/ServicesPage';
+import ShoppingCart from './components/ShoppingCart';
+import CheckOut from './pages/CheckOut';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -27,20 +29,26 @@ const Wrapper = styled.div`
 `;
 
 function MainApp() {
-  const [vis , setVis] = useState(false);
-  
-
   const [ margin, setMargin ] = useState('auto');
+  const [vis , setVis] = useState(false);
+  const [cartVis, setCartVis] = useState(false);
+  const cartBtnRef = useRef<HTMLDivElement>(null);
+  
   const toggleBladeVis = () => {
     setVis(prevVis => !prevVis);
     setMargin((prevMargin) => (prevMargin === 'auto' ? '400px' : 'auto'));
   };
 
+  const toggleCartVis = () => {
+    setCartVis(prevVis => !prevVis);
+  }
+
   return (
     
     <>
-      <Header ontoggleBladeVis={toggleBladeVis}/>
+      <Header ontoggleBladeVis={toggleBladeVis} onToggleCartVis={toggleCartVis} cartBtnRef={cartBtnRef} />
       <Blade $isVisible={vis} />
+      <ShoppingCart isVisible={cartVis} toggleCartVis={toggleCartVis} cartBtnRef={cartBtnRef} />
       <Wrapper>
         <Routes>
           <Route path="/" element={<HomePage $margin={margin} />} />
@@ -57,6 +65,7 @@ function MainApp() {
           <Route path="/view-stock" element={<StockPage />} />
           <Route path="/item/:itenName" element={<ItemPage />} />
           <Route path="/category/:categoryName" element={<FilteredPage />} />
+          <Route path="/check-out" element={<CheckOut />} />
           {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </Wrapper>

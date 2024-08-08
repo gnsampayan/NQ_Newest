@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import IconWrapper from "./IconWrapper";
 import { IconType } from 'react-icons';
+import { BsFillRocketTakeoffFill } from "react-icons/bs";
 
 const Btn = styled.button<{ 
     borderColor?: string, 
@@ -44,7 +45,7 @@ const Btn = styled.button<{
 `;
 
 interface Props {
-    asset: IconType;
+    asset?: IconType;
     title: string;
     borderColor?: string;
     borderHoverColor?: string;
@@ -59,7 +60,7 @@ interface Props {
 
 const Button = ({ 
     title, 
-    asset : IconAsset, 
+    asset: IconAsset = BsFillRocketTakeoffFill, 
     borderColor, 
     borderHoverColor,
     bgColor, 

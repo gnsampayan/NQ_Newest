@@ -4,6 +4,8 @@ import axios from 'axios';
 import apiConfig from "../../../api-config";
 import HighlightedItemConfig from "./highlightedItemConfig";
 import { BsEye } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import { ItemType } from "../../../context/Types";
 
 const Highlight = styled.div<{ image: string }>`
     display: flex;
@@ -159,14 +161,9 @@ const P2 = styled(P)`
     align-self: stretch;
 `;
 
-interface Props {
-    image: string;
-    name: string;
-    price: number;
-}
-
-const ItemHighlight: React.FC<Props> = ({ image, name, price }) => {
+const ItemHighlight: React.FC<ItemType> = ({ image, title, price, rating }) => {
     const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEndTime = async () => {
@@ -204,14 +201,19 @@ const ItemHighlight: React.FC<Props> = ({ image, name, price }) => {
         fetchEndTime();
     }, []);
 
+    const handleItemClick = () => {
+        const encodedItemName = encodeURIComponent(title);
+        navigate(`/item/${encodedItemName}`, { state: { image, title, price, rating } });
+    };
+
     return (
         <Highlight image={image}>
             <ItemInfo>
                 <Frame>
                     <ItemPriceNameAndButton>
                         <SalePrice>${price}</SalePrice>
-                        <H2>{name}</H2>
-                        <Button>
+                        <H2>{title}</H2>
+                        <Button onClick={handleItemClick}>
                             <EyeIcon />
                             <div>See item</div>
                         </Button>

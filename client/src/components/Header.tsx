@@ -18,6 +18,11 @@ const NavBox = styled.nav<NavBoxProps>`
 	z-index: 999;
 	transition: transform 0.3s ease-in-out;
 	transform: ${({ $isHidden }) => ($isHidden ? 'translateY(-100%)' : 'translateY(0)')};
+
+	user-select: none; /* Standard syntax */
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none; /* For Firefox */
+    -ms-user-select: none; /* For IE and Edge */
 `;
 
 const NavMenu = styled.ul`
@@ -107,7 +112,7 @@ const StyledPersonIcon = styled(BsFillPersonFill)`
 	width: 20px;
 	transform: translateY(2px);
 `;
-const Cart = styled.div`
+const CartBtn = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -123,12 +128,14 @@ const BsCart = styled(BsCart3)`
 
 interface HeaderProps {
 	ontoggleBladeVis: () => void;
+	onToggleCartVis: () => void;
+	cartBtnRef: React.RefObject<HTMLDivElement>;
 }
 interface NavBoxProps {
 	$isHidden: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cartBtnRef } : HeaderProps) => {
 	const navItems = [
 		{ name: "Shop", path: "/shop" },
 		{ name: "Services", path: "/services" },
@@ -198,9 +205,9 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis } : HeaderProps) => {
 					);
 				})}
 			</NavMenu>
-			<Cart>
+			<CartBtn ref={cartBtnRef} onClick={onToggleCartVis}>
 				<BsCart />
-			</Cart>
+			</CartBtn>
 		</NavBox>
 	);
 };
