@@ -3,7 +3,6 @@ import { useRef, useState } from "react";
 import ItemCard from "../../Cards/ItemCard";
 import { BsArrowLeftCircle } from "react-icons/bs";
 import { BsArrowRightCircle } from "react-icons/bs";
-import apiConfig from "../../../api-config";
 
 const CarouselWrapper = styled.div`
   position: relative;
