@@ -48,8 +48,7 @@ const P = styled.p`
     text-transform: capitalize;
 `
 const ItemCardsCollection = styled.div`
-    display: inline-flex;
-    align-items: flex-start;
+    display: flex;
     gap: 30px;
     height: auto;
     flex-wrap: wrap;

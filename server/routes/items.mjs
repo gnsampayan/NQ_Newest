@@ -44,6 +44,30 @@ export default function(pool) {
       );
     });
 
+    router.post('/images', async (req, res) => {
+      const { itemIds } = req.body;
+  
+      if (!Array.isArray(itemIds) || itemIds.length === 0) {
+          return res.status(400).json({ error: 'Invalid item IDs provided' });
+      }
+  
+      try {
+          const query = 'SELECT id, image FROM items WHERE id IN (?)';
+          const [results] = await pool.promise().query(query, [itemIds]);
+  
+          const images = {};
+          results.forEach(item => {
+              images[item.id] = item.image ? Buffer.from(item.image).toString('base64') : null;
+          });
+  
+          res.status(200).json(images);
+      } catch (err) {
+          console.error('Error retrieving images:', err);
+          res.status(500).json({ error: 'Error retrieving images' });
+      }
+  });
+  
+
     router.get('/', (req, res) => {
       const query = 'SELECT id, title, description, price, image, tags, quantity FROM items';
       pool.query(query, (err, results) => {

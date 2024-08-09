@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import ItemCard from "../../Cards/ItemCard";
 import { BsArrowLeftCircle } from "react-icons/bs";
 import { BsArrowRightCircle } from "react-icons/bs";
+import { ItemType } from "../../../context/Types";
+import apiConfig from "../../../api-config";
 
 const CarouselWrapper = styled.div`
   position: relative;
@@ -79,19 +81,11 @@ const ArrowRightIcon = styled(BsArrowRightCircle)`
 `
 
 interface Props {
-  itemImage: Array<string>;
-  itemDescription?: Array<string>;
-  amount: Array<number>;
-  name: Array<string>;
-  onClick: (itemName: string) => void;
-  enableWrap?: boolean;
+  items: ItemType[];
 }
 
 const LargeCarousel = ({
-  itemImage,
-  amount,
-  name,
-  enableWrap
+  items
 }: Props) => {
   const itemGroupRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -150,27 +144,58 @@ const LargeCarousel = ({
     }
   };
   
+  const handleAddToCartClick = async (newItem: ItemType) => {
+    console.log('Adding this item to cart:', newItem.id);
+
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No authentication token found. Please log in.');
+            return;
+        }
+
+        const response = await fetch(`${apiConfig.API_URL}/carts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data.message);
+        } else {
+            const errorText = await response.text();
+            console.error(`Failed to add item to cart: ${errorText}`);
+        }
+    } catch (error) {
+        console.error('Error adding item to cart:', error);
+    }
+};
+
   return (
     <CarouselWrapper>
       <LeftButton onClick={scrollLeftHandler}>
         <ArrowLeftIcon/>
       </LeftButton>
       <Group
-        $enableWrap={enableWrap ?? false}
+        $enableWrap={false}
         ref={itemGroupRef}
         onMouseDown={onMouseDown}
         onMouseLeave={onMouseLeave}
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
       >
-        {itemImage.map((item: string, index: number) => (
+        {items.map((item: ItemType, index: number) => (
           <ItemCard 
-            key={item}
-            image={item} 
-            itemName={name[index]} 
-            addToCart={() => {}}	
-            price={amount[index]} 
-            rating={0} 
+            key={index}
+            image={`data:image/jpeg;base64,${item.image}`} 
+            itemName={item.title} 
+            addToCart={() => handleAddToCartClick(item)}
+            price={item.price} 
+            rating={item.rating || 0} 
             boxSize={"large"} />
         ))}
       </Group>

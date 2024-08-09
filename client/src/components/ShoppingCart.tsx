@@ -19,10 +19,10 @@ const Cart = styled.div`
     padding: 20px;
     gap: 10px;
 
-    user-select: none; /* Standard syntax */
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none; /* For Firefox */
-    -ms-user-select: none; /* For IE and Edge */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 `;
 
 const ItemsList = styled.div`
@@ -59,6 +59,7 @@ const ItemIndex = styled.div`
 const ItemInfo = styled.div`
     display: flex;
     flex-direction: column;
+    max-width: 160px;
 `;
 
 const ItemName = styled.p`
@@ -140,29 +141,28 @@ interface CartItem {
     image: string;
     title: string;
     price: number;
-    quantity: number;
+    buyQuantity: number;
     totalInStock: number;
 }
 
-const CartItemsList = ({ cartItems, onDelete, onQuantityChange }: { cartItems: CartItem[], onDelete: (id: number) => void, onQuantityChange: (id: number, quantity: number) => void }) => {
+const CartItemsList = ({ cartItems, onDelete, onQuantityChange }: { cartItems: CartItem[], onDelete: (id: number) => void, onQuantityChange: (id: number, buyQuantity: number) => void }) => {
     return (
         <ItemsList>
             {cartItems.map((item, index) => (
                 <ItemCard key={item.id}>
                     <Contents>
                         <ItemIndex>{index + 1}</ItemIndex>
-                        <ItemImage src={item.image} alt={item.description} />
+                        <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.description} />
                         <ItemInfo>
                             <ItemName>{item.title}</ItemName>
                             <ItemDescription>{item.description}</ItemDescription>
                         </ItemInfo>
                     </Contents>
                     <PriceAndDelete>
-                        {/* Used to prevent weird floating-point arithmetic precision behavior in JavaScript */}
-                        <ItemPrice>${(Math.round(item.price * item.quantity * 100) / 100).toFixed(2)}</ItemPrice>
+                        <ItemPrice>${(Math.round(item.price * item.buyQuantity * 100) / 100).toFixed(2)}</ItemPrice>
                         <ItemQuantity
                             type="number"
-                            value={item.quantity}
+                            value={item.buyQuantity} // connect to DB later
                             min="1"
                             max={item.totalInStock}
                             onChange={(e) => onQuantityChange(item.id, parseInt(e.target.value))}
@@ -181,12 +181,6 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
     const cartRef = useRef<HTMLDivElement>(null); // Reference to the cart div
 
     useEffect(() => {
-        // Temporary data
-        // const data = [
-        //     { id: 1, description: "High-quality hammer", image: Hammer, title: "Hammer", price: 20.01, quantity: 1, totalInStock: 25 },
-        //     { id: 2, description: "Durable hand saw", image: HandSaw, title: "Hand Held Saw", price: 9.00, quantity: 1, totalInStock: 5 },
-        //     { id: 3, description: "Sharp circular saw blade", image: CircularSawBlade, title: "Circular Saw Blade", price: 120.00, quantity: 1, totalInStock: 42 },
-        // ];
         const fetchCart = async () => {
             try {
                 const response = await fetch(`${apiConfig.API_URL}/carts`, {
@@ -194,20 +188,97 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
+    
                 if (response.ok) {
                     const data = await response.json();
-                    setCartItems(data.cart);
+                    console.log('Raw cart data:', data.cart);
+                    console.log('Raw itemIdsArray:', data.itemIdsArray);
+    
+                    if (data.cart.length === 0 || data.itemIdsArray.length === 0) {
+                        setCartItems([]);
+                        return;
+                    }
+    
+                    // Count occurrences of each item ID in `itemIdsArray`
+                    const itemCounts: { [key: number]: number } = {};
+                    data.itemIdsArray.forEach((itemId: number) => {
+                        itemCounts[itemId] = (itemCounts[itemId] || 0) + 1;
+                    });
+    
+                    console.log('Item counts:', itemCounts);
+    
+                    // Create unique CartItems with correct `buyQuantity`
+                    const uniqueItems: CartItem[] = data.cart.map((item : CartItem) => ({
+                        ...item,
+                        buyQuantity: itemCounts[item.id],
+                    }));
+    
+                    console.log('Final unique items with buyQuantity:', uniqueItems);
+    
+                    setCartItems(uniqueItems);
                 } else {
-                    console.error('Failed to fetch cart data');
+                    console.error('Failed to fetch cart data:', response.status);
                 }
             } catch (error) {
                 console.error('Error fetching cart data:', error);
             }
         };
+    
         if (isVisible) {
             fetchCart();
         }
     }, [isVisible]);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    // New useEffect to fetch images based on item IDs
+    useEffect(() => {
+        const fetchItemImages = async () => {
+            try {
+                const itemIds = cartItems.map(item => item.id);
+                const response = await fetch(`${apiConfig.API_URL}/items/images`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ itemIds })
+                });
+
+                if (response.ok) {
+                    const images = await response.json();
+                    setCartItems(prevItems =>
+                        prevItems.map(item => ({
+                            ...item,
+                            image: images[item.id] || item.image  // Update image if found
+                        }))
+                    );
+                } else {
+                    console.error('Failed to fetch item images');
+                }
+            } catch (error) {
+                console.error('Error fetching item images:', error);
+            }
+        };
+
+        if (cartItems.length > 0) {
+            fetchItemImages();
+        }
+    }, [cartItems]);
+    
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -232,8 +303,8 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
         };
     }, [isVisible, toggleCartVis, cartBtnRef]);
 
-    const handleQuantityChange = (id: number, quantity: number) => {
-        setCartItems(prevItems => prevItems.map(item => item.id === id ? { ...item, quantity } : item));
+    const handleQuantityChange = (id: number, buyQuantity: number) => {
+        setCartItems(prevItems => prevItems.map(item => item.id === id ? { ...item, buyQuantity } : item));
     };
 
     const goToCheckout = (items: CartItem[]) => {
@@ -244,13 +315,13 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
 
     const handleDelete = async (id: number) => {
         try {
-            const response = await fetch(`/api/cart/${id}`, {
+            const response = await fetch(`${apiConfig.API_URL}/carts/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 console.log(data.message);
@@ -262,7 +333,6 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
             console.error('Error deleting item from cart:', error);
         }
     };
-    
 
     return (
         <>
@@ -281,7 +351,6 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
                     />
                 </Cart>
             )}
-            
         </>
     );
 };

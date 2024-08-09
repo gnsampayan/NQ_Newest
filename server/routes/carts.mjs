@@ -26,25 +26,50 @@ const authenticateToken = (req, res, next) => {
 };
 
 
-  // Get Cart Items for the Authenticated User
-  router.get('/', authenticateToken, (req, res) => {
-    const userId = req.user.userId;
+  // Fetch cart items for the authenticated user
+router.get('/', authenticateToken, (req, res) => {
+  const userId = req.user.userId;
 
-    pool.query('SELECT * FROM carts WHERE user_id = ? AND status = 0', [userId], (err, results) => {
+  pool.query('SELECT items FROM carts WHERE user_id = ?', [userId], (err, results) => {
       if (err) {
-        console.error('Error retrieving cart:', err);
-        return res.status(500).json({ error: 'Error retrieving cart' });
+          console.error('Error retrieving cart from database:', err);
+          return res.status(500).json({ error: 'Error retrieving cart from database' });
       }
 
-      if (results.length > 0) {
-        const cart = results[0];
-        res.status(200).json({ cart: JSON.parse(cart.content) });
-      } else {
-        // Cart is empty
-        res.status(200).json({ cart: [] });
+      if (results.length === 0) {
+          return res.status(200).json({ cart: [] });
       }
-    });
+
+      let itemIdsArray = results[0].items;
+
+      try {
+          // Log the array to confirm its structure
+          console.log('Raw itemIdsArray:', itemIdsArray);
+
+          // Ensure that itemIdsArray is indeed an array
+          if (!Array.isArray(itemIdsArray) || itemIdsArray.length === 0) {
+              return res.status(200).json({ cart: [] });
+          }
+
+          // Query the items table for details of the unique items in the cart
+          pool.query('SELECT * FROM items WHERE id IN (?)', [itemIdsArray], (err, itemResults) => {
+              if (err) {
+                  console.error('Error retrieving items from database:', err);
+                  return res.status(500).json({ error: 'Error retrieving items from database' });
+              }
+
+              // Return both the raw itemIdsArray and the item details
+              res.status(200).json({ cart: itemResults, itemIdsArray });
+          });
+      } catch (parseError) {
+          console.error('Error handling cart items:', parseError);
+          return res.status(500).json({ error: 'Error handling cart items' });
+      }
   });
+});
+
+
+
 
   // Add or Update Cart Item for the Authenticated User
   router.post('/', authenticateToken, (req, res) => {
@@ -100,42 +125,68 @@ const authenticateToken = (req, res, next) => {
 });
 
 
-
   // Delete an Item from the Cart for the Authenticated User
   router.delete('/:id', authenticateToken, (req, res) => {
     const userId = req.user.userId;
-    const itemId = parseInt(req.params.id);
+    const itemIdToRemove = parseInt(req.params.id);
 
-    pool.query('SELECT * FROM carts WHERE user_id = ? AND status = 0', [userId], (err, results) => {
-      if (err) {
-        console.error('Error retrieving cart:', err);
-        return res.status(500).json({ error: 'Error retrieving cart' });
-      }
+    pool.query('SELECT items FROM carts WHERE user_id = ?', [userId], (err, results) => {
+        if (err) {
+            console.error('Error retrieving cart:', err);
+            return res.status(500).json({ error: 'Error retrieving cart' });
+        }
 
-      if (results.length > 0) {
-        let cartContent = JSON.parse(results[0].content);
+        if (results.length > 0) {
+            let itemIdsArray;
+            let itemIdsString = results[0].items;
 
-        cartContent = cartContent.filter(item => item.id !== itemId);
-
-        const jsonContent = JSON.stringify(cartContent);
-
-        pool.query(
-          'UPDATE carts SET content = ? WHERE user_id = ? AND status = 0',
-          [jsonContent, userId],
-          (err) => {
-            if (err) {
-              console.error('Error updating cart:', err);
-              return res.status(500).json({ error: 'Error updating cart' });
+            // Check if itemIdsString is a string
+            if (typeof itemIdsString === 'string') {
+                itemIdsString = itemIdsString.trim();
             }
 
-            res.status(200).json({ status: 'ok', message: 'Item removed from cart' });
-          }
-        );
-      } else {
-        res.status(404).json({ error: 'Cart not found' });
-      }
+            try {
+                // If itemIdsString is already an array, no need to parse
+                if (Array.isArray(itemIdsString)) {
+                    itemIdsArray = itemIdsString;
+                } else if (typeof itemIdsString === 'string') {
+                    // If it's a string, parse it as JSON
+                    itemIdsArray = JSON.parse(itemIdsString);
+                } else {
+                    throw new Error('Unexpected data type for items column');
+                }
+            } catch (parseError) {
+                console.error('Error parsing cart items:', parseError);
+                return res.status(500).json({ error: 'Error parsing cart items' });
+            }
+
+            // Remove the itemIdToRemove from the array
+            const filteredItemIdsArray = itemIdsArray.filter(id => id !== itemIdToRemove);
+
+            console.log('Filtered itemIdsArray:', filteredItemIdsArray);
+
+            const jsonItems = JSON.stringify(filteredItemIdsArray);
+
+            pool.query(
+                'UPDATE carts SET items = ? WHERE user_id = ?',
+                [jsonItems, userId],
+                (err) => {
+                    if (err) {
+                        console.error('Error updating cart:', err);
+                        return res.status(500).json({ error: 'Error updating cart' });
+                    }
+
+                    res.status(200).json({ status: 'ok', message: 'Item removed from cart' });
+                }
+            );
+        } else {
+            res.status(404).json({ error: 'Cart not found' });
+        }
     });
-  });
+});
+
+
+
 
   return router;
 }

@@ -99,7 +99,7 @@ const DiscoverMore = () => {
     };
 
     const handleAddToCartClick = async (newItem: ItemType) => {
-        console.log('Adding this item to cart:', newItem.id); // Make sure this logs the id
+        console.log('Adding this item to cart:', newItem.id);
     
         try {
             const token = localStorage.getItem('token');
