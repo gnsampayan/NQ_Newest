@@ -18,10 +18,11 @@ const SectionHeadline = styled.div`
     gap: 10px;
 `
 const CardRow = styled.div`
-    display: inline-flex;
-    align-items: flex-start;
+    display: flex;
+    justify-content: start;
     gap: 30px;
     margin-top: 40px;
+    flex-wrap: nowrap;
 `
 const H3 = styled.h3`
     align-self: stretch;

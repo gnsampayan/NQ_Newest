@@ -53,11 +53,16 @@ const Card = styled.div<{ boxSize: BoxSize }>`
     
     border-radius: 20px;
     background: #3B3B3B;
+    cursor: pointer;
     
     min-height: ${(props) => styleConfig[props.boxSize].height};
     min-width: ${(props) => styleConfig[props.boxSize].width};
     padding: ${(props) => styleConfig[props.boxSize].padding};
     gap: ${(props) => styleConfig[props.boxSize].gaps.cardGap};
+
+    &:hover {
+        outline: 2px solid white;
+    }
 `;
 const ImageContainer = styled.div<{ boxSize: BoxSize }>`
     display: block;
@@ -238,9 +243,13 @@ const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props
         const encodedItemName = encodeURIComponent(itemName);
         navigate(`/item/${encodedItemName}`, { state: { image, itemName, price, rating } });
     };
+    const handleAddToCartClick = (event: React.MouseEvent) => {
+        event.stopPropagation();  // This prevents the parent Card's onClick from being triggered
+        addToCart();
+    };
   return (
     <>
-        <Card boxSize={boxSize}>
+        <Card boxSize={boxSize} onClick={handleItemClick}>
             <ImageContainer 
                 boxSize={boxSize}
                 onClick={handleItemClick}
@@ -266,7 +275,7 @@ const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props
                     </AdditionalInfo>
                     <Button boxSize={boxSize}>
                         <CartPlusIcon/>
-                        <Btn onClick={addToCart}>Add to cart</Btn>
+                        <Btn onClick={handleAddToCartClick}>Add to cart</Btn>
                     </Button>
                 </AddToCartAndAdditionalInfo>
             </CardInfo>

@@ -4,22 +4,17 @@ import { BsTrash3 } from "react-icons/bs";
 import Button from "./Buttons/Button";
 
 import { useNavigate } from "react-router";
+import apiConfig from "../api-config";
 
-// Temp, delete later and replace with DB images
-import Hammer from "../assets/items/hammer.png";
-import HandSaw from "../assets/items/hand_saw.png";
-import CircularSawBlade from "../assets/items/saw-blade.png";
-
-
-const Cart = styled.div<{ isVisible: boolean }>`
+const Cart = styled.div`
     width: 600px;
-    position: absolute;
+    position: fixed;
     border-radius: 20px;
     top: 100px;
     right: 0;
     background: #858584;
     z-index: 999;
-    display: ${(props) => (props.isVisible ? "flex" : "none")};
+    display: flex;
     flex-direction: column;
     padding: 20px;
     gap: 10px;
@@ -187,20 +182,32 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
 
     useEffect(() => {
         // Temporary data
-        const data = [
-            { id: 1, description: "High-quality hammer", image: Hammer, title: "Hammer", price: 20.01, quantity: 1, totalInStock: 25 },
-            { id: 2, description: "Durable hand saw", image: HandSaw, title: "Hand Held Saw", price: 9.00, quantity: 1, totalInStock: 5 },
-            { id: 3, description: "Sharp circular saw blade", image: CircularSawBlade, title: "Circular Saw Blade", price: 120.00, quantity: 1, totalInStock: 42 },
-        ];
-        setCartItems(data);
-        // Uncomment the below code when using real API
-        // const fetchDeliveries = async () => {
-        //     const response = await fetch("/api/deliveries");
-        //     const data = await response.json();
-        //     setDeliveries(data);
-        // };
-        // fetchDeliveries();
-    }, []);
+        // const data = [
+        //     { id: 1, description: "High-quality hammer", image: Hammer, title: "Hammer", price: 20.01, quantity: 1, totalInStock: 25 },
+        //     { id: 2, description: "Durable hand saw", image: HandSaw, title: "Hand Held Saw", price: 9.00, quantity: 1, totalInStock: 5 },
+        //     { id: 3, description: "Sharp circular saw blade", image: CircularSawBlade, title: "Circular Saw Blade", price: 120.00, quantity: 1, totalInStock: 42 },
+        // ];
+        const fetchCart = async () => {
+            try {
+                const response = await fetch(`${apiConfig.API_URL}/carts`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setCartItems(data.cart);
+                } else {
+                    console.error('Failed to fetch cart data');
+                }
+            } catch (error) {
+                console.error('Error fetching cart data:', error);
+            }
+        };
+        if (isVisible) {
+            fetchCart();
+        }
+    }, [isVisible]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -225,10 +232,6 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
         };
     }, [isVisible, toggleCartVis, cartBtnRef]);
 
-    const handleDelete = (id: number) => {
-        setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-    };
-
     const handleQuantityChange = (id: number, quantity: number) => {
         setCartItems(prevItems => prevItems.map(item => item.id === id ? { ...item, quantity } : item));
     };
@@ -239,20 +242,46 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
         toggleCartVis();
     };
 
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await fetch(`/api/cart/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data.message);
+                setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+            } else {
+                console.error('Failed to delete item from cart');
+            }
+        } catch (error) {
+            console.error('Error deleting item from cart:', error);
+        }
+    };
+    
+
     return (
         <>
-            <Cart ref={cartRef} isVisible={isVisible}>
-                <CartItemsList cartItems={cartItems} onDelete={handleDelete} onQuantityChange={handleQuantityChange} />
-                <Button
-                    title={"Go to Checkout"}
-                    onClick={() => goToCheckout(cartItems)}
-                    bgColor={"linear-gradient(101deg, #A259FF 13.57%, #FF6250 97.65%)"}
-                    fillColor="white"
-                    bgHoverColor={"white"}
-                    fillHoverColor={"#A259FF"}
-                    textHoverColor={"#A259FF"}
-                />
-            </Cart>
+            {isVisible && (
+                <Cart ref={cartRef}>
+                    <CartItemsList cartItems={cartItems} onDelete={handleDelete} onQuantityChange={handleQuantityChange} />
+                    <Button
+                        title={"Go to Checkout"}
+                        onClick={() => goToCheckout(cartItems)}
+                        bgColor={"white"}
+                        fillColor={"#A259FF"}
+                        bgHoverColor={"#A259FF"}
+                        fillHoverColor={"white"}
+                        textHoverColor={"white"}
+                        textColor={"#A259FF"}
+                    />
+                </Cart>
+            )}
+            
         </>
     );
 };

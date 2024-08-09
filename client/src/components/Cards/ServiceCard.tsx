@@ -8,14 +8,16 @@ const Card = styled.div`
     align-items: center;
     gap: 20px;
     flex: 1 0 0;
+    justify-content: space-evenly;
 
     border-radius: 20px;
     background: #3B3B3B;
     width: 240px;
+    cursor: pointer;
 
     &:hover {
         background: rgba(59, 59, 59, .5);
-        border: 2px solid #A259FF;
+        outline: 2px solid white;
     }
 `
 const Icon = styled.div`

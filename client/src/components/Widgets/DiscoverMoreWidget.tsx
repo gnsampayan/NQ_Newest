@@ -11,7 +11,6 @@ const Container = styled.div`
     width: 1050px;
     height: auto;
     flex-shrink: 0;
-    overflow: hidden;
 `
 const SectionHeadlineAndButton = styled.div`
     display: inline-flex;
@@ -50,8 +49,9 @@ const P = styled.p`
     text-transform: capitalize;
 `
 const ItemCardsRow = styled.div`
-    display: inline-flex;
-    align-items: flex-start;
+    display: flex;
+    justify-content: start;
+    flex-wrap: nowrap;
     gap: 30px;
     height: auto;
 `
@@ -61,15 +61,6 @@ const NoItems = styled.div`
   text-align: center;
   margin-top: 20px;
 `;
-
-
-const shuffleArray = (array: ItemType[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-};
 
 const DiscoverMore = () => {
     const [items, setItems] = useState<ItemType[]>([]);
@@ -88,7 +79,15 @@ const DiscoverMore = () => {
         fetchItems();
     }, []);
 
-   const trendingItems = items.filter(i => i.tags.includes("Trending"));
+    
+    const shuffleArray = (array: ItemType[]) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    };
+    const trendingItems = items.filter(i => i.tags.includes("Trending"));
     const curatedItems = shuffleArray(trendingItems).slice(0, 3);
     if (curatedItems.length < 3) {
         return <p>Not enough items in this section</p>;
@@ -99,6 +98,38 @@ const DiscoverMore = () => {
         navigate('/trending', { state: { relevantItems: trendingItems, heading, subhead } });
     };
 
+    const handleAddToCartClick = async (newItem: ItemType) => {
+        console.log('Adding this item to cart:', newItem.id); // Make sure this logs the id
+    
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No authentication token found. Please log in.');
+                return;
+            }
+    
+            const response = await fetch(`${apiConfig.API_URL}/carts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data.message);
+            } else {
+                const errorText = await response.text();
+                console.error(`Failed to add item to cart: ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+        }
+    };
+    
+    
 
     return (
         <Container>
@@ -116,7 +147,7 @@ const DiscoverMore = () => {
                     key={i.id}
                     image={`data:image/jpeg;base64,${i.image}`}
                     itemName={i.title}
-                    addToCart={() => { } } // add addToCart funtion here
+                    addToCart={() => handleAddToCartClick(i)} // add addToCart funtion here
                     price={i.price}
                     rating={i.rating} 
                     boxSize={"large"}

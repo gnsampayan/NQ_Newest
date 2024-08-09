@@ -67,7 +67,7 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 				amount={filteredItems.map(item => item.price)}
 				name={filteredItems.map(item => item.title)}
 				goToPage={() => handleSeeAll(filteredItems)}
-				onClick={(itemName) => handleItemClick(itemName)}
+				onClick={(itemName) => handleItemClick(itemName)} 	
 			/>
 		</Wrapper>
 	);

@@ -3,10 +3,9 @@ import { BsFillPersonFill } from "react-icons/bs";
 import MainLogo from "../assets/images/NQ-temp-logo.png";
 import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
-import { useEffect, useState } from "react";
 import { BsCart3 } from "react-icons/bs";
 
-const NavBox = styled.nav<NavBoxProps>`
+const NavBox = styled.nav`
 	background-color: #221F27;
 	height: 100px;
 	position: fixed;
@@ -16,8 +15,6 @@ const NavBox = styled.nav<NavBoxProps>`
 	display: flex;
 	justify-content: space-between;
 	z-index: 999;
-	transition: transform 0.3s ease-in-out;
-	transform: ${({ $isHidden }) => ($isHidden ? 'translateY(-100%)' : 'translateY(0)')};
 
 	user-select: none; /* Standard syntax */
     -webkit-user-select: none; /* For Safari */
@@ -131,9 +128,6 @@ interface HeaderProps {
 	onToggleCartVis: () => void;
 	cartBtnRef: React.RefObject<HTMLDivElement>;
 }
-interface NavBoxProps {
-	$isHidden: boolean;
-}
 
 const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cartBtnRef } : HeaderProps) => {
 	const navItems = [
@@ -145,25 +139,8 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
 
-	const [isHeaderHidden, setIsHeaderHidden] = useState(false);
-	const [lastScrollY, setLastScrollY] = useState(0);
-
-	const handleScroll = () => {
-		const currentScrollY = window.scrollY;
-		setIsHeaderHidden(currentScrollY > lastScrollY);
-		setLastScrollY(currentScrollY);
-	};
-
-	useEffect(() => {
-		window.addEventListener('scroll', handleScroll, { passive: true});
-
-		return () => {
-			window.removeEventListener('scroll', handleScroll);
-		};
-	}, [lastScrollY]);
-
 	return (
-		<NavBox $isHidden={isHeaderHidden}>
+		<NavBox>
 			<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
 			<WaterMarkParent onClick={() => {
 				navigate("/");

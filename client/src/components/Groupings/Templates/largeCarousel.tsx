@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import ItemCard from "../../Cards/ItemCard";
 import { BsArrowLeftCircle } from "react-icons/bs";
 import { BsArrowRightCircle } from "react-icons/bs";
+import apiConfig from "../../../api-config";
 
 const CarouselWrapper = styled.div`
   position: relative;
@@ -14,7 +15,7 @@ const Group = styled.div<{ $enableWrap: boolean }>`
   display: flex;
   gap: 30px;
   justify-content: start;
-  padding: 0px 60px 0px 60px;
+  padding: 10px 60px 10px 60px;
   overflow-x: auto;
   flex-wrap: ${({ $enableWrap }) => ($enableWrap ? "wrap" : "nowrap")};
   cursor: grab;
@@ -91,7 +92,7 @@ const LargeCarousel = ({
   itemImage,
   amount,
   name,
-  enableWrap,
+  enableWrap
 }: Props) => {
   const itemGroupRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -149,7 +150,7 @@ const LargeCarousel = ({
       itemGroupRef.current.scrollLeft = scrollStart - walk;
     }
   };
-
+  
   return (
     <CarouselWrapper>
       <LeftButton onClick={scrollLeftHandler}>
@@ -168,7 +169,7 @@ const LargeCarousel = ({
             key={item}
             image={item} 
             itemName={name[index]} 
-            addToCart={() => {}} 
+            addToCart={() => {}}	
             price={amount[index]} 
             rating={0} 
             boxSize={"large"} />

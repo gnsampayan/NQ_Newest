@@ -15,7 +15,7 @@ const Group = styled.div<{ $enableWrap: boolean }>`
   display: flex;
   gap: 30px;
   justify-content: start;
-  padding: 0px 60px 0px 60px;
+  padding: 10px 60px 10px 60px;
   overflow: hidden;
   flex-wrap: ${({ $enableWrap }) => ($enableWrap ? "wrap" : "nowrap")};
   cursor: grab;

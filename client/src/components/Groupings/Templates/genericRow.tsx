@@ -90,12 +90,11 @@ const GenericRow = ({
 				</SectionHeader>
 				<LargeCarousel 
 					itemImage={itemImage}
-					amount={amount} 
-					name={name} 
+					amount={amount}
+					name={name}
 					onClick={onClick}
-					enableWrap={enableWrap}
+					enableWrap={enableWrap} 		
 					/>
-				
 			</Container>
 		);
 };

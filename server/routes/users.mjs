@@ -78,11 +78,11 @@ export default function(pool) {  // Export as a function that takes pool
         if (results.length > 0) {
           // User exists in the database with matching credentials
            // Create a token
-          const token = jwt.sign(
-            { userId: results[0].id, username: results[0].user_name }, // Payload
+           const token = jwt.sign(
+            { userId: results[0].user_id, username: results[0].user_name }, // Ensure userId is included in the payload
             JWT_SECRET,
-            { expiresIn: '1h' } // Token expires in 1 hour
-          );
+            { expiresIn: '1h' }
+        );
 
           res.status(200).json({ status: 'ok', token });
 
