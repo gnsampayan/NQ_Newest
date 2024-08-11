@@ -81,7 +81,7 @@ export default function(pool) {  // Export as a function that takes pool
            const token = jwt.sign(
             { userId: results[0].user_id, username: results[0].user_name }, // Ensure userId is included in the payload
             JWT_SECRET,
-            { expiresIn: '1h' }
+            //{ expiresIn: '1h' } // uncomment to add expiration
         );
 
           res.status(200).json({ status: 'ok', token });

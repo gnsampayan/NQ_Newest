@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
-import { BsTrash3 } from "react-icons/bs";
 import Button from "./Buttons/Button";
 
 import { useNavigate } from "react-router";
 import apiConfig from "../api-config";
+import { CartItemType } from "../context/Types";
+import CartItemsList from "./Groupings/Templates/CartItemsList";
 
 const Cart = styled.div`
     width: 600px;
@@ -25,158 +26,14 @@ const Cart = styled.div`
     -ms-user-select: none;
 `;
 
-const ItemsList = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-`;
-
-const ItemCard = styled.div`
-    display: flex;
-    background: #2B2B2B;
-    border-radius: 20px;
-    height: 100px;
-    padding: 20px;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-const ItemIndex = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #444;
-    color: white;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-family: "Work Sans";
-    font-size: 14px;
-    font-weight: 600;
-`;
-
-const ItemInfo = styled.div`
-    display: flex;
-    flex-direction: column;
-    max-width: 160px;
-`;
-
-const ItemName = styled.p`
-    color: white;
-    font-family: "Work Sans";
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 400px;
-    display: flex;
-    flex: 1;
-    text-align: left;
-`;
-
-const ItemDescription = styled(ItemName)`
-    font-size: 12px;
-`;
-
-const ItemPrice = styled(ItemName)`
-    margin-left: 20px;
-`;
-
-const ItemImage = styled.img`
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    background: #d9d9d9;
-`;
-
-const DeleteButton = styled.button`
-    all: unset;
-    color: white;
-    padding: 10px;
-    background: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #a259ff;
-    &:hover {
-        background: #a259ff;
-    }
-`;
-
-const Contents = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-`;
-
-const PriceAndDelete = styled.div`
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    gap: 20px;
-`;
-
-const ItemQuantity = styled.input`
-    width: 50px;
-    padding: 5px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    text-align: center;
-`;
-
 interface Props {
     isVisible: boolean;
     toggleCartVis: () => void;
     cartBtnRef: React.RefObject<HTMLDivElement>;
 }
 
-interface CartItem {
-    id: number;
-    description: string;
-    image: string;
-    title: string;
-    price: number;
-    buyQuantity: number;
-    totalInStock: number;
-}
-
-const CartItemsList = ({ cartItems, onDelete, onQuantityChange }: { cartItems: CartItem[], onDelete: (id: number) => void, onQuantityChange: (id: number, buyQuantity: number) => void }) => {
-    return (
-        <ItemsList>
-            {cartItems.map((item, index) => (
-                <ItemCard key={item.id}>
-                    <Contents>
-                        <ItemIndex>{index + 1}</ItemIndex>
-                        <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.description} />
-                        <ItemInfo>
-                            <ItemName>{item.title}</ItemName>
-                            <ItemDescription>{item.description}</ItemDescription>
-                        </ItemInfo>
-                    </Contents>
-                    <PriceAndDelete>
-                        <ItemPrice>${(Math.round(item.price * item.buyQuantity * 100) / 100).toFixed(2)}</ItemPrice>
-                        <ItemQuantity
-                            type="number"
-                            value={item.buyQuantity} // connect to DB later
-                            min="1"
-                            max={item.totalInStock}
-                            onChange={(e) => onQuantityChange(item.id, parseInt(e.target.value))}
-                        />
-                        <DeleteButton onClick={() => onDelete(item.id)}><BsTrash3 /></DeleteButton>
-                    </PriceAndDelete>
-                </ItemCard>
-            ))}
-        </ItemsList>
-    );
-};
-
 const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
-    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [cartItems, setCartItems] = useState<CartItemType[]>([]);
     const navigate = useNavigate();
     const cartRef = useRef<HTMLDivElement>(null); // Reference to the cart div
 
@@ -191,9 +48,6 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
     
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Raw cart data:', data.cart);
-                    console.log('Raw itemIdsArray:', data.itemIdsArray);
-    
                     if (data.cart.length === 0 || data.itemIdsArray.length === 0) {
                         setCartItems([]);
                         return;
@@ -208,7 +62,7 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
                     console.log('Item counts:', itemCounts);
     
                     // Create unique CartItems with correct `buyQuantity`
-                    const uniqueItems: CartItem[] = data.cart.map((item : CartItem) => ({
+                    const uniqueItems: CartItemType[] = data.cart.map((item : CartItemType) => ({
                         ...item,
                         buyQuantity: itemCounts[item.id],
                     }));
@@ -228,21 +82,6 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
             fetchCart();
         }
     }, [isVisible]);
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     // New useEffect to fetch images based on item IDs
     useEffect(() => {
@@ -307,7 +146,7 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
         setCartItems(prevItems => prevItems.map(item => item.id === id ? { ...item, buyQuantity } : item));
     };
 
-    const goToCheckout = (items: CartItem[]) => {
+    const goToCheckout = (items: CartItemType[]) => {
         console.log('going to checkout with items:', items);
         navigate(`/check-out`);
         toggleCartVis();

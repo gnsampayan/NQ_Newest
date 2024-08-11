@@ -2,6 +2,9 @@ import styled from "styled-components"
 import { useLocation } from "react-router-dom";
 import { ItemType } from "../context/Types";
 import ItemCard from "../components/Cards/ItemCard";
+import AddToCartConfirmation from "../components/Widgets/Modals/AddToCartConfirmation";
+import apiConfig from "../api-config";
+import { useState } from "react";
 
 const Container = styled.div`
 	display: flex;
@@ -67,6 +70,41 @@ const FilteredPage = () => {
         heading: string, 
         subhead: string 
     }) || { relevantItems: [] };
+    const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
+
+
+    const handleAddToCartClick = async (newItem: ItemType) => {
+        console.log('Adding this item to cart:', newItem.id);
+    
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No authentication token found. Please log in.');
+                return;
+            }
+    
+            const response = await fetch(`${apiConfig.API_URL}/carts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data.message);
+                setConfirmationItem(newItem); // Trigger confirmation
+            } else {
+                const errorText = await response.text();
+                console.error(`Failed to add item to cart: ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+        }
+    };
+
     return (
         <>
             <Container>
@@ -81,9 +119,9 @@ const FilteredPage = () => {
                         relevantItems.map(i => (
                             <ItemCard
                                 key={i.id}
-                                image={`data:image/jpeg;base64,${i.image}`}
+                                image={i.image}
                                 itemName={i.title}
-                                addToCart={() => { } } // add addToCart function here
+                                addToCart={() => handleAddToCartClick(i) } // add addToCart function here
                                 price={i.price}
                                 rating={i.rating} 
                                 boxSize={"large"}
@@ -94,6 +132,12 @@ const FilteredPage = () => {
                     )}
                 </ItemCardsCollection>
             </Container>
+            {confirmationItem && (
+                <AddToCartConfirmation 
+                    item={confirmationItem} 
+                    onClose={() => setConfirmationItem(null)} // Close the confirmation modal
+                />
+            )}
         </>
     )
 }

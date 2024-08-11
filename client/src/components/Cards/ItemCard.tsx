@@ -126,7 +126,8 @@ const H5 = styled.h5<{ boxSize: BoxSize }>`
 const CartPlusIcon = styled(BsCartPlus)`
     fill: #A259FF;
 `;
-const Button = styled.div<{ boxSize: BoxSize }>`
+const Button = styled.button<{ boxSize: BoxSize }>`
+    all: unset;
     align-items: flex-start;
     gap: 12px;
     align-self: stretch;
@@ -152,7 +153,7 @@ const Button = styled.div<{ boxSize: BoxSize }>`
     
     display: ${(props) => styleConfig[props.boxSize].display};
 `;
-const Btn = styled.button`
+const Btn = styled.div`
     background: none;
     border: none;
     color: #FFF;
@@ -254,7 +255,7 @@ const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props
                 boxSize={boxSize}
                 onClick={handleItemClick}
             >
-                <Image image={image} boxSize={boxSize}/>
+                <Image image={`data:image/jpeg;base64,${image}`} boxSize={boxSize}/>
             </ImageContainer>
             <CardInfo boxSize={boxSize}>
                 <MainInfo>
@@ -273,9 +274,9 @@ const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props
                             </Base2>
                         </Rating>
                     </AdditionalInfo>
-                    <Button boxSize={boxSize}>
+                    <Button boxSize={boxSize} onClick={handleAddToCartClick}>
                         <CartPlusIcon/>
-                        <Btn onClick={handleAddToCartClick}>Add to cart</Btn>
+                        <Btn>Add to cart</Btn>
                     </Button>
                 </AddToCartAndAdditionalInfo>
             </CardInfo>

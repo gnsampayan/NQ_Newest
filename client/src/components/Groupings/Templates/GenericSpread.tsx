@@ -141,7 +141,7 @@ const GenericSpread = ({ keywords }: Props) => {
                 {filterByKeywords.map((item, index) => (
                     <ItemCard 
                         key={index}
-                        image={`data:image/jpeg;base64,${item.image}`}
+                        image={item.image}
                         itemName={item.title}
                         addToCart={() => { } }
                         price={item.price}

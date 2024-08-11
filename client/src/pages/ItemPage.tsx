@@ -3,6 +3,10 @@ import { useLocation } from "react-router-dom";
 import Button from "../components/Buttons/Button";
 import { BsCartPlus } from "react-icons/bs";
 import { FaRegHeart } from "react-icons/fa6";
+import { ItemType } from "../context/Types";
+import apiConfig from "../api-config";
+import { useEffect, useState } from "react";
+import AddToCartConfirmation from "../components/Widgets/Modals/AddToCartConfirmation";
 
 const Page = styled.div`
     color: white;
@@ -103,10 +107,62 @@ const ItemPage = () => {
         price: number;
         rating: number;
     };
+    const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
+    const [item, setItem] = useState<ItemType | null>(null);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await fetch(`${apiConfig.API_URL}/items`);
+                const data = await response.json();
+                const foundItem = data.find((item: ItemType) => item.title.toLowerCase() === itemName.toLowerCase());
+                setItem(foundItem || null);
+            } catch (error) {
+                console.error('Error fetching items:', error);
+            }
+        };
+        fetchItems();
+    }, [itemName]);
+
+    const handleAddToCartClick = async (newItem: ItemType) => {
+        console.log('Adding this item to cart:', newItem.id);
+    
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No authentication token found. Please log in.');
+                return;
+            }
+    
+            const response = await fetch(`${apiConfig.API_URL}/carts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data.message);
+                setConfirmationItem(newItem); // Trigger confirmation
+            } else {
+                const errorText = await response.text();
+                console.error(`Failed to add item to cart: ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+        }
+    };
+
+    if (!item) {
+        return <p>Loading item details...</p>;
+    }
 
     return (
         <Page>
-            <Image image={image}></Image>
+            <Image image={`data:image/jpeg;base64,${image}`}></Image>
             <Frame>
                 <NameAndButton>
                     <ItemInfo>
@@ -127,17 +183,19 @@ const ItemPage = () => {
                         </Status>
                     </ItemInfo>
                     <Buttons>
-                        <Button 
-                            asset={BsCartPlus} 
-                            title={"Add to Cart"} 
-                            onClick={() => console.log('added to cart')} 
-                            bgColor="#A259FF"
-                            bgHoverColor="white"
-                            fillColor="white"
-                            fillHoverColor="#A259FF"
-                            borderHoverColor="white"
-                            textHoverColor="#A259FF"
-                        />
+                        {item && (
+                            <Button 
+                                asset={BsCartPlus} 
+                                title={"Add to Cart"} 
+                                onClick={() => handleAddToCartClick(item)} // add addToCart function here
+                                bgColor="#A259FF"
+                                bgHoverColor="white"
+                                fillColor="white"
+                                fillHoverColor="#A259FF"
+                                borderHoverColor="white"
+                                textHoverColor="#A259FF"
+                            />
+                        )}
                         <Button 
                             asset={FaRegHeart} 
                             title={"Save"} 
@@ -150,6 +208,12 @@ const ItemPage = () => {
             <p>Price: ${price}</p>
             <p>Rating: {rating}</p>
             {/* Render other item details as needed */}
+            {confirmationItem && (
+                <AddToCartConfirmation 
+                    item={confirmationItem} 
+                    onClose={() => setConfirmationItem(null)} // Close the confirmation modal
+                />
+            )}
         </Page>
     );
 };

@@ -161,9 +161,11 @@ const P2 = styled(P)`
     align-self: stretch;
 `;
 
-const ItemHighlight: React.FC<ItemType> = ({ image, title, price, rating }) => {
+const ItemHighlight = () => {
     const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
     const navigate = useNavigate();
+    const [highlightedItem, setHighlightedItem] = useState<ItemType | null>(null);
+    const { item } = HighlightedItemConfig;
 
     useEffect(() => {
         const fetchEndTime = async () => {
@@ -202,17 +204,35 @@ const ItemHighlight: React.FC<ItemType> = ({ image, title, price, rating }) => {
     }, []);
 
     const handleItemClick = () => {
-        const encodedItemName = encodeURIComponent(title);
-        navigate(`/item/${encodedItemName}`, { state: { image, title, price, rating } });
+        if (!highlightedItem) return; // Ensure highlightedItem is not null
+
+        const encodedItemName = encodeURIComponent(highlightedItem.title);
+        navigate(`/item/${encodedItemName}`, { state: { image: highlightedItem.image, itemName: highlightedItem.title, price: highlightedItem.price, rating: highlightedItem.rating } });
     };
 
+    
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await fetch(`${apiConfig.API_URL}/items`);
+        const data: ItemType[] = await response.json();
+        const highlighted = data.find((i: ItemType) => i.title.includes(item));
+        setHighlightedItem(highlighted || null);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
+    };
+    fetchItems();
+  }, [item]);
+
     return (
-        <Highlight image={image}>
+        <Highlight image={`data:image/jpeg;base64,${highlightedItem?.image}`}>
             <ItemInfo>
                 <Frame>
                     <ItemPriceNameAndButton>
-                        <SalePrice>${price}</SalePrice>
-                        <H2>{title}</H2>
+                        <SalePrice>${highlightedItem?.price}</SalePrice>
+                        <H2>{highlightedItem?.title}</H2>
                         <Button onClick={handleItemClick}>
                             <EyeIcon />
                             <div>See item</div>

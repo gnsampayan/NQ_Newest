@@ -5,6 +5,7 @@ import { BsArrowLeftCircle } from "react-icons/bs";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { ItemType } from "../../../context/Types";
 import apiConfig from "../../../api-config";
+import AddToCartConfirmation from "../../Widgets/Modals/AddToCartConfirmation";
 
 const CarouselWrapper = styled.div`
   position: relative;
@@ -91,6 +92,7 @@ const LargeCarousel = ({
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollStart, setScrollStart] = useState(0);
+  const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
 
   const scrollLeftHandler = () => {
     if (itemGroupRef.current) {
@@ -166,6 +168,7 @@ const LargeCarousel = ({
         if (response.ok) {
             const data = await response.json();
             console.log(data.message);
+            setConfirmationItem(newItem); // Trigger confirmation
         } else {
             const errorText = await response.text();
             console.error(`Failed to add item to cart: ${errorText}`);
@@ -176,33 +179,41 @@ const LargeCarousel = ({
 };
 
   return (
-    <CarouselWrapper>
-      <LeftButton onClick={scrollLeftHandler}>
-        <ArrowLeftIcon/>
-      </LeftButton>
-      <Group
-        $enableWrap={false}
-        ref={itemGroupRef}
-        onMouseDown={onMouseDown}
-        onMouseLeave={onMouseLeave}
-        onMouseUp={onMouseUp}
-        onMouseMove={onMouseMove}
-      >
-        {items.map((item: ItemType, index: number) => (
-          <ItemCard 
-            key={index}
-            image={`data:image/jpeg;base64,${item.image}`} 
-            itemName={item.title} 
-            addToCart={() => handleAddToCartClick(item)}
-            price={item.price} 
-            rating={item.rating || 0} 
-            boxSize={"large"} />
-        ))}
-      </Group>
-      <RightButton onClick={scrollRightHandler}>
-        <ArrowRightIcon />
-      </RightButton>
-    </CarouselWrapper>
+    <>
+      <CarouselWrapper>
+        <LeftButton onClick={scrollLeftHandler}>
+          <ArrowLeftIcon/>
+        </LeftButton>
+        <Group
+          $enableWrap={false}
+          ref={itemGroupRef}
+          onMouseDown={onMouseDown}
+          onMouseLeave={onMouseLeave}
+          onMouseUp={onMouseUp}
+          onMouseMove={onMouseMove}
+        >
+          {items.map((item: ItemType, index: number) => (
+            <ItemCard 
+              key={index}
+              image={item.image} 
+              itemName={item.title} 
+              addToCart={() => handleAddToCartClick(item)}
+              price={item.price} 
+              rating={item.rating || 0} 
+              boxSize={"large"} />
+          ))}
+        </Group>
+        <RightButton onClick={scrollRightHandler}>
+          <ArrowRightIcon />
+        </RightButton>
+      </CarouselWrapper>
+      {confirmationItem && (
+        <AddToCartConfirmation 
+            item={confirmationItem} 
+            onClose={() => setConfirmationItem(null)} // Close the confirmation modal
+        />
+      )}
+    </>
   );
 };
 

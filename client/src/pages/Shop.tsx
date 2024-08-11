@@ -232,7 +232,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 		return (
 			<SmallCarousel 
 				key={index}
-				itemImage={filteredItems.map(item => `data:image/jpeg;base64,${item.image}`)}
+				itemImage={filteredItems.map(item => item.image)}
 				itemDescription={filteredItems.map(item => item.description)}
 				amount={filteredItems.map(item => item.price)}
 				name={filteredItems.map(item => item.title)}

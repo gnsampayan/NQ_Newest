@@ -6,6 +6,7 @@ import apiConfig from "../../api-config";
 import Button from "../Buttons/Button";
 import { useNavigate } from "react-router";
 import { ItemType } from "../../context/Types";
+import AddToCartConfirmation from "./Modals/AddToCartConfirmation";
 
 const Container = styled.div`
     width: 1050px;
@@ -64,6 +65,7 @@ const NoItems = styled.div`
 
 const DiscoverMore = () => {
     const [items, setItems] = useState<ItemType[]>([]);
+    const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -120,6 +122,7 @@ const DiscoverMore = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log(data.message);
+                setConfirmationItem(newItem); // Trigger confirmation
             } else {
                 const errorText = await response.text();
                 console.error(`Failed to add item to cart: ${errorText}`);
@@ -128,8 +131,6 @@ const DiscoverMore = () => {
             console.error('Error adding item to cart:', error);
         }
     };
-    
-    
 
     return (
         <Container>
@@ -145,7 +146,7 @@ const DiscoverMore = () => {
                 curatedItems.map(i => (
                 <ItemCard
                     key={i.id}
-                    image={`data:image/jpeg;base64,${i.image}`}
+                    image={i.image}
                     itemName={i.title}
                     addToCart={() => handleAddToCartClick(i)} // add addToCart funtion here
                     price={i.price}
@@ -157,6 +158,12 @@ const DiscoverMore = () => {
                 <NoItems>No items</NoItems>
             )}
             </ItemCardsRow>
+            {confirmationItem && (
+                <AddToCartConfirmation 
+                    item={confirmationItem} 
+                    onClose={() => setConfirmationItem(null)} // Close the confirmation modal
+                />
+            )}
         </Container>
     );
 };
