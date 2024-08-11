@@ -1,12 +1,16 @@
 import styled from "styled-components";
 import { BsTrash3 } from "react-icons/bs";
 import { CartItemType } from "../../../context/Types";
+import { useState } from "react";
 
-const ItemsList = styled.div`
+const ItemsList = styled.div<{ maxHeight : string }>`
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 10px;
+    max-height: ${(props) => props.maxHeight};
+    overflow-y: scroll;
+    overflow-x: hidden;
 `;
 
 const ItemCard = styled.div`
@@ -106,9 +110,31 @@ const ItemQuantity = styled.input`
     text-align: center;
 `;
 
-const CartItemsList = ({ cartItems, onDelete, onQuantityChange }: { cartItems: CartItemType[], onDelete: (id: number) => void, onQuantityChange: (id: number, buyQuantity: number) => void }) => {
+interface CartItemsListProps {
+    cartItems: CartItemType[];
+    onDelete: (id: number) => void;
+    onQuantityChange: (id: number, newQuantity: number) => void;
+    maxHeight: string;
+}
+
+const CartItemsList = ({ cartItems, onDelete, onQuantityChange, maxHeight }: CartItemsListProps) => {
+    // Define the type for inputValues
+    const [inputValues, setInputValues] = useState<{ [key: number]: string }>(
+        cartItems.reduce((acc, item) => ({ ...acc, [item.id]: item.buyQuantity.toString() }), {})
+    );
+
+    const handleQuantityChange = (id: number, value: string) => {
+        // Update local state with the new input value
+        setInputValues(prev => ({ ...prev, [id]: value }));
+
+        // If the value is a valid number and greater than 0, trigger the quantity change
+        const newQuantity = parseInt(value);
+        if (!isNaN(newQuantity) && newQuantity > 0) {
+            onQuantityChange(id, newQuantity);
+        }
+    };
   return (
-    <ItemsList>
+    <ItemsList maxHeight={maxHeight}>
         {cartItems.map((item, index) => (
             <ItemCard key={item.id}>
                 <Contents>
@@ -123,10 +149,11 @@ const CartItemsList = ({ cartItems, onDelete, onQuantityChange }: { cartItems: C
                     <ItemPrice>${(Math.round(item.price * item.buyQuantity * 100) / 100).toFixed(2)}</ItemPrice>
                     <ItemQuantity
                         type="number"
-                        value={item.buyQuantity} // connect to DB later
+                        value={inputValues[item.id] || ""}
+                        placeholder="1"
                         min="1"
                         max={item.totalInStock}
-                        onChange={(e) => onQuantityChange(item.id, parseInt(e.target.value))}
+                        onChange={(e) => handleQuantityChange(item.id, e.target.value)}
                     />
                     <DeleteButton onClick={() => onDelete(item.id)}><BsTrash3 /></DeleteButton>
                 </PriceAndDelete>
