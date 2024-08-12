@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 
@@ -9,20 +9,20 @@ import ContactUs from "./pages/ContactUs";
 import SignIn from "./pages/SignInPage";
 import SignUp from "./pages/SignUpPage";
 import Member from './pages/MemberPage';
-import Blade from './components/Blade';
+import Blade from './components/Widgets/Modals/BladeModal';
 import ItemCreation from './pages/ItemCreation';
 import StockPage from './pages/StockPage';
 import FilteredPage from './pages/FilteredPage';
 import ItemPage from './pages/ItemPage';
 import ServicesPage from './pages/Services/ServicesPage';
-import ShoppingCart from './components/ShoppingCart';
+import ShoppingCart from './components/Widgets/Modals/ShoppingCartModal';
 import CheckOut from './pages/CheckOut';
 
 const Wrapper = styled.div`
   position: absolute;
   top: 0;
   z-index: 1;
-	background-color: #2B2B2B;
+  background: #2B2B2B;
 	height: auto;
   width: 100%;
   padding-top: 100px;
@@ -32,6 +32,7 @@ function MainApp() {
   const [ margin, setMargin ] = useState('auto');
   const [vis , setVis] = useState(false);
   const [cartVis, setCartVis] = useState(false);
+  const hasClosedCart = useRef(false);
   const cartBtnRef = useRef<HTMLDivElement>(null);
   
   const toggleBladeVis = () => {
@@ -42,6 +43,18 @@ function MainApp() {
   const toggleCartVis = () => {
     setCartVis(prevVis => !prevVis);
   }
+  useEffect(() => {
+    // Only reload the page when cartVis changes from true to false
+    if (!cartVis && hasClosedCart.current) {
+      hasClosedCart.current = false; // Prevent further reloads
+      window.location.reload();
+    }
+
+    if (cartVis) {
+      hasClosedCart.current = true; // Set the flag when the cart is opened
+    }
+  }, [cartVis]);
+
 
   return (
     
@@ -63,7 +76,7 @@ function MainApp() {
           <Route path="/item-creation" element={<ItemCreation isEditing={false}  />} />
           <Route path="/member" element={<Member />} />
           <Route path="/view-stock" element={<StockPage />} />
-          <Route path="/item/:itenName" element={<ItemPage />} />
+          <Route path="/item/:itemName" element={<ItemPage />} />
           <Route path="/category/:categoryName" element={<FilteredPage />} />
           <Route path="/check-out" element={<CheckOut />} />
           {/* <Route path="*" element={<NotFoundPage />} /> */}

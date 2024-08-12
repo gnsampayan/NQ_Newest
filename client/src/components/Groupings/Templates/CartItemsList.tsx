@@ -1,15 +1,18 @@
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { BsTrash3 } from "react-icons/bs";
-import { CartItemType } from "../../../context/Types";
-import { useState } from "react";
+import { useCart } from '../../../context/CartContext';
+import { useNavigate } from 'react-router';
+import { CartItemType, ItemType } from '../../../context/Types';
+import AddToCartConfirmation from '../../Widgets/Modals/AddToCartConfirmation';
 
-const ItemsList = styled.div<{ maxHeight : string }>`
+const ItemsList = styled.div<{ maxHeight: string }>`
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 10px;
     max-height: ${(props) => props.maxHeight};
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 `;
 
@@ -41,6 +44,7 @@ const ItemInfo = styled.div`
     display: flex;
     flex-direction: column;
     max-width: 160px;
+    cursor: pointer;
 `;
 
 const ItemName = styled.p`
@@ -111,56 +115,111 @@ const ItemQuantity = styled.input`
 `;
 
 interface CartItemsListProps {
-    cartItems: CartItemType[];
-    onDelete: (id: number) => void;
-    onQuantityChange: (id: number, newQuantity: number) => void;
     maxHeight: string;
 }
 
-const CartItemsList = ({ cartItems, onDelete, onQuantityChange, maxHeight }: CartItemsListProps) => {
-    // Define the type for inputValues
-    const [inputValues, setInputValues] = useState<{ [key: number]: string }>(
-        cartItems.reduce((acc, item) => ({ ...acc, [item.id]: item.buyQuantity.toString() }), {})
-    );
+const CartItemsList: React.FC<CartItemsListProps> = ({ maxHeight }) => {
+    const [inputValues, setInputValues] = useState<{ [key: number]: string }>({});
+    const { cartItems, fetchCartItems, updateCartItemQuantity, deleteCartItem } = useCart();
+    const navigate = useNavigate();
+    const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
+    const [isDelete, setIsDelete] = useState<boolean>(false);
+
+    useEffect(() => {
+        fetchCartItems(); // Fetch cart items initially when component mounts
+    }, [fetchCartItems]);
+
+    useEffect(() => {
+        // Ensure cartItems is an array and contains valid items
+        if (Array.isArray(cartItems) && cartItems.length > 0) {
+            const initialValues = cartItems.reduce((acc, item) => {
+                if (item && item.id !== undefined && item.buyQuantity !== undefined) {
+                    acc[item.id] = item.buyQuantity.toString();
+                }
+                return acc;
+            }, {} as { [key: number]: string });
+            setInputValues(initialValues);
+        }
+    }, [cartItems]);
 
     const handleQuantityChange = (id: number, value: string) => {
-        // Update local state with the new input value
         setInputValues(prev => ({ ...prev, [id]: value }));
 
-        // If the value is a valid number and greater than 0, trigger the quantity change
         const newQuantity = parseInt(value);
         if (!isNaN(newQuantity) && newQuantity > 0) {
-            onQuantityChange(id, newQuantity);
+            updateCartItemQuantity(id, newQuantity);
         }
     };
-  return (
-    <ItemsList maxHeight={maxHeight}>
-        {cartItems.map((item, index) => (
-            <ItemCard key={item.id}>
-                <Contents>
-                    <ItemIndex>{index + 1}</ItemIndex>
-                    <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.description} />
-                    <ItemInfo>
-                        <ItemName>{item.title}</ItemName>
-                        <ItemDescription>{item.description}</ItemDescription>
-                    </ItemInfo>
-                </Contents>
-                <PriceAndDelete>
-                    <ItemPrice>${(Math.round(item.price * item.buyQuantity * 100) / 100).toFixed(2)}</ItemPrice>
-                    <ItemQuantity
-                        type="number"
-                        value={inputValues[item.id] || ""}
-                        placeholder="1"
-                        min="1"
-                        max={item.totalInStock}
-                        onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                    />
-                    <DeleteButton onClick={() => onDelete(item.id)}><BsTrash3 /></DeleteButton>
-                </PriceAndDelete>
-            </ItemCard>
-        ))}
-    </ItemsList>
-  )
+
+    const handleOnClick = (item: CartItemType) => {
+        navigate(`/item/${encodeURIComponent(item.title)}`, {
+            state: {
+                image: item.image,
+                itemName: item.title,
+                price: item.price,
+                rating: 4.5, // replace with the actual rating if available
+            },
+        });
+    }
+
+    const handleDelete = (item: CartItemType) => {
+        deleteCartItem(item.id);
+        
+        // Transform CartItemType to ItemType
+        const itemForConfirmation: ItemType = {
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            price: item.price,
+            image: item.image,
+            quantity: item.totalInStock, // Assuming you have totalInStock, otherwise, adjust accordingly
+            rating: 4.5, // Add a default rating or get it from somewhere
+            tags: [] // Add tags if available
+        };
+        
+        setIsDelete(true);
+        setConfirmationItem(itemForConfirmation);
+    };
+
+    return (
+        <>
+            <ItemsList maxHeight={maxHeight}>
+                {cartItems.map((item, index) => (
+                    item && ( // Ensure item is defined before rendering
+                    <ItemCard key={item.id}>
+                        <Contents>
+                            <ItemIndex>{index + 1}</ItemIndex>
+                            <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.description} />
+                            <ItemInfo onClick={() => handleOnClick(item)}>
+                                <ItemName>{item.title}</ItemName>
+                                <ItemDescription>{item.description}</ItemDescription>
+                            </ItemInfo>
+                        </Contents>
+                        <PriceAndDelete>
+                            <ItemPrice>${(Math.round(item.price * item.buyQuantity * 100) / 100).toFixed(2)}</ItemPrice>
+                            <ItemQuantity
+                                type="number"
+                                value={inputValues[item.id] || ""}
+                                placeholder="1"
+                                min="1"
+                                max={item.totalInStock}
+                                onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                            />
+                            <DeleteButton onClick={() => handleDelete(item)}><BsTrash3 /></DeleteButton>
+                        </PriceAndDelete>
+                    </ItemCard>
+                    )
+                ))}
+            </ItemsList>
+            {confirmationItem && (
+                <AddToCartConfirmation 
+                    item={confirmationItem} 
+                    onClose={() => setConfirmationItem(null)} // Close the confirmation modal
+                    delete={isDelete} // Pass the isDelete flag
+                />
+            )}
+        </>
+    );
 }
 
-export default CartItemsList
+export default CartItemsList;

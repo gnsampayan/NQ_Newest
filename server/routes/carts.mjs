@@ -2,128 +2,109 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = 'your_very_secret_key'; // Replace with your real secret key
-
 const router = express.Router();
 
-export default function(pool) {  // Export as a function that takes pool
-
+export default function(pool) {
   // Middleware to verify JWT and extract user ID
-const authenticateToken = (req, res, next) => {
+  const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(403).json({ error: 'Forbidden: No token provided' });
+      return res.status(403).json({ error: 'Forbidden: No token provided' });
     }
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Forbidden: Invalid token' });
-        }
-        req.user = user;  // Ensure the decoded token contains the userId
-        next();
+      if (err) {
+        return res.status(403).json({ error: 'Forbidden: Invalid token' });
+      }
+      req.user = user; // Ensure the decoded token contains the userId
+      next();
     });
-};
-
+  };
 
   // Fetch cart items for the authenticated user
-router.get('/', authenticateToken, (req, res) => {
-  const userId = req.user.userId;
+  router.get('/', authenticateToken, (req, res) => {
+    const userId = req.user.userId;
 
-  pool.query('SELECT items FROM carts WHERE user_id = ?', [userId], (err, results) => {
+    pool.query('SELECT items FROM carts WHERE user_id = ?', [userId], (err, results) => {
       if (err) {
-          console.error('Error retrieving cart from database:', err);
-          return res.status(500).json({ error: 'Error retrieving cart from database' });
+        console.error('Error retrieving cart from database:', err);
+        return res.status(500).json({ error: 'Error retrieving cart from database' });
       }
 
-      if (results.length === 0) {
-          return res.status(200).json({ cart: [] });
+      if (results.length === 0 || !results[0].items) {
+        return res.status(200).json({ cart: [], itemIdsArray: [] });
       }
 
       let itemIdsArray = results[0].items;
 
       try {
-          // Log the array to confirm its structure
-          console.log('Raw itemIdsArray:', itemIdsArray);
+        if (typeof itemIdsArray === 'string') {
+          itemIdsArray = JSON.parse(itemIdsArray);
+        }
 
-          // Ensure that itemIdsArray is indeed an array
-          if (!Array.isArray(itemIdsArray) || itemIdsArray.length === 0) {
-              return res.status(200).json({ cart: [] });
+        if (!Array.isArray(itemIdsArray) || itemIdsArray.length === 0) {
+          return res.status(200).json({ cart: [], itemIdsArray: [] });
+        }
+
+        pool.query('SELECT * FROM items WHERE id IN (?)', [itemIdsArray], (err, itemResults) => {
+          if (err) {
+            console.error('Error retrieving items from database:', err);
+            return res.status(500).json({ error: 'Error retrieving items from database' });
           }
 
-          // Query the items table for details of the unique items in the cart
-          pool.query('SELECT * FROM items WHERE id IN (?)', [itemIdsArray], (err, itemResults) => {
-              if (err) {
-                  console.error('Error retrieving items from database:', err);
-                  return res.status(500).json({ error: 'Error retrieving items from database' });
-              }
-
-              // Return both the raw itemIdsArray and the item details
-              res.status(200).json({ cart: itemResults, itemIdsArray });
-          });
+          res.status(200).json({ cart: itemResults, itemIdsArray });
+        });
       } catch (parseError) {
-          console.error('Error handling cart items:', parseError);
-          return res.status(500).json({ error: 'Error handling cart items' });
+        console.error('Error handling cart items:', parseError);
+        return res.status(500).json({ error: 'Error handling cart items' });
       }
+    });
   });
-});
-
-
-
 
   // Add or Update Cart Item for the Authenticated User
   router.post('/', authenticateToken, (req, res) => {
     const userId = req.user.userId;
     const { items } = req.body; // items should be an array of item objects
 
-    pool.query('SELECT * FROM carts WHERE user_id = ?', [userId], (err, results) => {
-        if (err) {
-            console.error('Error retrieving cart:', err);
-            return res.status(500).json({ error: 'Error retrieving cart' });
-        }
+    pool.query('SELECT items FROM carts WHERE user_id = ?', [userId], (err, results) => {
+      if (err) {
+        console.error('Error retrieving cart:', err);
+        return res.status(500).json({ error: 'Error retrieving cart' });
+      }
 
-        let cartItems = [];
+      let cartItems = [];
 
-        if (results.length > 0) {
-            const itemsColumn = results[0].items;
-            cartItems = typeof itemsColumn === 'string' ? JSON.parse(itemsColumn) : itemsColumn;
-        }
+      if (results.length > 0 && results[0].items) {
+        cartItems = typeof results[0].items === 'string' ? JSON.parse(results[0].items) : results[0].items;
+      }
 
-        // Extract just the item IDs from the incoming items array
-        const newCartItems = items.map(item => item.id); // Store the item IDs
+      const newCartItems = items.map(item => item.id);
+      const updatedCartItems = [...cartItems, ...newCartItems];
 
-        const updatedCartItems = [...cartItems, ...newCartItems]; // Combine existing and new items
+      const jsonItems = JSON.stringify(updatedCartItems);
 
-        const jsonItems = JSON.stringify(updatedCartItems); // Convert to JSON
-
-        if (results.length > 0) {
-            // Update existing cart
-            pool.query(
-                'UPDATE carts SET items = ? WHERE user_id = ?',
-                [jsonItems, userId],
-                (err) => {
-                    if (err) {
-                        console.error('Error updating cart:', err);
-                        return res.status(500).json({ error: 'Error updating cart', details: err.message });
-                    }
-                    res.status(200).json({ status: 'ok', message: 'Cart updated successfully' });
-                }
-            );
-        } else {
-            // Create new cart
-            const sql = `INSERT INTO carts (user_id, items) VALUES (?, ?)`;
-            pool.query(sql, [userId, jsonItems], (err) => {
-                if (err) {
-                    console.error('Error creating cart:', err);
-                    return res.status(500).json({ error: 'Error creating cart', details: err.message });
-                }
-
-                res.status(200).json({ status: 'ok', message: 'Cart created successfully' });
-            });
-        }
+      if (results.length > 0) {
+        pool.query('UPDATE carts SET items = ? WHERE user_id = ?', [jsonItems, userId], (err) => {
+          if (err) {
+            console.error('Error updating cart:', err);
+            return res.status(500).json({ error: 'Error updating cart', details: err.message });
+          }
+          res.status(200).json({ status: 'ok', message: 'Cart updated successfully' });
+        });
+      } else {
+        const sql = `INSERT INTO carts (user_id, items) VALUES (?, ?)`;
+        pool.query(sql, [userId, jsonItems], (err) => {
+          if (err) {
+            console.error('Error creating cart:', err);
+            return res.status(500).json({ error: 'Error creating cart', details: err.message });
+          }
+          res.status(200).json({ status: 'ok', message: 'Cart created successfully' });
+        });
+      }
     });
-});
-
+  });
 
   // Delete an Item from the Cart for the Authenticated User
   router.delete('/:id', authenticateToken, (req, res) => {
@@ -131,62 +112,86 @@ router.get('/', authenticateToken, (req, res) => {
     const itemIdToRemove = parseInt(req.params.id);
 
     pool.query('SELECT items FROM carts WHERE user_id = ?', [userId], (err, results) => {
+      if (err) {
+        console.error('Error retrieving cart:', err);
+        return res.status(500).json({ error: 'Error retrieving cart' });
+      }
+
+      if (results.length === 0 || !results[0].items) {
+        return res.status(404).json({ error: 'Cart not found' });
+      }
+
+      let itemIdsArray = results[0].items;
+
+      try {
+        itemIdsArray = typeof itemIdsArray === 'string' ? JSON.parse(itemIdsArray) : itemIdsArray;
+
+        const filteredItemIdsArray = itemIdsArray.filter(id => id !== itemIdToRemove);
+        const jsonItems = JSON.stringify(filteredItemIdsArray);
+
+        pool.query('UPDATE carts SET items = ? WHERE user_id = ?', [jsonItems, userId], (err) => {
+          if (err) {
+            console.error('Error updating cart:', err);
+            return res.status(500).json({ error: 'Error updating cart' });
+          }
+          res.status(200).json({ status: 'ok', message: 'Item removed from cart' });
+        });
+      } catch (parseError) {
+        console.error('Error parsing cart items:', parseError);
+        return res.status(500).json({ error: 'Error parsing cart items' });
+      }
+    });
+  });
+
+// Update Cart Item Quantity for the Authenticated User
+router.put('/', authenticateToken, (req, res) => {
+    const userId = req.user.userId;
+    const { id, newQuantity } = req.body; // id is the item id, newQuantity is the desired quantity
+
+    if (newQuantity < 1) {
+        return res.status(400).json({ error: 'Quantity must be at least 1.' });
+    }
+
+    pool.query('SELECT items FROM carts WHERE user_id = ?', [userId], (err, results) => {
         if (err) {
             console.error('Error retrieving cart:', err);
             return res.status(500).json({ error: 'Error retrieving cart' });
         }
 
-        if (results.length > 0) {
-            let itemIdsArray;
-            let itemIdsString = results[0].items;
-
-            // Check if itemIdsString is a string
-            if (typeof itemIdsString === 'string') {
-                itemIdsString = itemIdsString.trim();
-            }
-
-            try {
-                // If itemIdsString is already an array, no need to parse
-                if (Array.isArray(itemIdsString)) {
-                    itemIdsArray = itemIdsString;
-                } else if (typeof itemIdsString === 'string') {
-                    // If it's a string, parse it as JSON
-                    itemIdsArray = JSON.parse(itemIdsString);
-                } else {
-                    throw new Error('Unexpected data type for items column');
-                }
-            } catch (parseError) {
-                console.error('Error parsing cart items:', parseError);
-                return res.status(500).json({ error: 'Error parsing cart items' });
-            }
-
-            // Remove the itemIdToRemove from the array
-            const filteredItemIdsArray = itemIdsArray.filter(id => id !== itemIdToRemove);
-
-            console.log('Filtered itemIdsArray:', filteredItemIdsArray);
-
-            const jsonItems = JSON.stringify(filteredItemIdsArray);
-
-            pool.query(
-                'UPDATE carts SET items = ? WHERE user_id = ?',
-                [jsonItems, userId],
-                (err) => {
-                    if (err) {
-                        console.error('Error updating cart:', err);
-                        return res.status(500).json({ error: 'Error updating cart' });
-                    }
-
-                    res.status(200).json({ status: 'ok', message: 'Item removed from cart' });
-                }
-            );
-        } else {
-            res.status(404).json({ error: 'Cart not found' });
+        if (results.length === 0 || !results[0].items) {
+            return res.status(404).json({ error: 'Cart not found.' });
         }
+
+        let cartItems = typeof results[0].items === 'string' ? JSON.parse(results[0].items) : results[0].items;
+        const currentQuantity = cartItems.filter(itemId => itemId === id).length;
+
+        if (newQuantity > currentQuantity) {
+            // Add items to match the new quantity
+            cartItems = [...cartItems, ...Array(newQuantity - currentQuantity).fill(id)];
+        } else if (newQuantity < currentQuantity) {
+            // Remove items to match the new quantity
+            let itemsToRemove = currentQuantity - newQuantity;
+            cartItems = cartItems.filter(itemId => {
+                if (itemId === id && itemsToRemove > 0) {
+                    itemsToRemove--;
+                    return false;
+                }
+                return true;
+            });
+        }
+
+        const jsonItems = JSON.stringify(cartItems);
+
+        pool.query('UPDATE carts SET items = ? WHERE user_id = ?', [jsonItems, userId], (err) => {
+            if (err) {
+                console.error('Error updating cart:', err);
+                return res.status(500).json({ error: 'Error updating cart' });
+            }
+
+            res.status(200).json({ status: 'ok', message: 'Cart updated successfully' });
+        });
     });
 });
 
-
-
-
-  return router;
+return router;
 }

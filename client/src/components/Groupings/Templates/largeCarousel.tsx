@@ -149,34 +149,53 @@ const LargeCarousel = ({
   const handleAddToCartClick = async (newItem: ItemType) => {
     console.log('Adding this item to cart:', newItem.id);
 
-    try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No authentication token found. Please log in.');
-            return;
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+        // User is authenticated, proceed with API request
+        try {
+            const response = await fetch(`${apiConfig.API_URL}/carts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data.message);
+                setConfirmationItem(newItem); // Trigger confirmation
+            } else {
+                const errorText = await response.text();
+                console.error(`Failed to add item to cart: ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
         }
-
-        const response = await fetch(`${apiConfig.API_URL}/carts`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data.message);
-            setConfirmationItem(newItem); // Trigger confirmation
+    } else {
+        // No token, handle guest cart using local storage
+        let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+        
+        // Check if the item already exists in the cart
+        const existingItemIndex = guestCart.findIndex((item: ItemType) => item.id === newItem.id);
+        if (existingItemIndex > -1) {
+            // If the item already exists, update the quantity
+            guestCart[existingItemIndex].buyQuantity += 1;
         } else {
-            const errorText = await response.text();
-            console.error(`Failed to add item to cart: ${errorText}`);
+            // If the item does not exist, add it to the cart
+            guestCart.push({ ...newItem, buyQuantity: 1 });
         }
-    } catch (error) {
-        console.error('Error adding item to cart:', error);
+        
+        localStorage.setItem('guestCart', JSON.stringify(guestCart));
+        
+        console.log('Item added to guest cart:', newItem.id);
+        setConfirmationItem(newItem); // Trigger confirmation
     }
 };
+
+
 
   return (
     <>

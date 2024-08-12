@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
-import Button from "./Buttons/Button";
+import Button from "../../Buttons/Button";
 import { useNavigate } from "react-router";
-import { useCart } from "../context/CartContext";
-import CartItemsList from "./Groupings/Templates/CartItemsList";
+import CartItemsList from "../../Groupings/Templates/CartItemsList";
+import { useCart } from '../../../context/CartContext';
 
 const Cart = styled.div`
     width: 600px;
@@ -25,6 +25,12 @@ const Cart = styled.div`
     overflow: hidden;
 `;
 
+const EmptyCartMessage = styled.p`
+    color: white;
+    text-align: center;
+    font-size: 18px;
+`;
+
 interface Props {
     isVisible: boolean;
     toggleCartVis: () => void;
@@ -32,15 +38,9 @@ interface Props {
 }
 
 const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
-    const { cartItems, fetchCartItems, updateCartItemQuantity, deleteCartItem } = useCart();
     const navigate = useNavigate();
     const cartRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (isVisible) {
-            fetchCartItems();
-        }
-    }, [isVisible, fetchCartItems]);
+    const { cartItems } = useCart(); // Access cartItems from CartContext
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -74,17 +74,21 @@ const ShoppingCart = ({ isVisible, toggleCartVis, cartBtnRef }: Props) => {
         <>
             {isVisible && (
                 <Cart ref={cartRef}>
-                    <CartItemsList cartItems={cartItems} onDelete={deleteCartItem} onQuantityChange={updateCartItemQuantity} maxHeight={"calc(100vh - 200px)"} />
-                    <Button
-                        title={"Go to Checkout"}
-                        onClick={goToCheckout}
-                        bgColor={"white"}
-                        fillColor={"#A259FF"}
-                        bgHoverColor={"#A259FF"}
-                        fillHoverColor={"white"}
-                        textHoverColor={"white"}
-                        textColor={"#A259FF"}
-                    />
+                    <CartItemsList maxHeight={"calc(100vh - 200px)"} />
+                    {cartItems.length === 0 ? (
+                        <EmptyCartMessage>Cart is Empty</EmptyCartMessage>
+                    ) : (
+                        <Button
+                            title={"Go to Checkout"}
+                            onClick={goToCheckout}
+                            bgColor={"white"}
+                            fillColor={"#A259FF"}
+                            bgHoverColor={"#A259FF"}
+                            fillHoverColor={"white"}
+                            textHoverColor={"white"}
+                            textColor={"#A259FF"}
+                        />
+                    )}
                 </Cart>
             )}
         </>

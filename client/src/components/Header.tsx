@@ -4,6 +4,7 @@ import MainLogo from "../assets/images/NQ-temp-logo.png";
 import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
 import { BsCart3 } from "react-icons/bs";
+import { useCart } from '../context/CartContext';
 
 const NavBox = styled.nav`
 	background-color: #221F27;
@@ -116,12 +117,31 @@ const CartBtn = styled.div`
 	color: white;
 	margin: 0px 20px 0px 20px;
 	padding: 0px 20px 0px 20px;
+	cursor: pointer;
 `;
 const BsCart = styled(BsCart3)`
 	height: 30px;
 	width: 30px; 
-	cursor: pointer;
 `;
+const Number = styled.div`
+    color: #FFF;
+
+    /* Base (Body) - Space Mono */
+    font-family: "Space Mono";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+	margin-left: 6px;
+`
+const Frame = styled.div`
+    display: flex;
+    padding: 5px 10px;
+    align-items: center;
+    gap: 10px;
+    border-radius: 20px;
+    background:  #858584;
+`
 
 interface HeaderProps {
 	ontoggleBladeVis: () => void;
@@ -130,6 +150,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cartBtnRef } : HeaderProps) => {
+	const { cartCount } = useCart();
 	const navItems = [
 		{ name: "Shop", path: "/shop" },
 		{ name: "Services", path: "/services" },
@@ -138,6 +159,12 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 	];
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
+
+	const Counter = (number: number) => {
+        return (
+            <Frame>{number}</Frame>
+        )
+    }
 
 	return (
 		<NavBox>
@@ -184,6 +211,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 			</NavMenu>
 			<CartBtn ref={cartBtnRef} onClick={onToggleCartVis}>
 				<BsCart />
+				<Number>{Counter(cartCount)}</Number>
 			</CartBtn>
 		</NavBox>
 	);

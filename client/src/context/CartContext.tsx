@@ -4,6 +4,7 @@ import apiConfig from '../api-config';
 
 interface CartContextType {
     cartItems: CartItemType[];
+    cartCount: number;
     fetchCartItems: () => void;
     updateCartItemQuantity: (id: number, buyQuantity: number) => void;
     deleteCartItem: (id: number) => void;
@@ -17,156 +18,190 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+    const [cartCount, setCartCount] = useState<number>(0);
+
+    const updateCartCount = (items: CartItemType[]) => {
+        const count = items.reduce((total, item) => total + item.buyQuantity, 0);
+        setCartCount(count);
+    };
 
     const fetchCartItems = useCallback(async () => {
-        try {
-            const response = await fetch(`${apiConfig.API_URL}/carts`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            // Fetch items from the server for authenticated users
+            try {
+                const response = await fetch(`${apiConfig.API_URL}/carts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    if (data.cart.length === 0 || data.itemIdsArray.length === 0) {
+                        setCartItems([]);
+                        setCartCount(0);
+                        return;
+                    }
+
+                    const itemCounts: { [key: number]: number } = {};
+                    data.itemIdsArray.forEach((itemId: number) => {
+                        itemCounts[itemId] = (itemCounts[itemId] || 0) + 1;
+                    });
+
+                    const uniqueItems: CartItemType[] = data.cart.map((item: CartItemType) => ({
+                        ...item,
+                        buyQuantity: itemCounts[item.id],
+                    }));
+                    setCartItems(uniqueItems);
+                    updateCartCount(uniqueItems);
+                    await fetchItemImages(uniqueItems);
+                } else {
+                    console.error('Failed to fetch cart data:', response.status);
                 }
-            });
+            } catch (error) {
+                console.error('Error fetching cart data:', error);
+            }
+        } else {
+            // Load guest cart from localStorage
+            const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+            // Calculate the total number of items (considering quantities)
+            const totalItemCount = guestCart.reduce((total: number, item: CartItemType) => total + item.buyQuantity, 0);
+        
+            setCartItems(guestCart);
+            setCartCount(totalItemCount);
+        }
+    }, []);
 
-            if (response.ok) {
-                const data = await response.json();
+    const fetchItemImages = useCallback(async (items: CartItemType[]) => {
+        const token = localStorage.getItem('token');
 
-                if (data.cart.length === 0 || data.itemIdsArray.length === 0) {
-                    setCartItems([]);
+        if (token) {
+            try {
+                const itemIds = items.map(item => item.id);
+                const response = await fetch(`${apiConfig.API_URL}/items/images`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ itemIds })
+                });
+
+                if (response.ok) {
+                    const images = await response.json();
+                    const updatedItems = items.map(item => ({
+                        ...item,
+                        image: images[item.id] || item.image
+                    }));
+                    setCartItems(updatedItems);
+                } else {
+                    console.error('Failed to fetch item images');
+                }
+            } catch (error) {
+                console.error('Error fetching item images:', error);
+            }
+        } else {
+            // For guest users, image fetching could be handled differently or skipped if not available
+            console.log("Guest users, fetching images can be handled differently.");
+        }
+    }, []);
+
+    const updateCartItemQuantity = useCallback(async (id: number, newBuyQuantity: number) => {
+        if (newBuyQuantity < 1) {
+            console.error(`Invalid quantity ${newBuyQuantity} for item with id ${id}.`);
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            // Update item quantity on the server for authenticated users
+            try {
+                const currentItem = cartItems.find(item => item.id === id);
+
+                if (!currentItem) {
+                    console.error(`Item with id ${id} not found in cart.`);
                     return;
                 }
 
-                const itemCounts: { [key: number]: number } = {};
-                data.itemIdsArray.forEach((itemId: number) => {
-                    itemCounts[itemId] = (itemCounts[itemId] || 0) + 1;
+                const response = await fetch(`${apiConfig.API_URL}/carts`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        newQuantity: newBuyQuantity,
+                    }),
                 });
 
-                const uniqueItems: CartItemType[] = data.cart.map((item: CartItemType) => ({
-                    ...item,
-                    buyQuantity: itemCounts[item.id],
-                }));
-
-                await fetchItemImages(uniqueItems);
-            } else {
-                console.error('Failed to fetch cart data:', response.status);
-            }
-        } catch (error) {
-            console.error('Error fetching cart data:', error);
-        }
-    }, []); // Use useCallback to memoize fetchCartItems
-
-    const fetchItemImages = useCallback(async (items: CartItemType[]) => {
-        try {
-            const itemIds = items.map(item => item.id);
-            const response = await fetch(`${apiConfig.API_URL}/items/images`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({ itemIds })
-            });
-
-            if (response.ok) {
-                const images = await response.json();
-                const updatedItems = items.map(item => ({
-                    ...item,
-                    image: images[item.id] || item.image
-                }));
-                setCartItems(updatedItems);
-            } else {
-                console.error('Failed to fetch item images');
-            }
-        } catch (error) {
-            console.error('Error fetching item images:', error);
-        }
-    }, []); // Use useCallback to memoize fetchItemImages
-
-    const updateCartItemQuantity = useCallback(async (id: number, newBuyQuantity: number) => {
-        try {
-            const response = await fetch(`${apiConfig.API_URL}/carts`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                if (response.ok) {
+                    setCartItems(prevItems => 
+                        prevItems.map(item => 
+                            item.id === id ? { ...item, buyQuantity: newBuyQuantity } : item
+                        )
+                    );
+                    updateCartCount(cartItems);
+                } else {
+                    console.error('Failed to update item quantity in the cart:', response.status);
                 }
-            });
-    
-            if (response.ok) {
-                const data = await response.json();
-                const currentQuantity = data.itemIdsArray.filter((itemId: number) => itemId === id).length;
-                const difference = newBuyQuantity - currentQuantity;
-    
-                if (difference > 0) {
-                    // Add items
-                    const itemsToAdd = Array(difference).fill({ id });
-                    const addResponse = await fetch(`${apiConfig.API_URL}/carts`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        },
-                        body: JSON.stringify({ items: itemsToAdd })
-                    });
-    
-                    if (!addResponse.ok) {
-                        console.error('Failed to add items to the cart');
-                    }
-                } else if (difference < 0) {
-                    // Remove items
-                    for (let i = 0; i < -difference; i++) {
-                        const deleteResponse = await fetch(`${apiConfig.API_URL}/carts/${id}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`
-                            }
-                        });
-    
-                        if (!deleteResponse.ok) {
-                            console.error('Failed to remove items from the cart');
-                            break;
-                        }
-                    }
-                }
-    
-                // Update local state after successful update on the server
-                setCartItems(prevItems => 
-                    prevItems.map(item => 
-                        item.id === id ? { ...item, buyQuantity: newBuyQuantity } : item
-                    )
-                );
-            } else {
-                console.error('Failed to fetch cart data:', response.status);
+            } catch (error) {
+                console.error('Error updating item quantity in the cart:', error);
             }
-        } catch (error) {
-            console.error('Error fetching cart data:', error);
+        } else {
+            // Update item quantity in localStorage for guest users
+            const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+            const updatedCart = guestCart.map((item: CartItemType) => 
+                item.id === id ? { ...item, buyQuantity: newBuyQuantity } : item
+            );
+            localStorage.setItem('guestCart', JSON.stringify(updatedCart));
+            setCartItems(updatedCart);
+            updateCartCount(updatedCart);
         }
     }, [cartItems]);
-    
-    
 
     const deleteCartItem = useCallback(async (id: number) => {
-        try {
-            const response = await fetch(`${apiConfig.API_URL}/carts/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+        const token = localStorage.getItem('token');
 
-            if (response.ok) {
-                setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-            } else {
-                console.error('Failed to delete item from cart');
+        if (token) {
+            // Delete item from the server for authenticated users
+            try {
+                const response = await fetch(`${apiConfig.API_URL}/carts/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+                    updateCartCount(cartItems.filter(item => item.id !== id));
+                } else {
+                    console.error('Failed to delete item from cart');
+                }
+            } catch (error) {
+                console.error('Error deleting item from cart:', error);
             }
-        } catch (error) {
-            console.error('Error deleting item from cart:', error);
+        } else {
+            // Delete item from localStorage for guest users
+            const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+            const updatedCart = guestCart.filter((item: CartItemType) => item.id !== id);
+            localStorage.setItem('guestCart', JSON.stringify(updatedCart));
+            setCartItems(updatedCart);
+            updateCartCount(updatedCart);
         }
-    }, []);
+    }, [cartItems]);
 
     useEffect(() => {
         fetchCartItems(); // Fetch cart items initially once
     }, [fetchCartItems]);
 
     return (
-        <CartContext.Provider value={{ cartItems, fetchCartItems, updateCartItemQuantity, deleteCartItem }}>
+        <CartContext.Provider value={{ cartItems, cartCount, fetchCartItems, updateCartItemQuantity, deleteCartItem }}>
             {children}
         </CartContext.Provider>
     );

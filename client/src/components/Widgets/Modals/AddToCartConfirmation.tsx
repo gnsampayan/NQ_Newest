@@ -1,9 +1,7 @@
 import styled from "styled-components";
 import { ItemType } from "../../../context/Types";
 import { useEffect } from "react";
-import Button from "../../Buttons/Button";
 import ItemCard from "../../Cards/ItemCard";
-import { useNavigate } from "react-router";
 
 const Frame = styled.div`
     display: flex;
@@ -36,16 +34,32 @@ const ItemCardContainer = styled.div`
     position: relative;
     max-width: 300px;
 `
-const AddToCartConfirmation = ({ item, onClose }: { item: ItemType, onClose: () => void }) => {
-    const navigate = useNavigate();
+const AddToCartConfirmation = ({
+  item,
+  onClose,
+  delete: isDeleted = false,  // Default to false
+}: {
+  item: ItemType;
+  onClose: () => void;
+  delete?: boolean;
+}) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 10000); // Auto-close after 2 seconds
+    const timer = setTimeout(() => {
+      onClose();
+      window.location.reload(); // Refresh the page
+    }, 500); // Auto-close after 0.5 seconds
+
     return () => clearTimeout(timer);
   }, [onClose]);
 
+  const handleClose = () => {
+    onClose();
+    window.location.reload(); // Refresh the page
+  };
   return (
-    <Frame onClick={onClose}>
+    <Frame onClick={handleClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}> 
+        <H2>{isDeleted ? "Deleted From Cart" : "Added To Cart"}</H2>
         <H2>Added To Cart</H2>
         <ItemCardContainer>
             <ItemCard 
@@ -56,8 +70,6 @@ const AddToCartConfirmation = ({ item, onClose }: { item: ItemType, onClose: () 
                 rating={item.rating} 
                 boxSize={"standard"} />
         </ItemCardContainer>
-        <Button title={"Go to Checkout"} onClick={() => navigate('/check-out')} />
-        <Button title={"Close"} onClick={onClose} />
       </ModalContent>
     </Frame>
   );
