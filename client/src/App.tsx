@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 
@@ -32,7 +32,6 @@ function MainApp() {
   const [ margin, setMargin ] = useState('auto');
   const [vis , setVis] = useState(false);
   const [cartVis, setCartVis] = useState(false);
-  const hasClosedCart = useRef(false);
   const cartBtnRef = useRef<HTMLDivElement>(null);
   
   const toggleBladeVis = () => {
@@ -43,23 +42,12 @@ function MainApp() {
   const toggleCartVis = () => {
     setCartVis(prevVis => !prevVis);
   }
-  useEffect(() => {
-    // Only reload the page when cartVis changes from true to false
-    if (!cartVis && hasClosedCart.current) {
-      hasClosedCart.current = false; // Prevent further reloads
-      window.location.reload();
-    }
-
-    if (cartVis) {
-      hasClosedCart.current = true; // Set the flag when the cart is opened
-    }
-  }, [cartVis]);
 
 
   return (
     
     <>
-      <Header ontoggleBladeVis={toggleBladeVis} onToggleCartVis={toggleCartVis} cartBtnRef={cartBtnRef} />
+      <Header ontoggleBladeVis={toggleBladeVis} onToggleCartVis={toggleCartVis} cartBtnRef={cartBtnRef} counterVis={cartVis} />
       <Blade $isVisible={vis} />
       <ShoppingCart isVisible={cartVis} toggleCartVis={toggleCartVis} cartBtnRef={cartBtnRef} />
       <Wrapper>

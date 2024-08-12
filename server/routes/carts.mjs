@@ -54,7 +54,14 @@ export default function(pool) {
             return res.status(500).json({ error: 'Error retrieving items from database' });
           }
 
-          res.status(200).json({ cart: itemResults, itemIdsArray });
+          // Map the database's quantity field to totalInStock for frontend compatibility
+          const mappedCartItems = itemResults.map(item => ({
+            ...item,
+            totalInStock: item.quantity // Map quantity to totalInStock
+        }));
+
+
+          res.status(200).json({ cart: mappedCartItems, itemIdsArray });
         });
       } catch (parseError) {
         console.error('Error handling cart items:', parseError);

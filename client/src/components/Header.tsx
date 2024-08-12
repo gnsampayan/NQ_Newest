@@ -123,7 +123,7 @@ const BsCart = styled(BsCart3)`
 	height: 30px;
 	width: 30px; 
 `;
-const Number = styled.div`
+const Number = styled.div<{ vis: boolean }>`
     color: #FFF;
 
     /* Base (Body) - Space Mono */
@@ -133,6 +133,8 @@ const Number = styled.div`
     font-weight: 400;
     line-height: 140%; /* 22.4px */
 	margin-left: 6px;
+
+	display: ${(props) => props.vis ? "block" : "none"};
 `
 const Frame = styled.div`
     display: flex;
@@ -147,9 +149,10 @@ interface HeaderProps {
 	ontoggleBladeVis: () => void;
 	onToggleCartVis: () => void;
 	cartBtnRef: React.RefObject<HTMLDivElement>;
+	counterVis: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cartBtnRef } : HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cartBtnRef, counterVis } : HeaderProps) => {
 	const { cartCount } = useCart();
 	const navItems = [
 		{ name: "Shop", path: "/shop" },
@@ -211,7 +214,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 			</NavMenu>
 			<CartBtn ref={cartBtnRef} onClick={onToggleCartVis}>
 				<BsCart />
-				<Number>{Counter(cartCount)}</Number>
+				<Number vis={counterVis}>{Counter(cartCount)}</Number>
 			</CartBtn>
 		</NavBox>
 	);

@@ -7,6 +7,7 @@ import Button from "../Buttons/Button";
 import { useNavigate } from "react-router";
 import { ItemType } from "../../context/Types";
 import AddToCartConfirmation from "./Modals/AddToCartConfirmation";
+import { addItemToCart } from "../utilityFunctions";
 
 const Container = styled.div`
     width: 1050px;
@@ -101,35 +102,7 @@ const DiscoverMore = () => {
     };
 
     const handleAddToCartClick = async (newItem: ItemType) => {
-        console.log('Adding this item to cart:', newItem.id);
-    
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('No authentication token found. Please log in.');
-                return;
-            }
-    
-            const response = await fetch(`${apiConfig.API_URL}/carts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
-            });
-    
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data.message);
-                setConfirmationItem(newItem); // Trigger confirmation
-            } else {
-                const errorText = await response.text();
-                console.error(`Failed to add item to cart: ${errorText}`);
-            }
-        } catch (error) {
-            console.error('Error adding item to cart:', error);
-        }
+        await addItemToCart(newItem, setConfirmationItem);
     };
 
     return (

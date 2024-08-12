@@ -3,8 +3,8 @@ import { useLocation } from "react-router-dom";
 import { ItemType } from "../context/Types";
 import ItemCard from "../components/Cards/ItemCard";
 import AddToCartConfirmation from "../components/Widgets/Modals/AddToCartConfirmation";
-import apiConfig from "../api-config";
 import { useState } from "react";
+import { addItemToCart } from "../components/utilityFunctions";
 
 const Container = styled.div`
 	display: flex;
@@ -72,37 +72,8 @@ const FilteredPage = () => {
     }) || { relevantItems: [] };
     const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
 
-
     const handleAddToCartClick = async (newItem: ItemType) => {
-        console.log('Adding this item to cart:', newItem.id);
-    
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('No authentication token found. Please log in.');
-                return;
-            }
-    
-            const response = await fetch(`${apiConfig.API_URL}/carts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ items: [{ id: newItem.id }] })  // Only send the item id
-            });
-    
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data.message);
-                setConfirmationItem(newItem); // Trigger confirmation
-            } else {
-                const errorText = await response.text();
-                console.error(`Failed to add item to cart: ${errorText}`);
-            }
-        } catch (error) {
-            console.error('Error adding item to cart:', error);
-        }
+        await addItemToCart(newItem, setConfirmationItem);
     };
 
     return (

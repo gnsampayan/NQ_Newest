@@ -46,7 +46,6 @@ const AddToCartConfirmation = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-      window.location.reload(); // Refresh the page
     }, 500); // Auto-close after 0.5 seconds
 
     return () => clearTimeout(timer);
@@ -54,7 +53,6 @@ const AddToCartConfirmation = ({
 
   const handleClose = () => {
     onClose();
-    window.location.reload(); // Refresh the page
   };
   return (
     <Frame onClick={handleClose}>
