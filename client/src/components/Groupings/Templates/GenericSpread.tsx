@@ -1,156 +1,192 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ItemType } from "../../../context/Types";
 import apiConfig from "../../../api-config";
 import ItemCard from "../../Cards/ItemCard";
 import ButtonCounter from "../../Buttons/ButtonCounter";
 
 const Spread = styled.div`
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 `;
 
 const ButtonContainer = styled.div`
-	display: flex;
-	justify-content: right;
-	padding-right: 60px;
-	position: relative; /* Position relative to contain the dropdown */
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 60px;
+  position: relative;
 `;
 
 const Dropdown = styled.div<{ isVisible: boolean }>`
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 60;
-    background-color: rgba(43, 43, 43, 0.8);
-    border: 2px solid #858584;
-    border-radius: 20px;
-    width: auto;
-    display: ${(props) => (props.isVisible ? 'flex' : 'none')};
-    z-index: 1;
-    height: auto;
-    overflow: hidden;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 60px;
+  background-color: rgba(43, 43, 43, 1);
+  border: 2px solid #858584;
+  border-radius: 20px;
+  width: auto;
+  display: ${(props) => (props.isVisible ? "flex" : "none")};
+  z-index: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 10px;
 
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
-    gap: 10px;
-
-    &:hover {
-        border-color: white;
-        background-color: rgba(43, 43, 43, 1);
-    }
+  &:hover {
+    border-color: white;
+  }
 `;
+
 const Option = styled.h5`
-    height: 100%;
-    color: white;
-    text-align: center;
-
-    /* H5 - Work Sans */
-    font-family: "Work Sans";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    cursor: pointer;
-`
-const Items = styled.div`
-	background-color: none;
-	width: 100%;
-	height: auto;
-	display: flex;
-	flex-wrap: wrap;
-	padding: 20px;
-	gap: 20px;
-	overflow: hidden;
+  color: white;
+  text-align: center;
+  font-family: "Work Sans";
+  font-size: 18px;
+  font-weight: 400;
+  cursor: pointer;
 `;
 
-interface Props {
-    keywords: string[];
-}
+const Items = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20px;
+  gap: 20px;
+  overflow: hidden;
+`;
 
-const GenericSpread = ({ keywords }: Props) => {
-    const [items, setItems] = useState<ItemType[]>([]);
-    const [filterByKeywords, setFilterByKeywords] = useState<ItemType[]>([]);
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+const ButtonRef = styled.div`
+  position: relative;
+`;
 
-    useEffect(() => {
-		const fetchItems = async () => {
-			try {
-				const response = await fetch(`${apiConfig.API_URL}/items`);
-				const data = await response.json();
-				// Ensure each item has a 'tags' field initialized as an array
-				const itemsWithTags = data.map((item: ItemType) => ({
-					...item,
-					tags: item.tags || [], // If 'tags' is null/undefined, initialize as empty array
-				}));
-				setItems(itemsWithTags);
-			} catch (error) {
-				console.error('Error fetching items:', error);
-			}
-		};
-		fetchItems();
-	}, []);
 
-    useEffect(() => {
-        if (items.length > 0) {
-            const validateKeywords = (keywords: string[], items: ItemType[]) => {
-                const lowerCaseKeywords = keywords.map(keyword => keyword.toLowerCase());
-                const allTags = items.flatMap(item => item.tags.map(tag => tag.toLowerCase()));
-                lowerCaseKeywords.forEach(keyword => {
-                    if (keyword !== "all" && !allTags.includes(keyword)) {
-                        console.log(`Keyword not valid: ${keyword}`);
-                    }
-                });
-            };
+const GenericSpread = () => {
+  const [items, setItems] = useState<ItemType[]>([]);
+  const [filteredItems, setFilteredItems] = useState<ItemType[]>([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [buttonTitle, setButtonTitle] = useState("All");
 
-            validateKeywords(keywords, items);
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-            const filteredItems = keywords.map(keyword => keyword.toLowerCase()).includes("all")
-                ? items 
-                : items.filter(item => 
-                    item.tags.some(tag => 
-                        keywords.map(keyword => keyword.toLowerCase()).includes(tag.toLowerCase())
-                    )
-                );
-            
-            setFilterByKeywords(filteredItems);
-        }
-    }, [items, keywords]);
-
-    const handleOnClick = () => {
-        setIsDropdownVisible(!isDropdownVisible);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await fetch(`${apiConfig.API_URL}/items`);
+        const data = await response.json();
+        const itemsWithTags = data.map((item: ItemType) => ({
+          ...item,
+          tags: item.tags || [],
+        }));
+        setItems(itemsWithTags);
+        setFilteredItems(itemsWithTags); // Initially display all items
+      } catch (error) {
+        console.error("Error fetching items:", error);
+      }
     };
 
+    fetchItems();
+  }, []);
+
+  const handleOptionClick = (option: string) => {
+    setButtonTitle(option);
+    setIsDropdownVisible(false);
+
+    let sortedItems = [...items];
+
+    if (option === "All") {
+      setFilteredItems(items);
+    } else if (option === "Lowest Price") {
+      sortedItems.sort((a, b) => a.price - b.price);
+      setFilteredItems(sortedItems);
+    } else if (option === "Highest Price") {
+      sortedItems.sort((a, b) => b.price - a.price);
+      setFilteredItems(sortedItems);
+    } else {
+      sortedItems = items.filter((item) =>
+        item.tags.some((tag) => tag.toLowerCase() === option.toLowerCase())
+      );
+      setFilteredItems(sortedItems);
+    }
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownVisible((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
+        setIsDropdownVisible(false);
+      }
+    };
+
+    if (isDropdownVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownVisible]);
+
+  const renderOptions = () => {
+    const options = [
+      "All",
+      "Featured",
+      "Lowest Price",
+      "Highest Price",
+      "Best Deals",
+      "Best Sellers",
+      "Best Rating",
+      "Most Reviews",
+      "Biggest Discounts",
+    ];
+
+    return options
+      .filter((option) => option !== buttonTitle)
+      .map((option) => (
+        <Option key={option} onClick={() => handleOptionClick(option)}>
+          {option}
+        </Option>
+      ));
+  };
+
   return (
-    <>
-        <Spread>
-            <ButtonContainer>
-                <ButtonCounter onClick={handleOnClick} title={"All"} type={"default"} totalVisItemsCards={items.length} />
-                <Dropdown isVisible={isDropdownVisible}>
-                    {/* Add dropdown content here */}
-                    <Option>Featured</Option>
-                    <Option>Lowest Price</Option>
-                    <Option>Highest Price</Option>
-                    <Option>Best Deals</Option>
-                    <Option>Best Sellers</Option>
-                    <Option>Best Rating</Option>
-                    <Option>Most Reviews</Option>
-                    <Option>Biggest Discounts</Option>
-                </Dropdown>
-            </ButtonContainer>
-            <Items>
-                {filterByKeywords.map((item, index) => (
-                    <ItemCard 
-                        key={index}
-                        image={item.image}
-                        itemName={item.title}
-                        addToCart={() => { } }
-                        price={item.price}
-                        rating={0} 
-                        boxSize={"standard"} />
-                ))}
-            </Items>
-        </Spread>
-    </>
+    <Spread>
+      <ButtonContainer>
+        <ButtonRef ref={buttonRef}>
+          <ButtonCounter
+            onClick={toggleDropdown}
+            title={buttonTitle}
+            type="default"
+            totalVisItemsCards={filteredItems.length} // Show count of visible items
+          />
+        </ButtonRef>
+        <Dropdown ref={dropdownRef} isVisible={isDropdownVisible}>
+          {renderOptions()}
+        </Dropdown>
+      </ButtonContainer>
+      <Items>
+        {filteredItems.map((item, index) => (
+          <ItemCard
+            key={index}
+            image={item.image}
+            itemName={item.title}
+            addToCart={() => {}}
+            price={item.price}
+            rating={0}
+            boxSize="standard"
+          />
+        ))}
+      </Items>
+    </Spread>
   );
 };
 

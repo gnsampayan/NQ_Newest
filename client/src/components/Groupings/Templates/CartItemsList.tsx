@@ -135,8 +135,6 @@ const CartItemsList: React.FC<CartItemsListProps> = ({ maxHeight }) => {
             const initialValues = cartItems.reduce((acc, item) => {
                 if (item && item.id !== undefined && item.buyQuantity !== undefined) {
                     acc[item.id] = item.buyQuantity.toString();
-                    // Debugging totalInStock
-                    console.log(`Item ID: ${item.id}, totalInStock: ${item.totalInStock}`);
                 }
                 return acc;
             }, {} as { [key: number]: string });

@@ -1,6 +1,7 @@
 import { ItemType, CartItemType } from '../context/Types';
 import apiConfig from '../api-config';
 
+
 // Utility function to add an item to the cart
 export const addItemToCart = async (
   newItem: ItemType,
@@ -75,3 +76,35 @@ export const chunkArray = <T,>(array: T[], chunkSize: number): T[][] => {
   }
   return chunks;
 };
+
+
+// Grab Username from DB after login
+export async function fetchUsernameFromDatabase(): Promise<string | null> {
+  const token = localStorage.getItem('token');
+  if (!token) {
+      return null;
+  }
+
+  try {
+      const response = await fetch(`${apiConfig.API_URL}/users/me`, {
+          method: 'GET',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+          },
+      });
+
+      if (!response.ok) {
+          console.error("Failed to fetch username:", response.statusText);
+          return null;
+      }
+
+      const data = await response.json();
+      return data.username;
+  } catch (error) {
+      console.error("Error fetching username from database:", error);
+      return null;
+  }
+}
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import HeroWidget from "../../components/Widgets/HeroWidget";
 import ContractorImage from "../../assets/images/contractor_working_in_a_jobsite.png";
@@ -137,8 +137,47 @@ const Wrap = styled.div`
     justify-content: space-between;
     margin-bottom: 20px;
     margin-top: 40px;
+    width: 100%;
+    position: relative;
 `;
 
+const Dropdown = styled.div<{ isVisible: boolean }>`
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: rgba(43, 43, 43, 1);
+    border: 2px solid #858584;
+    border-radius: 20px;
+    width: auto;
+    display: ${(props) => (props.isVisible ? "flex" : "none")};
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 10px;
+    &:hover {
+        border-color: white;
+    }
+`;
+
+const Option = styled.h5`
+    color: white;
+    text-align: center;
+    font-family: "Work Sans";
+    font-size: 18px;
+    font-weight: 400;
+    cursor: pointer;
+`;
+
+const ButtonRef = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+`;
 
 interface Contractor {
     id: number;
@@ -149,6 +188,7 @@ interface Contractor {
     rate: number;
     status: string;
 }
+
 const ContractorList = ({ contractors, onOptions }: { contractors: Contractor[], onOptions: (id: number) => void }) => {
     return (
         <Section>
@@ -183,9 +223,14 @@ const ContractorList = ({ contractors, onOptions }: { contractors: Contractor[],
 const ContractorServices = () => {
     const token = localStorage.getItem('token');
     const [contractors , setContractors] = useState<Contractor[]>([]);
+    const [filteredContractors, setFilteredContractors] = useState<Contractor[]>([]);
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const [filterTitle, setFilterTitle] = useState("All");
+
+    const buttonRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Temporary data
         const data = [
             { id: 1, name: "John Doe", role: "Electrician", workLengthInDays: "30", image: "https://via.placeholder.com/150", rate: 50, status: "inactive" },
             { id: 2, name: "Jane Smith", role: "Plumber", workLengthInDays: "45", image: "https://via.placeholder.com/150", rate: 60, status: "active" },
@@ -195,24 +240,112 @@ const ContractorServices = () => {
             { id: 6, name: "Linda Wilson", role: "Roofer", workLengthInDays: "15", image: "https://via.placeholder.com/150", rate: 70, status: "inactive" },
             { id: 7, name: "James Moore", role: "Welder", workLengthInDays: "50", image: "https://via.placeholder.com/150", rate: 80, status: "active" }
         ];
-        // Sort contractors so that active ones are on top
         const sortedData = data.sort((a, b) => (a.status === "active" && b.status !== "active" ? -1 : 1));
         setContractors(sortedData);
-        // Uncomment the below code when using real API
-        // const fetchContractors = async () => {
-        //     const response = await fetch("/api/contractors");
-        //     const data = await response.json();
-        //     setContractors(data);
-        // };
-        // fetchContractors();
+        setFilteredContractors(sortedData);
     }, []);
 
     const handleOptions = (id: number) => {
         console.log("Options for contractor", id);
     };
-    const handleFilter = () => {
-        console.log('filter Delivery clicked');
+
+    const handleFilterClick = (filter: string) => {
+        setFilterTitle(filter);
+        setIsDropdownVisible(false);
+
+        let filtered = [...contractors];
+
+        switch (filter) {
+            case "All":
+                filtered = contractors;
+                break;
+            case "Status Active":
+                filtered = contractors.filter(c => c.status === "active");
+                break;
+            case "Status Inactive":
+                filtered = contractors.filter(c => c.status === "inactive");
+                break;
+            case "Rate Going Up":
+                filtered.sort((a, b) => a.rate - b.rate);
+                break;
+            case "Rate Going Down":
+                filtered.sort((a, b) => b.rate - a.rate);
+                break;
+            case "Work Length Going Up":
+                filtered.sort((a, b) => parseInt(a.workLengthInDays) - parseInt(b.workLengthInDays));
+                break;
+            case "Work Length Going Down":
+                filtered.sort((a, b) => parseInt(b.workLengthInDays) - parseInt(a.workLengthInDays));
+                break;
+            case "Role A-Z":
+                filtered.sort((a, b) => a.role.localeCompare(b.role));
+                break;
+            case "Role Z-A":
+                filtered.sort((a, b) => b.role.localeCompare(a.role));
+                break;
+            case "Name A-Z":
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case "Name Z-A":
+                filtered.sort((a, b) => b.name.localeCompare(a.name));
+                break;
+            default:
+                filtered = contractors; // Default to all contractors
+        }
+
+        setFilteredContractors(filtered);
     };
+
+    const toggleDropdown = () => {
+        setIsDropdownVisible(prev => !prev);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (
+                buttonRef.current &&
+                !buttonRef.current.contains(target) &&
+                dropdownRef.current &&
+                !dropdownRef.current.contains(target)
+            ) {
+                setIsDropdownVisible(false);
+            }
+        };
+
+        if (isDropdownVisible) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isDropdownVisible]);
+
+    const renderFilterOptions = () => {
+        const options = [
+            "All",
+            "Status Active",
+            "Status Inactive",
+            "Rate Going Up",
+            "Rate Going Down",
+            "Work Length Going Up",
+            "Work Length Going Down",
+            "Role A-Z",
+            "Role Z-A",
+            "Name A-Z",
+            "Name Z-A",
+        ];
+
+        return options
+            .filter(option => option !== filterTitle)
+            .map(option => (
+                <Option key={option} onClick={() => handleFilterClick(option)}>
+                    {option}
+                </Option>
+            ));
+    };
+
     const heroContents = {
         headline: 'Expert Contractor Services',
         subhead: `Transform your project vision into reality with our skilled 
@@ -222,9 +355,9 @@ const ContractorServices = () => {
         btnTitle: 'Become a Member',
         url: "/sign-in",
         image: ContractorImage
-    }
+    };
 
-     return (
+    return (
         <>
             <ServiceSection>
                 {token ?  
@@ -232,9 +365,19 @@ const ContractorServices = () => {
                     <Button title={"Hire Contractors"} onClick={() => {}} />
                         <Wrap>
                             <h1>Contractor Services</h1>
-                            <ButtonCounter title={"All"} type={"default"} totalVisItemsCards={0} onClick={handleFilter}></ButtonCounter>
+                            <ButtonRef ref={buttonRef}>
+                                <ButtonCounter
+                                    title={filterTitle}
+                                    type="default"
+                                    totalVisItemsCards={filteredContractors.length}
+                                    onClick={toggleDropdown}
+                                />
+                            </ButtonRef>
+                            <Dropdown ref={dropdownRef} isVisible={isDropdownVisible}>
+                                {renderFilterOptions()}
+                            </Dropdown>
                         </Wrap>
-                        <ContractorList contractors={contractors} onOptions={handleOptions} />
+                        <ContractorList contractors={filteredContractors} onOptions={handleOptions} />
                     </>
                     : 
                     <HeroWidget 

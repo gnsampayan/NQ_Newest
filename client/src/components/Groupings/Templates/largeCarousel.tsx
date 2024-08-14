@@ -5,7 +5,7 @@ import { BsArrowLeftCircle } from "react-icons/bs";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { ItemType } from "../../../context/Types";
 import AddToCartConfirmation from "../../Widgets/Modals/AddToCartConfirmation";
-import { addItemToCart } from "../../utilityFunctions";
+import { addItemToCart } from "../../../utils/utilityFunctions";
 
 const CarouselWrapper = styled.div`
   position: relative;

@@ -4,7 +4,7 @@ import { ItemType } from "../context/Types";
 import ItemCard from "../components/Cards/ItemCard";
 import AddToCartConfirmation from "../components/Widgets/Modals/AddToCartConfirmation";
 import { useState } from "react";
-import { addItemToCart } from "../components/utilityFunctions";
+import { addItemToCart } from "../utils/utilityFunctions";
 
 const Container = styled.div`
 	display: flex;

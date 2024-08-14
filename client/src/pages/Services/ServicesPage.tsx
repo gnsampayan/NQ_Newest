@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Deliveries from "./Deliveries";
 import ContractorServices from "./ContractorServices";
@@ -9,6 +9,7 @@ import InstallationServices from "./InstallationServices";
 import ServicesImage from "../../assets/images/collage_image_showcase.png";
 import HeroWidget from "../../components/Widgets/HeroWidget";
 import Footer from "../../components/Widgets/FooterWidget";
+import { fetchUsernameFromDatabase } from "../../utils/utilityFunctions";
 
 const Container = styled.div<{ margin: string }>`
     display: flex;
@@ -20,43 +21,6 @@ const Container = styled.div<{ margin: string }>`
     margin-left: ${(props) => props.margin};
 `;
 
-const TabsContainer = styled.div`
-    width: 100%;
-    justify-content: center;
-    display: inline-flex;
-    padding: 0px 20px 60px 20px;
-`;
-
-const TabButton = styled.button<{ isActive: boolean }>`
-    all: unset;
-    display: flex;
-    height: 60px;
-    padding: 0 20px;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-
-    background: none;
-    color: ${(props) => (props.isActive ? 'white' : '#858584')};
-    text-align: center;
-    font-family: "Work Sans";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 140%; /* 22.4px */
-    cursor: pointer;
-    position: relative;
-
-    &:hover::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background-color: ${(props) => (props.isActive ? '#858584' : '#3B3B3B')};
-    }
-`;
 
 const Wrap = styled.div`
     width: 100%;
@@ -70,15 +34,29 @@ const Parent = styled.div`
     flex-direction: column;
     gap: 100px;
 `
+const Welcome = styled.h3`
+    color: white;
+    /* H3 - Work Sans */
+    font-family: "Work Sans";
+    font-size: 38px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%; /* 45.6px */
+    text-transform: capitalize;
+
+    margin-top: 20px;
+    margin-bottom: -60px;
+`
 interface Props {
     $margin: string;
 }
 
 const ServicesPage = ({ $margin }: Props) => {
     const { serviceType } = useParams<{ serviceType: string }>();
-    const navigate = useNavigate();
 
     const [activeServiceTab, setActiveServiceTab] = useState<string>('Select a service');
+
+    const [username, setUsername] = useState<string | null>(null);
 
     useEffect(() => {
         if (serviceType) {
@@ -104,9 +82,9 @@ const ServicesPage = ({ $margin }: Props) => {
         return (
             <Parent>
                 {token ?
-                    <>
-                        Welcome userName, Please Select from our services
-                    </>
+                    <Welcome>
+                        Welcome {username},
+                    </Welcome>
                     :
                     <HeroWidget 
                         headline={heroContents.headline}
@@ -137,22 +115,21 @@ const ServicesPage = ({ $margin }: Props) => {
         }
     };
 
+    useEffect(() => {
+        const getUsername = async () => {
+            const name = await fetchUsernameFromDatabase();
+            if (name) {
+                setUsername(name);
+            } else {
+                setUsername(null);
+            }
+        };
+
+        getUsername();
+    }, []);
+
     return (
         <Container margin={$margin}>
-            <TabsContainer>
-                {['Deliveries', 'Contractor Services', 'Tool Rentals', 'Installation Services'].map(service => (
-                    <TabButton
-                        key={service}
-                        isActive={activeServiceTab === service}
-                        onClick={() => {
-                            setActiveServiceTab(service);
-                            navigate(`/services/${service.toLowerCase().replace(' ', '-')}`);
-                        }}
-                    >
-                        {service}
-                    </TabButton>
-                ))}
-            </TabsContainer>
             <Wrap>
                 {renderServiceSection()}
             </Wrap>

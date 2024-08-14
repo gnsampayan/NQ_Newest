@@ -24,7 +24,7 @@ import { BsTools } from "react-icons/bs";
 import CategoriesCard from "../Cards/CategoriesCard";
 
 // Utility function to split array into chunks
-import { chunkArray } from "../utilityFunctions";
+import { chunkArray } from "../../utils/utilityFunctions";
 
 const Group = styled.div`
 	width: 1050px;

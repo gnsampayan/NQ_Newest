@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Cement from "../../assets/items/cement.png";
@@ -44,12 +44,12 @@ const DeliveryText = styled.p`
 `;
 
 const DeliveryDate = styled(DeliveryText)`
-    flex: 0 0 1; /* Adjust this value to fit your design */
+    flex: 0 0 1;
     text-align: right;
 `;
 
 const DeliverySubscription = styled(DeliveryText)<{ subscribed: boolean }>`
-    flex: 0 0 1; /* Adjust this value to fit your design */
+    flex: 0 0 1;
     text-align: left;
     margin-right: 20px;
     color: #8B42E6;
@@ -60,7 +60,7 @@ const DeliverySubscription = styled(DeliveryText)<{ subscribed: boolean }>`
 `;
 
 const DeliveryStatus = styled(DeliveryText)`
-    flex: 0 0 1; /* Adjust this value to fit your design */
+    flex: 0 0 1;
     text-align: right;
     padding-left: 20px;
 `;
@@ -139,12 +139,53 @@ const HeaderItem = styled.div`
         flex: 1;
     }
 `;
+
 const Wrap = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     margin-top: 40px;
-`
+    width: 100%;
+    position: relative;
+`;
+
+const Dropdown = styled.div<{ isVisible: boolean }>`
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: rgba(43, 43, 43, 1);
+    border: 2px solid #858584;
+    border-radius: 20px;
+    width: auto;
+    display: ${(props) => (props.isVisible ? "flex" : "none")};
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 10px;
+    &:hover {
+        border-color: white;
+    }
+`;
+
+const Option = styled.h5`
+    color: white;
+    text-align: center;
+    font-family: "Work Sans";
+    font-size: 18px;
+    font-weight: 400;
+    cursor: pointer;
+`;
+
+const ButtonRef = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+`;
 
 interface Delivery {
     id: number;
@@ -157,14 +198,11 @@ interface Delivery {
 }
 
 const DeliveryList = ({ deliveries, onOptions }: { deliveries: Delivery[], onOptions: (id: number) => void }) => {
-    const handleSubscription = (text : string) => {
+    const handleSubscription = (text: string) => {
         const formattedText = text.toLocaleLowerCase();
-        if (formattedText === 'none') {
-            return false;
-        } else {
-            return true;
-        };
+        return formattedText !== 'none';
     };
+
     return (
         <Section>
             <TableHeader>
@@ -192,20 +230,24 @@ const DeliveryList = ({ deliveries, onOptions }: { deliveries: Delivery[], onOpt
                 </DeliveryCard>
             ))}
         </Section>
-    )
+    );
 };
-
 
 const Deliveries = () => {
     const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+    const [filteredDeliveries, setFilteredDeliveries] = useState<Delivery[]>([]);
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const [filterTitle, setFilterTitle] = useState("All");
+
     const token = localStorage.getItem('token');
+    const buttonRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Temporary data
         const data = [
             { id: 1, date: "08/05/2024", deliveryStatus: "Out for Delivery", order: "Milwaukee® M18 FUEL™ Circular Saw", avatar: Cement, subscription: "Weekly", status: true },
             { id: 2, date: "08/05/2024", deliveryStatus: "Out for Delivery", order: "2 in. x 6 in. x 8 ft. 2 Prime Kiln-Dried Southern Yellow Pine Dimensional Lumber", avatar: Cement, subscription: "Monthly", status: true },
-            { id: 3, date: "08/05/2024", deliveryStatus: "Out for Delivery", order: "Cement - 50kg x 10 units", avatar: Cement, subscription: "None", status: false },
+            { id: 3, date: "08/05/2024", deliveryStatus: "Out for Delivery", order: "Cement - 50kg x 10 units", avatar: Cement, subscription: "None", status: true },
             { id: 4, date: "08/05/2024", deliveryStatus: "In Transit", order: "Gemelina Lumber - 2x4 x 100 units", avatar: Cement, subscription: "Weekly", status: true },
             { id: 5, date: "08/05/2024", deliveryStatus: "Delivered", order: "Sand - 3 m³", avatar: Cement, subscription: "None", status: false },
             { id: 6, date: "07/21/2024", deliveryStatus: "Delivered", order: "Gravel - 20 m³", avatar: Cement, subscription: "Monthly", status: true },
@@ -213,51 +255,122 @@ const Deliveries = () => {
         ];
         const sortedData = data.sort((a, b) => (a.status === true && b.status === false ? -1 : 1));
         setDeliveries(sortedData);
-        // Uncomment the below code when using real API
-        // const fetchDeliveries = async () => {
-        //     const response = await fetch("/api/deliveries");
-        //     const data = await response.json();
-        //     setDeliveries(data);
-        // };
-        // fetchDeliveries();
+        setFilteredDeliveries(sortedData);
     }, []);
 
     const handleOptions = (id: number) => {
         console.log("Options for delivery", id);
     };
-    const handleFilter = () => {
-        console.log('filter Delivery clicked');
+
+    const handleFilterClick = (filter: string) => {
+        setFilterTitle(filter);
+        setIsDropdownVisible(false);
+
+        let filtered = [...deliveries];
+
+        if (filter === "All") {
+            filtered = deliveries;
+        } else if (filter === "Active Status") {
+            filtered = deliveries.filter(d => d.status === true);
+        } else if (filter === "Inactive Status") {
+            filtered = deliveries.filter(d => d.status === false);
+        } else if (filter === "Subscribed") {
+            filtered = deliveries.filter(d => d.subscription.toLowerCase() !== "none");
+        } else if (filter === "Date Going Up") {
+            filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        } else if (filter === "Date Going Down") {
+            filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        } else if (filter === "Delivered") {
+            filtered = deliveries.filter(d => d.deliveryStatus === "Delivered");
+        } else if (filter === "In Transit") {
+            filtered = deliveries.filter(d => d.deliveryStatus === "In Transit");
+        } else if (filter === "Out For Delivery") {
+            filtered = deliveries.filter(d => d.deliveryStatus === "Out for Delivery");
+        } else {
+            filtered = deliveries; // Default to all deliveries
+        }
+
+        setFilteredDeliveries(filtered);
     };
-    const heroContents = {
-        headline: 'Reliable and Fast Deliveries',
-        subhead: `Experience prompt and dependable delivery services 
-        tailored to meet your needs. From small parcels to large 
-        shipments, we ensure your items are delivered safely and on 
-        time, every time.`,
-        btnTitle: 'Become a Member',
-        url: "/sign-in",
-        image: DeliverImage
-    }
+
+    const toggleDropdown = () => {
+        setIsDropdownVisible(prev => !prev);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (
+                buttonRef.current &&
+                !buttonRef.current.contains(target) &&
+                dropdownRef.current &&
+                !dropdownRef.current.contains(target)
+            ) {
+                setIsDropdownVisible(false);
+            }
+        };
+
+        if (isDropdownVisible) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isDropdownVisible]);
+
+    const renderFilterOptions = () => {
+        const options = [
+            "All",
+            "Active Status",
+            "Inactive Status",
+            "Subscribed",
+            "Date Going Up",
+            "Date Going Down",
+            "Delivered",
+            "In Transit",
+            "Out For Delivery",
+        ];
+
+        return options
+            .filter(option => option !== filterTitle)
+            .map(option => (
+                <Option key={option} onClick={() => handleFilterClick(option)}>
+                    {option}
+                </Option>
+            ));
+    };
+
     return (
         <>
             <ServiceSection>
                 {token ? 
                 <>
-                <Button title={"Add Recurring Delivery"} onClick={() => {}} />
+                    <Button title={"Add Recurring Delivery"} onClick={() => {}} />
                     <Wrap>
                         <h1>Deliveries</h1>
-                        <ButtonCounter title={"All"} type={"default"} totalVisItemsCards={deliveries.length} onClick={handleFilter}></ButtonCounter>
+                        <ButtonRef ref={buttonRef}>
+                            <ButtonCounter
+                                title={filterTitle}
+                                type="default"
+                                totalVisItemsCards={filteredDeliveries.length}
+                                onClick={toggleDropdown}
+                            />
+                        </ButtonRef>
+                        <Dropdown ref={dropdownRef} isVisible={isDropdownVisible}>
+                            {renderFilterOptions()}
+                        </Dropdown>
                     </Wrap>
-                    <DeliveryList deliveries={deliveries} onOptions={handleOptions} />
+                    <DeliveryList deliveries={filteredDeliveries} onOptions={handleOptions} />
                 </> 
                 : 
                 <>
                     <HeroWidget 
-                        headline={heroContents.headline}
-                        subhead={heroContents.subhead}
-                        btnTitle={heroContents.btnTitle} 
-                        urlDestination={heroContents.url} 
-                        heroImage={heroContents.image}
+                        headline="Reliable and Fast Deliveries"
+                        subhead="Experience prompt and dependable delivery services tailored to meet your needs. From small parcels to large shipments, we ensure your items are delivered safely and on time, every time."
+                        btnTitle="Become a Member" 
+                        urlDestination="/sign-in" 
+                        heroImage={DeliverImage}
                     />
                 </>
                 }

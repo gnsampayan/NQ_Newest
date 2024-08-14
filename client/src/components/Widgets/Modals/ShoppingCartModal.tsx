@@ -8,10 +8,10 @@ import { useCart } from '../../../context/CartContext';
 const Cart = styled.div`
     width: 600px;
     position: fixed;
-    border-radius: 20px;
+    border-radius: 0px 0px 20px 20px;
     top: 100px;
     right: 0;
-    background: #858584;
+    background: #221F27;
     z-index: 999;
     display: flex;
     flex-direction: column;

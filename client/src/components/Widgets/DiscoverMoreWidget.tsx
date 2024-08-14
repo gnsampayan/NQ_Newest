@@ -7,7 +7,7 @@ import Button from "../Buttons/Button";
 import { useNavigate } from "react-router";
 import { ItemType } from "../../context/Types";
 import AddToCartConfirmation from "./Modals/AddToCartConfirmation";
-import { addItemToCart } from "../utilityFunctions";
+import { addItemToCart } from "../../utils/utilityFunctions";
 
 const Container = styled.div`
     width: 1050px;

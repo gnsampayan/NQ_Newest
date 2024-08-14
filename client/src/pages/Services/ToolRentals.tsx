@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import HeroWidget from "../../components/Widgets/HeroWidget";
 import ToolRentalImage from "../../assets/images/Tool_Rentals.png";
@@ -22,6 +22,7 @@ const ToolCard = styled.div<{ isRented?: boolean }>`
     color: white;
     width: 100%;
     opacity: ${({ isRented }) => (isRented ? 0.3 : 1)};
+    gap: 20px;
 `;
 
 const ToolInfo = styled.div`
@@ -142,6 +143,46 @@ const Wrap = styled.div`
     justify-content: space-between;
     margin-bottom: 20px;
     margin-top: 40px;
+    width: 100%;
+    position: relative;
+`;
+
+const Dropdown = styled.div<{ isVisible: boolean }>`
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: rgba(43, 43, 43, 1);
+    border: 2px solid #858584;
+    border-radius: 20px;
+    width: auto;
+    display: ${(props) => (props.isVisible ? "flex" : "none")};
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 10px;
+    &:hover {
+        border-color: white;
+    }
+`;
+
+const Option = styled.h5`
+    color: white;
+    text-align: center;
+    font-family: "Work Sans";
+    font-size: 18px;
+    font-weight: 400;
+    cursor: pointer;
+`;
+
+const ButtonRef = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: auto;
 `;
 
 interface Tool {
@@ -194,13 +235,17 @@ const ToolList = ({ tools, onOptions }: { tools: Tool[], onOptions: (id: number)
     );
 };
 
-
 const ToolRentals = () => {
     const token = localStorage.getItem('token');
     const [tools, setTools] = useState<Tool[]>([]);
+    const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const [filterTitle, setFilterTitle] = useState("All");
+
+    const buttonRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Temporary data
         const data = [
             { id: 1, name: "Hammer Drill", category: "Power Tools", image: "https://via.placeholder.com/150", rate: 15, status: true, durationInDays: 5, startDate: "2023-08-01", endDate: "2023-08-06", daysRemaining: 3 },
             { id: 2, name: "Circular Saw", category: "Power Tools", image: "https://via.placeholder.com/150", rate: 20, status: false, durationInDays: 3, startDate: "2023-08-02", endDate: "2023-08-05", daysRemaining: 0 },
@@ -210,24 +255,134 @@ const ToolRentals = () => {
             { id: 6, name: "Concrete Mixer", category: "Heavy Equipment", image: "https://via.placeholder.com/150", rate: 50, status: true, durationInDays: 8, startDate: "2023-08-01", endDate: "2023-08-09", daysRemaining: 5 },
             { id: 7, name: "Jackhammer", category: "Heavy Equipment", image: "https://via.placeholder.com/150", rate: 60, status: false, durationInDays: 4, startDate: "2023-08-02", endDate: "2023-08-06", daysRemaining: 0 }
         ];
-        // Sort tools so that available ones are on top
         const sortedData = data.sort((a, b) => (a.status === true && b.status === false ? -1 : 1));
         setTools(sortedData);
-        // Uncomment the below code when using real API
-        // const fetchTools = async () => {
-        //     const response = await fetch("/api/tools");
-        //     const data = await response.json();
-        //     setTools(data);
-        // };
-        // fetchTools();
+        setFilteredTools(sortedData);
     }, []);
 
     const handleOptions = (id: number) => {
         console.log("Options for tool", id);
     };
 
-    const handleFilter = () => {
-        console.log('filter Tool clicked');
+    const handleFilterClick = (filter: string) => {
+        setFilterTitle(filter);
+        setIsDropdownVisible(false);
+
+        let filtered = [...tools];
+
+        switch (filter) {
+            case "All":
+                filtered = tools;
+                break;
+            case "Status Active":
+                filtered = tools.filter(tool => tool.status === true);
+                break;
+            case "Status Inactive":
+                filtered = tools.filter(tool => tool.status === false);
+                break;
+            case "Tool Name A-Z":
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case "Tool Name Z-A":
+                filtered.sort((a, b) => b.name.localeCompare(a.name));
+                break;
+            case "Rate Going Up":
+                filtered.sort((a, b) => a.rate - b.rate);
+                break;
+            case "Rate Going Down":
+                filtered.sort((a, b) => b.rate - a.rate);
+                break;
+            case "Category A-Z":
+                filtered.sort((a, b) => a.category.localeCompare(b.category));
+                break;
+            case "Category Z-A":
+                filtered.sort((a, b) => b.category.localeCompare(a.category));
+                break;
+            case "Duration Going Up":
+                filtered.sort((a, b) => a.durationInDays - b.durationInDays);
+                break;
+            case "Duration Going Down":
+                filtered.sort((a, b) => b.durationInDays - a.durationInDays);
+                break;
+            case "Start Date Going Up":
+                filtered.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+                break;
+            case "Start Date Going Down":
+                filtered.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+                break;
+            case "End Date Going Up":
+                filtered.sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
+                break;
+            case "End Date Going Down":
+                filtered.sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
+                break;
+            case "Days Remaining Going Up":
+                filtered.sort((a, b) => a.daysRemaining - b.daysRemaining);
+                break;
+            case "Days Remaining Going Down":
+                filtered.sort((a, b) => b.daysRemaining - a.daysRemaining);
+                break;
+            default:
+                filtered = tools; // Default to all tools
+        }
+
+        setFilteredTools(filtered);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownVisible(prev => !prev);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (
+                buttonRef.current &&
+                !buttonRef.current.contains(target) &&
+                dropdownRef.current &&
+                !dropdownRef.current.contains(target)
+            ) {
+                setIsDropdownVisible(false);
+            }
+        };
+
+        if (isDropdownVisible) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isDropdownVisible]);
+
+    const renderFilterOptions = () => {
+        const options = [
+            "All",
+            "Status Active",
+            "Status Inactive",
+            "Tool Name A-Z",
+            "Tool Name Z-A",
+            "Rate Going Up",
+            "Rate Going Down",
+            "Category A-Z",
+            "Category Z-A",
+            "Duration Going Up",
+            "Duration Going Down",
+            "Start Date Going Up",
+            "Start Date Going Down",
+            "End Date Going Up",
+            "End Date Going Down",
+            "Days Remaining Going Up",
+            "Days Remaining Going Down",
+        ];
+
+        return options
+            .filter(option => option !== filterTitle)
+            .map(option => (
+                <Option key={option} onClick={() => handleFilterClick(option)}>
+                    {option}
+                </Option>
+            ));
     };
 
     const heroContents = {
@@ -249,9 +404,19 @@ const ToolRentals = () => {
                         <Button title={"Rent Tools"} onClick={() => {}} />
                         <Wrap>
                             <h1>Tool Rentals</h1>
-                            <ButtonCounter title={"All"} type={"default"} totalVisItemsCards={0} onClick={handleFilter} />
+                            <ButtonRef ref={buttonRef}>
+                                <ButtonCounter
+                                    title={filterTitle}
+                                    type="default"
+                                    totalVisItemsCards={filteredTools.length}
+                                    onClick={toggleDropdown}
+                                />
+                            </ButtonRef>
+                            <Dropdown ref={dropdownRef} isVisible={isDropdownVisible}>
+                                {renderFilterOptions()}
+                            </Dropdown>
                         </Wrap>
-                        <ToolList tools={tools} onOptions={handleOptions} />
+                        <ToolList tools={filteredTools} onOptions={handleOptions} />
                     </>
                     : 
                     <HeroWidget 

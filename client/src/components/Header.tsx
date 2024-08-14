@@ -3,8 +3,11 @@ import { BsFillPersonFill } from "react-icons/bs";
 import MainLogo from "../assets/images/NQ-temp-logo.png";
 import { useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
-import { BsCart3 } from "react-icons/bs";
+import { BsCart3, BsChevronDown  } from "react-icons/bs";
 import { useCart } from '../context/CartContext';
+import { fetchUsernameFromDatabase } from "../utils/utilityFunctions";
+import { useEffect, useRef, useState } from "react";
+import Button from "./Buttons/Button";
 
 const NavBox = styled.nav`
 	background-color: #221F27;
@@ -15,7 +18,7 @@ const NavBox = styled.nav`
 	width: 100vw;
 	display: flex;
 	justify-content: space-between;
-	z-index: 999;
+	z-index: 9999;
 
 	user-select: none; /* Standard syntax */
     -webkit-user-select: none; /* For Safari */
@@ -31,17 +34,19 @@ const NavMenu = styled.ul`
 	justify-content: flex-end;
 	align-items: center;
 	gap: 10px;
+	position: relative;
 `;
 
 const NavItem = styled.button`
 	all: unset;
 	width: auto;
-	cursor: pointer;
+	position: relative;
+	cursor: default;
 	
 	display: flex;
-	height: 46px;
 	padding: 0px 20px;
-	justify-content: center;
+	flex-direction: column;
+	justify-content: start;
 	align-items: center;
 	gap: 12px;
 	
@@ -54,26 +59,9 @@ const NavItem = styled.button`
 	line-height: 140%; /* 22.4px */
 
 	white-space: nowrap; /* Prevents text from wrapping */
-`;
-
-const SignInItem = styled(NavItem)`
-	background: #A259FF;
-	border-radius: 20px;
-	display: flex;
-	height: 60px;
-	padding: 0px 30px 0px 30px;
-	justify-content: center;
-	align-items: center;
-	gap: 12px;
 	&:hover {
-		background-color: rgba(162, 89, 255, 0.4);
+		color: #A259FF;
 	}
-`;
-const MemberItem = styled(SignInItem)`
-	background: red;
-`;
-const PersonIcon = styled.span`
-	display: block;
 `;
 const WaterMarkParent = styled.div`
 	margin-left: 20px;
@@ -104,12 +92,6 @@ const MainIcon = styled.img`
 	margin-right: 10px;
 	cursor: pointer;
 `;
-const StyledPersonIcon = styled(BsFillPersonFill)`
-	all: unset;
-	fill: white;
-	width: 20px;
-	transform: translateY(2px);
-`;
 const CartBtn = styled.div`
 	display: flex;
 	align-items: center;
@@ -118,6 +100,9 @@ const CartBtn = styled.div`
 	margin: 0px 20px 0px 20px;
 	padding: 0px 20px 0px 20px;
 	cursor: pointer;
+	&:hover {
+		color: #A259FF;
+	}
 `;
 const BsCart = styled(BsCart3)`
 	height: 30px;
@@ -144,6 +129,41 @@ const Frame = styled.div`
     border-radius: 20px;
     background:  #858584;
 `
+const DDFrame = styled.div`
+	position: absolute;
+	z-index: 999;
+	background: #221F27;
+	color: white;
+	padding: 40px 20px 20px 20px;
+	border-radius: 0px 0px 20px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 0px;
+	top: 100%;
+	cursor: default;
+`
+const DDNav = styled.h6`
+	color: #FFF;
+	text-align: center;
+	font-family: "Work Sans";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 140%; /* 22.4px */
+	cursor: pointer;
+	&:hover {
+		color: #A259FF;
+	}
+	padding: 10px 20px;
+	border-radius: 20px;
+`
+const Label = styled.div`
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	align-items: center;
+	cursor: pointer;
+`
 
 interface HeaderProps {
 	ontoggleBladeVis: () => void;
@@ -154,14 +174,15 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cartBtnRef, counterVis } : HeaderProps) => {
 	const { cartCount } = useCart();
-	const navItems = [
-		{ name: "Shop", path: "/shop" },
-		{ name: "Services", path: "/services" },
-		{ name: "Contact Us", path: "/contact-us" },
-		{ name: "Members", path: "/sign-in" },
-	];
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
+	const [username, setUsername] = useState<string | null>(null);
+	const [userOptionsVis, setUserOptionsVis] = useState(false);
+	const [servicesOptionsVis, setServicesOptionsVis] = useState(false);
+	const userButtonRef = useRef<HTMLButtonElement>(null);
+	const servicesButtonRef = useRef<HTMLButtonElement>(null);
+	const userDropdownRef = useRef<HTMLDivElement>(null);
+	const servicesDropdownRef = useRef<HTMLDivElement>(null);
 
 	const Counter = (number: number) => {
         return (
@@ -169,6 +190,99 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
         )
     }
 
+	useEffect(() => {
+        const getUsername = async () => {
+            const name = await fetchUsernameFromDatabase();
+            if (name) {
+                setUsername(name);
+            } else {
+                setUsername(null);
+            }
+        };
+
+        getUsername();
+    }, []);
+
+	const toggleUserDropdown = () => {
+		setUserOptionsVis(prevVis => !prevVis);
+		setServicesOptionsVis(false);
+	};
+	const toggleServicesDropdown = () => {
+		setServicesOptionsVis(prevVis => !prevVis);
+		setUserOptionsVis(false);
+	};
+
+	// Close dropdown if clicking outside of it
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+
+			// For user dropdown
+			if (
+				userButtonRef.current && 
+				!userButtonRef.current.contains(target) &&
+				userDropdownRef.current && 
+				!userDropdownRef.current.contains(target)
+			) {
+				setUserOptionsVis(false);
+			}
+
+			// For services dropdown
+			if (
+				servicesButtonRef.current && 
+				!servicesButtonRef.current.contains(target) &&
+				servicesDropdownRef.current && 
+				!servicesDropdownRef.current.contains(target)
+			) {
+				setServicesOptionsVis(false);
+			}
+		};
+		if (userOptionsVis || servicesOptionsVis) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [userOptionsVis, servicesOptionsVis]);
+
+	  const handleSignInAndOut = () => {
+		localStorage.removeItem('token');
+		navigate("/sign-in");
+	  };
+
+	  const UserDropdown = () => {
+		return (
+			<DDFrame ref={userDropdownRef}>
+				{token ? 
+					<>
+						<DDNav onClick={() => navigate('/sign-in')}>Members Area</DDNav>
+						<DDNav>My Profile</DDNav>
+						<DDNav>Account Settings</DDNav>
+						<DDNav>My Wishlist</DDNav>
+						<DDNav onClick={handleSignInAndOut}>Sign Out</DDNav>
+					</> 
+					: 
+					<>
+						<DDNav onClick={handleSignInAndOut}>Sign In</DDNav>
+					</>
+				}
+				
+			</DDFrame>
+		)
+	}
+	const ServicesDropdown = () => {
+		return (
+			<DDFrame ref={servicesDropdownRef}>
+				<DDNav onClick={() => navigate('/services/deliveries')}>Deliveries</DDNav>
+				<DDNav onClick={() => navigate('/services/contractor-services')}>Contractor Services</DDNav>
+				<DDNav onClick={() => navigate('/services/tool-rentals')}>Tool Rentals</DDNav>
+				<DDNav onClick={() => navigate('/services/installation-services')}>Installation Services</DDNav>
+			</DDFrame>
+		)
+	}
+		
+		
+	
 	return (
 		<NavBox>
 			<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
@@ -185,32 +299,35 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 				</WaterMark>
 			</WaterMarkParent>
 			<NavMenu>
-				{navItems.map((item) => {
-					let ItemComponent;
-
-					// Conditionally assign ItemComponent based on membership and item name
-					if (item.name === "Members") {
-					  	ItemComponent = token ? MemberItem : SignInItem;
-					} else {
-					  	ItemComponent = NavItem;
-					}
-					return (
-						<ItemComponent
-							key={item.name}
-							onClick={() => {
-								console.log(`${item.name} clicked`);
-								navigate(item.path);
-							}}
-						>
-							{item.name === "Members" && (
-								<PersonIcon>
-									<StyledPersonIcon />
-								</PersonIcon>
-							)}
-							{ item.name === "Members" && token ? "{userName}" : item.name}
-						</ItemComponent>
-					);
-				})}
+				<NavItem onClick={() => navigate('/shop')}>
+					<Label>
+						Shop
+					</Label>
+				</NavItem>
+				<NavItem 
+					//onClick={() => navigate('/services')}
+					ref={servicesButtonRef} 
+					onClick={toggleServicesDropdown}
+				>
+					<Label>
+						Services
+						<BsChevronDown  />
+					</Label>
+					{servicesOptionsVis && <ServicesDropdown />}
+				</NavItem>
+				<NavItem onClick={() => navigate('/contact-us')}>
+					<Label>
+						Contact Us
+					</Label>
+				</NavItem>
+				<NavItem ref={userButtonRef} onClick={toggleUserDropdown}>
+					<Button 
+						asset={BsFillPersonFill}
+						title={token ? `${username}` : "Members"} 
+						onClick={() => {}}
+					/>
+					{userOptionsVis && <UserDropdown />}
+				</NavItem>
 			</NavMenu>
 			<CartBtn ref={cartBtnRef} onClick={onToggleCartVis}>
 				<BsCart />

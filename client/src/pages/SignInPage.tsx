@@ -196,6 +196,7 @@ const SignIn: React.FC = () => {
 				console.log("Sign in successful");
 				console.log(data.token);
 				navigate("/member");
+				window.location.reload();
 			} else {
 				console.error("Invalid credentials");
 				setMessage('Invalid credentials');
@@ -247,6 +248,7 @@ const SignIn: React.FC = () => {
 									onChange={(e) => setUsername(e.target.value)}
 									placeholder="Username"
 									aria-label="Username"
+									maxLength={15}
 									required
 								/>
 								<Input
@@ -256,6 +258,7 @@ const SignIn: React.FC = () => {
 									onChange={(e) => setPassword(e.target.value)}
 									placeholder="Password"
 									aria-label="Password"
+									maxLength={30}
 									required
 								/>
 							</TypeForms>

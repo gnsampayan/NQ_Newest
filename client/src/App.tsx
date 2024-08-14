@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useRef, useState } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 import Header from "./components/Header";
@@ -28,6 +28,16 @@ const Wrapper = styled.div`
   padding-top: 100px;
 `;
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+      window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 function MainApp() {
   const [ margin, setMargin ] = useState('auto');
   const [vis , setVis] = useState(false);
@@ -51,6 +61,7 @@ function MainApp() {
       <Blade $isVisible={vis} />
       <ShoppingCart isVisible={cartVis} toggleCartVis={toggleCartVis} cartBtnRef={cartBtnRef} />
       <Wrapper>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage $margin={margin} />} />
           <Route path="/filtered" element={<FilteredPage />} />

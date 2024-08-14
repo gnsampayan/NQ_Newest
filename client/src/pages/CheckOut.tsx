@@ -3,6 +3,7 @@ import CartItemsList from "../components/Groupings/Templates/CartItemsList";
 import ProfilePicture from "../assets/images/profile_picture_of_a_person.png";
 import { FaCcMastercard, FaCcVisa, FaCcDiscover, FaCcPaypal  } from "react-icons/fa";
 import Button from "../components/Buttons/Button";
+import { useCart } from "../context/CartContext";
 
 const Wrapper = styled.div`
     display: flex;
@@ -24,6 +25,9 @@ const Frame = styled.div`
 const List = styled.div`
     max-height: calc(100vh - 200px);
     overflow-y: auto;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
 `
 const Payment = styled.div`
     display: flex;
@@ -142,13 +146,38 @@ const RowInfo = styled.div`
     justify-content: space-between;
     width: 100%;
 `
+const HeadingAndSubhead = styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0px;
+`
 
 const CheckOut = () => {
+    const { cartItems, cartCount  } = useCart();
+     // Constants for tax and shipping
+     // Constants for tax and shipping
+    const TAX = 4;
+    const SHIPPING = 6;
+
+    // Calculate subtotal by summing up the item prices in the cart
+    const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.buyQuantity, 0);
+
+    // Calculate total by adding subtotal, tax, and shipping
+    const total = subtotal + TAX + SHIPPING;
+
+    const grammar = () => {
+        return cartCount === 1 ? "item" : "items";
+    };
 
     return (
         <Wrapper>
             <Frame>
                 <List>
+                    <HeadingAndSubhead>
+                        <H5>Shopping Cart</H5>
+                        <Caption>You have {cartCount} {grammar()} in your cart</Caption>
+                    </HeadingAndSubhead>
                     <CartItemsList maxHeight={"auto"} />
                 </List>
                 <Payment>
@@ -196,19 +225,19 @@ const CheckOut = () => {
                     <Summary>
                         <RowInfo>
                             <Caption>Subtotal</Caption>
-                            <Caption>$1,090</Caption>
+                            <Caption>${subtotal.toFixed(2)}</Caption>
                         </RowInfo>
                         <RowInfo>
                             <Caption>Tax</Caption>
-                            <Caption>$4</Caption>
+                            <Caption>${TAX}</Caption>
                         </RowInfo>
                         <RowInfo>
                             <Caption>Shipping</Caption>
-                            <Caption>$20</Caption>
+                            <Caption>${SHIPPING}</Caption>
                         </RowInfo>
                         <RowInfo>
                             <Caption>Total</Caption>
-                            <Caption>$1,114</Caption>
+                            <Caption>${total.toFixed(2)}</Caption>
                         </RowInfo>
                     </Summary>
                     <Button

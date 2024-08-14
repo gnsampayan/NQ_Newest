@@ -34,13 +34,6 @@ const ActionButton = styled.button`
     background-color: rgba(162, 89, 255, 0.4);
   }
 `
-const SignOutButton = styled(ActionButton)`
-  border: solid 2px red;
-  margin-top: 40px;
-  &:hover {
-    background-color: rgba(255, 0, 0, 0.4);
-  }
-`
  const Box = styled.div`
   background-color: white;
   padding: 20px 20px 0px 20px;
@@ -65,11 +58,6 @@ const BoxContainer = styled.div`
 const Member: React.FC = () => {
   const navigate = useNavigate();
 
-  const SignOut = () => {
-    localStorage.removeItem('token');
-    navigate("/sign-in");
-  };
-
   const handleCreateItemClick = () => {
     console.log('clicked create an item');
     navigate("/item-creation");
@@ -82,7 +70,7 @@ const Member: React.FC = () => {
 
   return (
     <Wrapper>
-      <Title>memberType Area</Title>
+      <Title>Members Area</Title>
       <BoxContainer>
         <Box>
           <BoxTitle>White Label Configuration</BoxTitle>
@@ -93,28 +81,7 @@ const Member: React.FC = () => {
           <ActionButton onClick={handleCreateItemClick}>Add New Item</ActionButton>
           <ActionButton onClick={handleViewStockClick}>View All Items</ActionButton>
         </Box>
-        <Box>
-          <h3>Deliveries</h3>
-          <p>Fast and reliable product delivery service.</p>
-          <ActionButton>View</ActionButton>
-        </Box>
-        <Box>
-          <h3>Contractor Services</h3>
-          <p>Professional services for your construction needs.</p>
-          <ActionButton>View</ActionButton>
-        </Box>
-        <Box>
-          <h3>Tool Rentals</h3>
-          <p>A wide range of tools available for rent.</p>
-          <ActionButton>View</ActionButton>
-        </Box>
-        <Box>
-          <h3>Installation Services</h3>
-          <p>Expert installation services for various products.</p>
-          <ActionButton>View</ActionButton>
-        </Box>
       </BoxContainer>
-      <SignOutButton onClick={SignOut}>Sign Out</SignOutButton>
     </Wrapper>
   )
 }

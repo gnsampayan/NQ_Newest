@@ -254,8 +254,6 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 		)
 	})
 
-	const KeyWords = ["trending", "tools", "NonExistentKeyword", "all"];
-
 	return (
 		<>
 			<Wrapper $margin={$margin}>
@@ -303,7 +301,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 								<Body>On Sale</Body>
 								<Body>Open Box</Body>
 						</FilterColumn>
-						<GenericSpread keywords={KeyWords} />
+						<GenericSpread />
 					</Floor>
 				</FloorSection>
 			</Wrapper>

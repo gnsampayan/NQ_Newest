@@ -71,6 +71,7 @@ const Icons = styled.div`
     align-items: flex-start;
     gap: 10px;
     margin-bottom: 40px;
+    cursor: pointer;
 `
 const Explore = styled.div`
     display: flex;
@@ -94,10 +95,11 @@ const Pages = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 20px;
+    gap: 10px;
 `
 const P3 = styled.p`
     color: #CCC;
+    cursor: pointer;
     
     /* Base(Body) - Work Sans */
     font-family: "Work Sans";
@@ -105,7 +107,10 @@ const P3 = styled.p`
     font-style: normal;
     font-weight: 400;
     line-height: 140%; /* 22.4px */
-    `
+    &:hover {
+        color: #A259FF;
+    }
+`
 const Subscribe = styled.div`
     display: flex;
     flex-direction: column;
@@ -219,9 +224,9 @@ const Footer = () => {
                 <Explore>
                     <H5>Explore</H5>
                     <Pages>
-                        <P3>Store</P3>
-                        <P3>Services</P3>
-                        <P3>Contact Us</P3>
+                        <P3 onClick={() => navigate("/shop")}>Shop</P3>
+                        <P3 onClick={() => navigate("/services")}>Services</P3>
+                        <P3 onClick={() => navigate("/contact-us")}>Contact Us</P3>
                     </Pages>
                 </Explore>
                 <Subscribe>

@@ -6,6 +6,25 @@ const JWT_SECRET = 'your_very_secret_key'; // Replace with a real secret key lat
 const router = express.Router();
 
 export default function(pool) {  // Export as a function that takes pool
+
+  // Middleware to verify JWT and extract user ID
+  const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(403).json({ error: 'Forbidden: No token provided' });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).json({ error: 'Forbidden: Invalid token' });
+      }
+      req.user = user; // Ensure the decoded token contains the userId
+      next();
+    });
+  };
+  
   // Temp User Signup
   router.post('/', (req, res) => {
       const { name, password, email, type } = req.body;
@@ -93,6 +112,27 @@ export default function(pool) {  // Export as a function that takes pool
       }
     );
   });
+
+  // Getting Username after Login
+
+router.get('/me', authenticateToken, (req, res) => {
+  const userId = req.user.userId;  // Extracted from the token via the middleware
+
+  pool.query('SELECT user_name FROM users WHERE user_id = ?', [userId], (err, results) => {
+      if (err) {
+          console.error('Error retrieving user:', err);
+          return res.status(500).json({ error: 'Error retrieving user' });
+      }
+
+      if (results.length > 0) {
+          res.status(200).json({ username: results[0].user_name });
+      } else {
+          res.status(404).json({ error: 'User not found' });
+      }
+  });
+});
+
+
 
   return router;
 }
