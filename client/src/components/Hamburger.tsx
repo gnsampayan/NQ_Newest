@@ -6,8 +6,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0px 20px 0px 20px;
-	padding: 0px 20px 0px 20px;
+  margin: 0px 20px;
 `
 
 interface Props {

@@ -6,7 +6,7 @@ import { FaRegHeart } from "react-icons/fa6";
 import { ItemType } from "../context/Types";
 import apiConfig from "../api-config";
 import { useEffect, useState } from "react";
-import AddToCartConfirmation from "../components/Widgets/Modals/AddToCartConfirmation";
+import AddToCartConfirmation from "../components/Widgets/Elements/AddToCartConfirmation";
 import { addItemToCart } from "../utils/utilityFunctions";
 
 const Page = styled.div`

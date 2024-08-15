@@ -5,8 +5,7 @@ import { BsSearch } from "react-icons/bs";
 
 const Wrapper = styled.div`
   position: relative;
-  margin-bottom: 20px;
-  margin-top: 10px;
+  width: auto;
 `;
 const Icon = styled(BsSearch)`
   position: absolute;
@@ -19,7 +18,6 @@ const Icon = styled(BsSearch)`
 const Search = styled.input`
     background-color: #2B2B2B;
     height: 60px;
-    width: calc(100% - 12px);
     margin: 6px;
     border-radius: 20px;
     border: 1px solid #3B3B3B;
@@ -54,6 +52,7 @@ const Search = styled.input`
       color: white;
       opacity: .6;
     }
+    width: auto;
 `;
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');

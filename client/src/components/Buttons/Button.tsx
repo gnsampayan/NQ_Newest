@@ -11,9 +11,12 @@ const Btn = styled.button<{
     borderHoverColor?: string,
     textColor?: string,
     textHoverColor?: string,
+    height?: string,
+    width?: string,
 }>`
         display: flex;
-        height: 60px;
+        height: ${({ height }) => height || '60px'};
+        width: ${({ width }) => width || 'auto'};
         padding: 0px 50px;
         justify-content: center;
         align-items: center;
@@ -56,6 +59,8 @@ interface Props {
     textHoverColor?: string,
     textColor?: string,
     onClick: () => void;
+    height?: string,
+    width?: string,
 }
 
 const Button = ({ 
@@ -69,7 +74,9 @@ const Button = ({
     fillColor,
     textColor,
     textHoverColor,
-    onClick
+    onClick,
+    height,
+    width
 } : Props) => {
         return (
             <>
@@ -82,6 +89,8 @@ const Button = ({
                     fillHoverColor={fillHoverColor}
                     textHoverColor={textHoverColor}
                     textColor={textColor}
+                    height={height}
+                    width={width}
                     >
                         <IconWrapper icon={IconAsset} fillColor={fillColor} fillHoverColor={fillHoverColor}/>
                         {title}

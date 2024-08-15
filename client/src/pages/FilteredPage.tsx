@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { useLocation } from "react-router-dom";
 import { ItemType } from "../context/Types";
 import ItemCard from "../components/Cards/ItemCard";
-import AddToCartConfirmation from "../components/Widgets/Modals/AddToCartConfirmation";
+import AddToCartConfirmation from "../components/Widgets/Elements/AddToCartConfirmation";
 import { useState } from "react";
 import { addItemToCart } from "../utils/utilityFunctions";
 

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SearchBar from "../../SearchBar";
 import 'typeface-work-sans';
 
 
@@ -53,7 +52,6 @@ const Blade = ({ $isVisible } : Props) => {
     return <BladeContents $isVisible={$isVisible} >
         {$isVisible && 
             <>
-                <SearchBar/>
                 <section>
                     <Promo>In Stock</Promo>
                     <Promo>Featured</Promo>

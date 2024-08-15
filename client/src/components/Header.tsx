@@ -8,15 +8,19 @@ import { useCart } from '../context/CartContext';
 import { fetchUsernameFromDatabase } from "../utils/utilityFunctions";
 import { useEffect, useRef, useState } from "react";
 import Button from "./Buttons/Button";
+import apiConfig from "../api-config";
+import SearchBar from "./SearchBar";
 
 const NavBox = styled.nav`
-	background-color: #221F27;
+	background: #221F27;
 	height: 100px;
 	position: fixed;
 	top: 0;
 	padding: 20px;
 	width: 100vw;
 	display: flex;
+	flex-direction: row;
+	align-items: center;
 	justify-content: space-between;
 	z-index: 9999;
 
@@ -25,7 +29,20 @@ const NavBox = styled.nav`
     -moz-user-select: none; /* For Firefox */
     -ms-user-select: none; /* For IE and Edge */
 `;
-
+const LeftNav = styled.div`
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+`
+const RightNav = styled.div`
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+`
 const NavMenu = styled.ul`
 	list-style: none;
 	color: white;
@@ -64,7 +81,7 @@ const NavItem = styled.button`
 	}
 `;
 const WaterMarkParent = styled.div`
-	margin-left: 20px;
+	margin: 0px 20px;
 	display: flex;
 	width: 100%;
 	align-items: center;
@@ -176,13 +193,37 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 	const { cartCount } = useCart();
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
-	const [username, setUsername] = useState<string | null>(null);
+	const [username, setUsername] = useState<string | null>('');
 	const [userOptionsVis, setUserOptionsVis] = useState(false);
 	const [servicesOptionsVis, setServicesOptionsVis] = useState(false);
 	const userButtonRef = useRef<HTMLButtonElement>(null);
 	const servicesButtonRef = useRef<HTMLButtonElement>(null);
 	const userDropdownRef = useRef<HTMLDivElement>(null);
 	const servicesDropdownRef = useRef<HTMLDivElement>(null);
+	const [userType, setUserType] = useState<string | null>(null);
+
+	// Check User Type for Admin Privilages --- move to utilityFunctions later
+	useEffect(() => {
+		const fetchUserType = async () => {
+		try {
+			const response = await fetch(`${apiConfig.API_URL}/users/me`, {
+			headers: {
+				'Authorization': `Bearer ${localStorage.getItem('token')}`
+			}
+			});
+			if (response.ok) {
+			const data = await response.json();
+			setUserType(data.user_type);
+			} else {
+			console.error('Failed to fetch user type:', response.statusText);
+			}
+		} catch (error) {
+			console.error('Error fetching user type:', error);
+		}
+		};
+
+		fetchUserType();
+	}, []);
 
 	const Counter = (number: number) => {
         return (
@@ -252,10 +293,10 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 
 	  const UserDropdown = () => {
 		return (
-			<DDFrame ref={userDropdownRef}>
+			<DDFrame ref={userDropdownRef} style={{padding: "20px 20px 20px 20px"}}>
 				{token ? 
 					<>
-						<DDNav onClick={() => navigate('/sign-in')}>Members Area</DDNav>
+						{(userType === "admin" || "super") && <DDNav onClick={() => navigate('/members')}>User Area</DDNav>}
 						<DDNav>My Profile</DDNav>
 						<DDNav>Account Settings</DDNav>
 						<DDNav>My Wishlist</DDNav>
@@ -285,54 +326,60 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 	
 	return (
 		<NavBox>
-			<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
-			<WaterMarkParent onClick={() => {
-				navigate("/");
-				}}>
-				<MainIcon
-					src={MainLogo}
-					alt="NQ logo of a minimal store front icon"
-				/>
-				<WaterMark>
-					<WordMarkMain>NQ Hardware</WordMarkMain>
-					<WordMarkSecondary>& General Enterprise</WordMarkSecondary>
-				</WaterMark>
-			</WaterMarkParent>
-			<NavMenu>
-				<NavItem onClick={() => navigate('/shop')}>
-					<Label>
-						Shop
-					</Label>
-				</NavItem>
-				<NavItem 
-					//onClick={() => navigate('/services')}
-					ref={servicesButtonRef} 
-					onClick={toggleServicesDropdown}
-				>
-					<Label>
-						Services
-						<BsChevronDown  />
-					</Label>
-					{servicesOptionsVis && <ServicesDropdown />}
-				</NavItem>
-				<NavItem onClick={() => navigate('/contact-us')}>
-					<Label>
-						Contact Us
-					</Label>
-				</NavItem>
-				<NavItem ref={userButtonRef} onClick={toggleUserDropdown}>
-					<Button 
-						asset={BsFillPersonFill}
-						title={token ? `${username}` : "Members"} 
-						onClick={() => {}}
+			<LeftNav>
+				<Hamburger ontoggleBladeVis={ontoggleBladeVis} />
+				<WaterMarkParent onClick={() => {
+					navigate("/");
+					}}>
+					<MainIcon
+						src={MainLogo}
+						alt="NQ logo of a minimal store front icon"
 					/>
-					{userOptionsVis && <UserDropdown />}
-				</NavItem>
-			</NavMenu>
-			<CartBtn ref={cartBtnRef} onClick={onToggleCartVis}>
-				<BsCart />
-				<Number vis={counterVis}>{Counter(cartCount)}</Number>
-			</CartBtn>
+					<WaterMark>
+						<WordMarkMain>NQ Hardware</WordMarkMain>
+						<WordMarkSecondary>& General Enterprise</WordMarkSecondary>
+					</WaterMark>
+				</WaterMarkParent>
+				<SearchBar />
+			</LeftNav>
+			<RightNav>
+				<NavMenu>
+					<NavItem onClick={() => navigate('/shop')}>
+						<Label>
+							Shop
+						</Label>
+					</NavItem>
+					<NavItem 
+						//onClick={() => navigate('/services')}
+						ref={servicesButtonRef} 
+						onClick={toggleServicesDropdown}
+					>
+						<Label>
+							Services
+							<BsChevronDown  />
+						</Label>
+						{servicesOptionsVis && <ServicesDropdown />}
+					</NavItem>
+					<NavItem onClick={() => navigate('/contact-us')}>
+						<Label>
+							Contact Us
+						</Label>
+					</NavItem>
+					<NavItem ref={userButtonRef} onClick={toggleUserDropdown}>
+						<Button 
+							asset={BsFillPersonFill}
+							title={token ? `${username}` : "Members"} 
+							onClick={() => {}}
+						/>
+						{userOptionsVis && <UserDropdown />}
+					</NavItem>
+				</NavMenu>
+				<CartBtn ref={cartBtnRef} onClick={onToggleCartVis}>
+					<BsCart />
+					<Number vis={counterVis}>{Counter(cartCount)}</Number>
+				</CartBtn>
+			</RightNav>
+
 		</NavBox>
 	);
 };

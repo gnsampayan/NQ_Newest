@@ -2,71 +2,63 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ItemType } from '../context/Types';
 import apiConfig from '../api-config';
+import Button from '../components/Buttons/Button';
+import { MdOutlineNewLabel } from "react-icons/md";
+import { LuDelete } from "react-icons/lu";
+import { RiSave3Fill } from "react-icons/ri";
+import { IoMdAdd } from 'react-icons/io';
 
 // Styled components
 const Wrapper = styled.div`
-    padding: 20px;
-    max-width: 500px;
-    margin: auto;
-    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 40px;
 `;
 
 const Form = styled.form`
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+    padding-right: 20px;
 `;
 
 const Input = styled.input`
+    all: unset;
     padding: 8px;
-    border: 1px solid #ddd;
     border-radius: 4px;
-`;
-
-const Button = styled.button`
-    padding: 10px 15px;
-    background-color: #007bff;
+    width: 100%;
+    height: 100%;
     color: white;
-    border: none;
-    border-radius: 4px;
+    background: #3B3B3B;
     cursor: pointer;
-    &:hover {
-        background-color: #0056b3;
-    }
 `;
-
-const Tag = styled.div`
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
+const SubmitContainer = styled.div`
+    width: 100%;
+    padding: 20px;
 `
-const AddTagBtn = styled(Button)`
-    width: 100px;
-    margin-left: calc(100% - 100px);
-`
-const DeleteTagBtn = styled.button`
-    width: 60px;
-`
-
+const Submit = styled.button`
+    all: unset;
+    cursor: pointer;
+`;
 const ImagePreview = styled.img`
     max-width: 300px;
     max-height: 300px;
     margin-top: 10px;
 `;
-
 const Dropdown = styled.div`
     position: absolute;
-    background-color: #f6f6f6;
+    color: white;
+    background: #3B3B3B;
     width: 100%;
     max-height: 200px;
     overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 99;
 `;
-
 const DropdownItem = styled.div`
     padding: 8px;
     cursor: pointer;
@@ -74,6 +66,108 @@ const DropdownItem = styled.div`
         background-color: #ddd;
     }
 `;
+const Heading = styled.h5`
+    color: white;
+    margin-top: 20px;
+    /* H5 - Work Sans */
+    font-family: "Work Sans";
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%; /* 30.8px */
+    text-transform: capitalize;
+    `
+const Label = styled.p`
+  color: white;
+  /* Caption - Space Mono */
+  font-family: "Space Mono";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 110%; /* 13.2px */
+  margin-bottom: 8px;
+  `
+const Description = styled.p`
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  position: relative;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  `
+const TextArea = styled.textarea`
+    display: flex;
+    height: 100px;
+    width: 100%;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #858584;
+    color: white;
+    background: #3B3B3B;
+    resize: vertical;
+    `
+const TagSearchAndSubmit = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    `
+const TagSearch = styled.div`
+    position: relative;
+    `
+const TagInput = styled.input`
+    padding: 8px;
+    border-radius: 4px;
+    width: auto;
+    color: white;
+    background: #3B3B3B;
+    &::placeholder {
+        color: white;
+        font-style: italic;
+    }
+`
+const TagItems = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+`
+const Tag = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    background: #3B3B3B;
+    border-radius: 20px;
+    padding: 4px 12px;
+`
+const DeleteTagBtn = styled.button`
+    all: unset;
+    color: #A259FF;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 2px;
+    &:hover {
+        color: red;
+    }
+`
+const TagName = styled.p`
+    all: unset;
+    color: white;
+    /* Base(Body) - Work Sans */
+    font-family: "Work Sans";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+`
 
 interface ItemCreationProps {
     isEditing: boolean;
@@ -340,75 +434,94 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     return (
         <Wrapper>
             <Form onSubmit={handleSubmit}>
-                <h5>Upload Item Image</h5>
-                <Input 
-                    key={inputKey}
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleImageChange}
-                />
-                {preview && <ImagePreview src={preview} alt="Preview" />}
-                <h5>Item Details</h5>
-                <p>Item title</p>
-                <Input 
-                    type="text"
-                    placeholder="Type item title here"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                />
-                <p>Item description</p>
-                <Input 
-                    type="text"
-                    placeholder="Type description here"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-                <p>Item price</p>
-                <Input 
-                    type="text"
-                    placeholder="$0.00"
-                    value={displayPrice}
-                    onChange={handlePriceChange}
-                />
-                <p>Tags</p>
-                <div style={{ position: 'relative' }}>
-                    <Input
-                        type="text"
-                        placeholder="search tags"
-                        value={tag}
-                        onChange={handleTagInputChange}
-                        onKeyDown={handleKeyPress}
-                        onFocus={handleTagInputFocus}
-                        onBlur={handleTagInputBlur}
-                        ref={tagInputRef}
+                <Description>
+                    <Label>Upload Item Image</Label>
+                    <Input 
+                        key={inputKey}
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageChange}
                     />
-                    {showDropdown && (
-                        <Dropdown onMouseDown={handleDropdownMouseDown}>
-                            {filteredTags.map((filteredTag, index) => (
-                                <DropdownItem key={index} onClick={() => handleTagSelection(filteredTag)} className="dropdown-item">
-                                    {filteredTag}
-                                </DropdownItem>
+                    {preview && <ImagePreview src={preview} alt="Preview" />}
+                </Description>
+                <Heading>Item Details</Heading>
+                <Description>
+                    <Label>Item title</Label>
+                    <Input 
+                        type="text"
+                        placeholder="Type item title here"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
+                </Description>
+                <Description>
+                    <Label>Item description</Label>
+                    <TextArea 
+                        name="description"
+                        placeholder="Type description here"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                </Description>
+                <Description>
+                    <Label>Item price</Label>
+                    <Input 
+                        type="text"
+                        placeholder="$0.00"
+                        value={displayPrice}
+                        onChange={handlePriceChange}
+                    />
+                </Description>
+                <Description>
+                    <Label>Search or Create Tags</Label>
+                    <TagSearchAndSubmit>
+                        <TagSearch>
+                            <TagInput
+                                type="text"
+                                placeholder="search tags"
+                                value={tag}
+                                onChange={handleTagInputChange}
+                                onKeyDown={handleKeyPress}
+                                onFocus={handleTagInputFocus}
+                                onBlur={handleTagInputBlur}
+                                ref={tagInputRef}
+                            />
+                            {showDropdown && (
+                                <Dropdown onMouseDown={handleDropdownMouseDown}>
+                                    {filteredTags.map((filteredTag, index) => (
+                                        <DropdownItem key={index} onClick={() => handleTagSelection(filteredTag)} className="dropdown-item">
+                                            {filteredTag}
+                                        </DropdownItem>
+                                    ))}
+                                </Dropdown>
+                            )}
+                        </TagSearch>
+                        <Button asset={MdOutlineNewLabel} height={'auto'} title={'Create New Tag'} onClick={handleTagAdd} />
+                    </TagSearchAndSubmit>
+                </Description>
+                <Description>
+                    <Label>Current Tags</Label>
+                    <TagItems>
+                        {tags.map((tag, index) => (
+                                <Tag key={index}>
+                                    <TagName>{tag}</TagName>
+                                    <DeleteTagBtn type='button' onClick={() => handleTagDelete(tag)}><LuDelete/></DeleteTagBtn>
+                                </Tag>
                             ))}
-                        </Dropdown>
-                    )}
-                </div>
-                <AddTagBtn type="button" onClick={handleTagAdd}>Add tag</AddTagBtn>
-                <div>
-                    {tags.map((tag, index) => (
-                        <Tag key={index}>
-                            {tag}
-                            <DeleteTagBtn type='button' onClick={() => handleTagDelete(tag)}>Delete</DeleteTagBtn>
-                        </Tag>
-                    ))}
-                </div>
-                <p>Item quantity</p>
+                    </TagItems>
+                </Description>
+                <Label>Item quantity</Label>
                 <Input
                     type='number'
                     placeholder='0'
                     value={quantity}
                     onChange={handleQuantityChange}
                 />
-                <Button type="submit">{isEditing ? 'Submit Changes' : 'Create Item'}</Button>
+                <SubmitContainer>
+                    <Submit type="submit">
+                        <Button asset={isEditing ? RiSave3Fill : IoMdAdd} title={isEditing ? 'Save Changes' : 'Create Item'} onClick={() => {}} />
+                    </Submit>
+                </SubmitContainer>
             </Form>
         </Wrapper>
     );

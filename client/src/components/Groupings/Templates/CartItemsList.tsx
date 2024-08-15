@@ -4,7 +4,7 @@ import { BsTrash3 } from "react-icons/bs";
 import { useCart } from '../../../context/CartContext';
 import { useNavigate } from 'react-router';
 import { CartItemType, ItemType } from '../../../context/Types';
-import AddToCartConfirmation from '../../Widgets/Modals/AddToCartConfirmation';
+import AddToCartConfirmation from '../../Widgets/Elements/AddToCartConfirmation';
 
 const ItemsList = styled.div<{ maxHeight: string }>`
     display: flex;

@@ -1,92 +1,222 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
+import apiConfig from "../api-config";
+import Button from "../components/Buttons/Button";
+import { IoMdAdd } from "react-icons/io";
+import { MdViewInAr, MdGroups, MdOutlineFeedback } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
+import { FaPersonCirclePlus, FaTruck } from "react-icons/fa6";
+import { GiCrane } from "react-icons/gi";
+import { IoCalendarOutline } from "react-icons/io5";
+import { LiaToolsSolid } from "react-icons/lia";
+import { PiToolboxDuotone } from "react-icons/pi";
+import { LuLampWallUp } from "react-icons/lu";
+import { HiOutlineWrench } from "react-icons/hi2";
+
 
 const Wrapper = styled.div`
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 100px;
+`
+const Frame = styled.div`
   color: white;
-  background-color: #f2f2f2;
-  padding: 20px;
-  padding-bottom: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 800px;
-  margin: 40px auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  max-width: 1050px;
 `
 const Title = styled.h2`
-  color: black;
+  color: white;
   text-align: center;
-  margin-bottom: 40px;
-  margin-top: 20px;
-`
-const ActionButton = styled.button`
-  padding: 10px 20px;
-  color: black;
-  background-color: white;
-  border: solid 1px black;
-  border-radius: 100vw;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
   margin-bottom: 20px;
-  &:hover {
-    background-color: rgba(162, 89, 255, 0.4);
-  }
-`
- const Box = styled.div`
-  background-color: white;
-  padding: 20px 20px 0px 20px;
-  border-radius: 20px;
-  width: 200px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  color: black;
-`
+  margin-top: 40px;
 
-const BoxTitle = styled.h4`
-  margin-bottom: 20px;
+  /* H3 - Work Sans */
+  font-family: "Work Sans";
+  font-size: 38px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 120%; /* 45.6px */
+  text-transform: capitalize;
 `
-
 const BoxContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 20px;
-`;
+  min-height: calc(100vh - 306px);
+  `;
+ const Box = styled.div`
+  padding: 20px;
+  border-radius: 20px;
+  width: auto;
+  color: white;
+  background: #3B3B3B;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  &:hover {
+    outline: 2px solid white;
+  }
+`
+const Buttons = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  `
+const BoxTitle = styled.h5`
+  color: white;
+  
+  /* H5 - Work Sans */
+  font-family: "Work Sans";
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 140%; /* 30.8px */
+  text-transform: capitalize;
+`
+const Description = styled.p`
+  color: white;
+  max-width: 450px;
+  /* Base (Body) - Space Mono */
+  font-family: "Space Mono";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 22.4px */
+`
 
-const Member: React.FC = () => {
+
+const MemberPage: React.FC = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  const [userType, setUserType] = useState<string | null>(null);
 
   const handleCreateItemClick = () => {
-    console.log('clicked create an item');
     navigate("/item-creation");
   };
 
   const handleViewStockClick = () => {
-    console.log('clicked view stock');
     navigate("/view-stock");
   };
 
+  // Get User Type -- move to utilityFunctions
+	useEffect(() => {
+		const fetchUserType = async () => {
+		  try {
+			const response = await fetch(`${apiConfig.API_URL}/users/me`, {
+			  headers: {
+				'Authorization': `Bearer ${localStorage.getItem('token')}`
+			  }
+			});
+			if (response.ok) {
+			  const data = await response.json();
+			  setUserType(data.user_type);
+			} else {
+			  console.error('Failed to fetch user type:', response.statusText);
+			}
+		  } catch (error) {
+			console.error('Error fetching user type:', error);
+		  }
+		};
+	
+		fetchUserType();
+	  }, []);
+
+    const handleButtonClick = (buttonName: string) => {
+      console.log(`button ${buttonName} is clicked`);
+    }
   return (
     <Wrapper>
-      <Title>Members Area</Title>
-      <BoxContainer>
-        <Box>
-          <BoxTitle>White Label Configuration</BoxTitle>
-          <ActionButton>Edit</ActionButton>
-        </Box>
-        <Box>
-          <BoxTitle>Shop Options</BoxTitle>
-          <ActionButton onClick={handleCreateItemClick}>Add New Item</ActionButton>
-          <ActionButton onClick={handleViewStockClick}>View All Items</ActionButton>
-        </Box>
-      </BoxContainer>
+      <Frame>
+        {token && (userType === "admin") && 
+          <>
+          <Title>Admin Area</Title>
+          <BoxContainer>
+            <Box>
+              <BoxTitle>White Label Configuration</BoxTitle>
+              <Description>Customize the look and feel of your website to align with your brand. Adjust colors, fonts, logos, and other styling elements to create a cohesive and personalized online presence that reflects your business identity.</Description>
+              <Button asset={CiEdit} title={"Edit Style"} onClick={() => handleButtonClick}/>
+            </Box>
+            <Box>
+              <BoxTitle>Inventory Management</BoxTitle>
+              <Description>Manage your product inventory by adding new items for sale, updating pricing, stock levels, and promotional status. Customize product details, including tags, images, names, and descriptions.</Description>
+              <Buttons>
+                <Button asset={IoMdAdd} title={"Create Item"} onClick={handleCreateItemClick}/>
+                <Button asset={MdViewInAr} title={"Manage Items"} onClick={handleViewStockClick}/>
+              </Buttons>
+            </Box>
+            <Box>
+              <BoxTitle>Delivery Settings</BoxTitle>
+              <Description>List construction materials for reccuring deliveries, oversee your drivers' schedule, rate, and routes.</Description>
+              <Buttons>
+                <Button asset={GiCrane} title={"Manage Construction Materials"} onClick={() => handleButtonClick}/>
+                <Button asset={FaTruck} title={"Manage Drivers"} onClick={() => handleButtonClick}/>
+                <Button asset={IoCalendarOutline} title={"View Schedule"} onClick={() => handleButtonClick}/>
+              </Buttons>
+            </Box>
+            <Box>
+              <BoxTitle>Contractor Operations</BoxTitle>
+              <Description>Manage your contractor workforce by adding new professionals, overseeing their roles, schedules, and performance.</Description>
+              <Buttons>
+                <Button asset={FaPersonCirclePlus} title={"Add a Contractor"} onClick={() => handleButtonClick}/>
+                <Button asset={MdGroups} title={"View Team"} onClick={() => handleButtonClick}/>
+              </Buttons>
+            </Box>
+            <Box>
+              <BoxTitle>Rental Equipment Management</BoxTitle>
+              <Description>Keep your rental inventory up to date by adding new equipment, editing existing listings, and managing the availability of tools and machinery for customer rentals.</Description>
+              <Buttons>
+                <Button asset={LiaToolsSolid} title={"Add Rental Equipment"} onClick={() => handleButtonClick}/>
+                <Button asset={PiToolboxDuotone} title={"Edit Rental Inventory"} onClick={() => handleButtonClick}/>
+              </Buttons>
+            </Box>
+            <Box>
+              <BoxTitle>Service Installation Management</BoxTitle>
+              <Description>Offer a variety of installation services to your customers. Manage and edit all existing installation services.</Description>
+              <Buttons>
+                <Button asset={HiOutlineWrench} title={"Offer New Installation Service"} onClick={() => handleButtonClick}/>
+                <Button asset={LuLampWallUp} title={"Manage Installation Services"} onClick={() => handleButtonClick}/>
+              </Buttons>
+            </Box>
+          </BoxContainer>
+        </>
+        }
+        {token && (userType === "super") && 
+          <>
+            <Title>Super User Area</Title>
+            <BoxContainer>
+              <Box>
+                <BoxTitle>My Schedule</BoxTitle>
+                <Description>Stay organized by viewing your work schedule, easily request time off, and submit anonymous or non-anonymous feedback to management. Keep track of your work-life balance all in one place.</Description>
+                <Buttons>
+                  <Button asset={IoCalendarOutline} title={"View Schedule"} onClick={() => handleButtonClick}/>
+                  <Button asset={MdOutlineFeedback} title={"Submit Feedback"} onClick={() => handleButtonClick}/>
+                </Buttons>
+              </Box>
+              <Box>
+                <BoxTitle>Inventory Management</BoxTitle>
+                <Description>Manage your product inventory by adding new items for sale, updating pricing, stock levels, and promotional status. Customize product details, including tags, images, names, and descriptions.</Description>
+                <Buttons>
+                  <Button asset={IoMdAdd} title={"Create Item"} onClick={handleCreateItemClick}/>
+                  <Button asset={MdViewInAr} title={"Manage Items"} onClick={handleViewStockClick}/>
+                </Buttons>
+              </Box>
+            </BoxContainer>
+          </>
+        }
+      </Frame>
     </Wrapper>
   )
 }
 
-export default Member;
+export default MemberPage;
   
   
   

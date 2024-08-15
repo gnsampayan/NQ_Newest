@@ -171,8 +171,10 @@ const SignIn: React.FC = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
-
+	const [userType, setUserType] = useState<string | null>(null);
 	const navigate = useNavigate();
+
+
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		try {
@@ -193,10 +195,27 @@ const SignIn: React.FC = () => {
 
 			if (data.token) {
 				localStorage.setItem('token', data.token);
-				console.log("Sign in successful");
-				console.log(data.token);
-				navigate("/member");
-				window.location.reload();
+				// Fetch user type after getting the token
+				const userResponse = await fetch(`${apiConfig.API_URL}/users/me`, {
+					headers: {
+						'Authorization': `Bearer ${data.token}`
+					}
+				});
+				if (userResponse.ok) {
+					const userData = await userResponse.json();
+					const type = userData.user_type;
+					setUserType(userData.user_type);
+
+					if (type === "admin" || "super") {
+						navigate("/members"); 
+						window.location.reload();
+					} else {
+						navigate("/shop");
+						window.location.reload();
+					}
+				} else {
+					console.error('Failed to fetch user type:', userResponse.statusText);
+				}
 			} else {
 				console.error("Invalid credentials");
 				setMessage('Invalid credentials');
@@ -210,8 +229,11 @@ const SignIn: React.FC = () => {
 	useEffect(() => {
 		const token = localStorage.getItem('token');
 		if (token) {
-			console.log("User is already signed in");
-			navigate("/member");
+			if (userType === "admin" || "super") {
+				navigate("/members"); 
+			} else {
+				navigate("/shop")
+			}
 		}
 	}, [navigate]);
 

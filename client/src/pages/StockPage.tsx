@@ -5,7 +5,9 @@ import CreateItemModal from '../components/CreateItemModal';
 import { ItemType } from '../context/Types';
 import apiConfig from '../api-config';
 import Button from '../components/Buttons/Button';
-import { IoCreateOutline } from "react-icons/io5";
+import { IoMdAdd } from "react-icons/io";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { CiEdit } from "react-icons/ci";
 
 const Grid = styled.div`
   display: flex;
@@ -15,39 +17,93 @@ const Grid = styled.div`
   color: black;
   padding-bottom: 100px;
   `;
-
 const ItemCard = styled.div`
-  width: 200px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
-  `;
-
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 300px;
+  color: white;
+  background: #3B3B3B;
+  position: relative;
+`;
+const ItemCardUnique = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+`;
 const ItemImage = styled.img`
-  width: 100%;
+  width: 60px;
   height: auto;
-  border-radius: 4px;
+  border-radius: 10px;
+  margin-bottom: 10px;
   `;
-
 const ItemInfo = styled.div`
-  margin-top: 10px;
-  `;
-
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+`;
 const DeleteItem = styled.button`
-  //add delte style button here
-  `
-const EditItem = styled.button`
-  //edit styles button here
-  `
+  all: unset;
+  position: absolute;
+  background: #2B2B2B;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: #A259FF;
+  &:hover {
+    background: red;
+    color: white;
+  }
+`
 const CreateModalButton = styled.div`
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  opacity: 60%;
+  margin-left: 20px;
+  margin-top: 20px;
+  z-index: 99;
   &:hover {
     opacity: 100%;
   }
+`
+const Description = styled.p`
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  position: relative;
+  margin-top: 0px;
+  margin-bottom: 0px;
+`
+const Label = styled.p`
+  color: white;
+  /* Caption - Space Mono */
+  font-family: "Space Mono";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 110%; /* 13.2px */
+  margin-bottom: 8px;
+`
+const Body = styled.p`
+  color: white;
+  background: #2B2B2B;
+  padding: 2px 4px;
+  border-radius: 3px;
+  max-height: 60px;
+  overflow: hidden;
+  position: static;
+  /* Base(Body) - Work Sans */
+  font-family: "Work Sans";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 22.4px */
 `
 
 interface Item {
@@ -60,7 +116,6 @@ interface Item {
   tags: string[];
   // Add more item properties as needed
 }
-
 
 const StockPage: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -149,32 +204,61 @@ const StockPage: React.FC = () => {
     />
     <CreateModalButton>
       <Button 
-        asset={IoCreateOutline } 
-        title={'Create New'} 
-        onClick={openCreateModal} 
-        bgColor='white'
-        bgHoverColor='#A259FF'
-        textColor='#A259FF'
-        textHoverColor='white'
-        borderColor='white'
-        borderHoverColor='#A259FF'
+        asset={IoMdAdd} 
+        title={'Create Item'} 
+        onClick={openCreateModal}
         />
     </CreateModalButton>
     <Grid>
       {items.map(item => (
         <ItemCard key={item.id}>
-          <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.title} />
           <ItemInfo>
-            <h3>{item.title}</h3>
-            <p>Price: {item.price}</p>
-            <p>Description: {item.description}</p>
-            <p>Tags: {item.tags && item.tags.length > 0 ? item.tags.join(', ') : 'none'}</p>
-            <p>Quantity: {item.quantity}</p>
+            <Description>
+              <Label>Image</Label>
+              <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.title} />
+            </Description>
+            <Description>
+              <Label>Title</Label>
+              <Body>{item.title}</Body>
+            </Description>
+            <Description>
+              <Label>Price</Label>
+              <Body>{item.price}</Body>
+            </Description>
+            <Description>
+              <Label>Description</Label>
+              <Body>{item.description}</Body>
+            </Description>
+            <Description>
+              <Label>Tags</Label>
+              <Body>{item.tags && item.tags.length > 0 ? item.tags.join(', ') : 'none'}</Body>
+            </Description>
+            <Description>
+              <Label>Quantity In Stock</Label>
+              <Body>{item.quantity}</Body>
+            </Description>
           </ItemInfo>
-          <DeleteItem onClick={() => handleItemDelete(item.id)}>Delete</DeleteItem>
-          <EditItem onClick={() => openModal(item.id)}>Edit</EditItem>
+          <DeleteItem onClick={() => handleItemDelete(item.id)}><RiDeleteBin5Line/></DeleteItem>
+          <Button 
+            // borderColor={'#3B3B3B'}
+            // borderHoverColor={'#3B3B3B'}
+            height='40px'
+            width='100px'
+            asset={CiEdit} 
+            title={'Edit'} 
+            onClick={() => openModal(item.id)}
+          />
         </ItemCard>
       ))}
+      <ItemCardUnique>
+        <CreateModalButton>
+          <Button 
+            asset={IoMdAdd} 
+            title={'Create Item'} 
+            onClick={openCreateModal}
+            />
+        </CreateModalButton>
+      </ItemCardUnique>
     </Grid>
   </>
   );

@@ -9,13 +9,13 @@ import ContactUs from "./pages/ContactUs";
 import SignIn from "./pages/SignInPage";
 import SignUp from "./pages/SignUpPage";
 import Member from './pages/MemberPage';
-import Blade from './components/Widgets/Modals/BladeModal';
-import ItemCreation from './pages/ItemCreation';
+import Blade from './components/Widgets/Elements/Blade';
+import ItemCreation from './pages/CreateItemPage';
 import StockPage from './pages/StockPage';
 import FilteredPage from './pages/FilteredPage';
 import ItemPage from './pages/ItemPage';
 import ServicesPage from './pages/Services/ServicesPage';
-import ShoppingCart from './components/Widgets/Modals/ShoppingCartModal';
+import ShoppingCart from './components/Widgets/Elements/ShoppingCart';
 import CheckOut from './pages/CheckOut';
 
 const Wrapper = styled.div`
@@ -73,7 +73,7 @@ function MainApp() {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/item-creation" element={<ItemCreation isEditing={false}  />} />
-          <Route path="/member" element={<Member />} />
+          <Route path="/members" element={<Member />} />
           <Route path="/view-stock" element={<StockPage />} />
           <Route path="/item/:itemName" element={<ItemPage />} />
           <Route path="/category/:categoryName" element={<FilteredPage />} />

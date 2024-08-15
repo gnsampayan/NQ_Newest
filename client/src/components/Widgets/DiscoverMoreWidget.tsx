@@ -6,7 +6,7 @@ import apiConfig from "../../api-config";
 import Button from "../Buttons/Button";
 import { useNavigate } from "react-router";
 import { ItemType } from "../../context/Types";
-import AddToCartConfirmation from "./Modals/AddToCartConfirmation";
+import AddToCartConfirmation from "./Elements/AddToCartConfirmation";
 import { addItemToCart } from "../../utils/utilityFunctions";
 
 const Container = styled.div`

@@ -113,24 +113,23 @@ export default function(pool) {  // Export as a function that takes pool
     );
   });
 
-  // Getting Username after Login
+  // Getting Username and User Type after Login
+  router.get('/me', authenticateToken, (req, res) => {
+    const userId = req.user.userId;
 
-router.get('/me', authenticateToken, (req, res) => {
-  const userId = req.user.userId;  // Extracted from the token via the middleware
-
-  pool.query('SELECT user_name FROM users WHERE user_id = ?', [userId], (err, results) => {
+    pool.query('SELECT user_name, user_type FROM users WHERE user_id = ?', [userId], (err, results) => {
       if (err) {
-          console.error('Error retrieving user:', err);
-          return res.status(500).json({ error: 'Error retrieving user' });
+        console.error('Error retrieving user:', err);
+        return res.status(500).json({ error: 'Error retrieving user' });
       }
 
       if (results.length > 0) {
-          res.status(200).json({ username: results[0].user_name });
+        return res.status(200).json({ username: results[0].user_name, user_type: results[0].user_type });
       } else {
-          res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
       }
+    });
   });
-});
 
 
 
