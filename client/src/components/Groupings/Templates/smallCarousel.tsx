@@ -84,6 +84,8 @@ interface Props {
   name: Array<string>;
   onClick: (itemName: string) => void;
   enableWrap?: boolean;
+  saleBool: Array<number>;
+  saleRate: Array<number>;
 }
 
 const SmallCarousel = ({
@@ -91,6 +93,8 @@ const SmallCarousel = ({
   amount,
   name,
   enableWrap,
+  saleBool,
+  saleRate
 }: Props) => {
   const itemGroupRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -213,8 +217,10 @@ const SmallCarousel = ({
             itemName={name[index]}
             addToCart={() => { } }
             price={amount[index]}
-            rating={0} 
-            boxSize={"standard"} />
+            rating={0}
+            boxSize={"standard"} 
+            saleBool={saleBool[index]} 
+            saleRate={saleRate[index]} />
         ))}
       </Group>
       <RightButton onClick={scrollRight}>

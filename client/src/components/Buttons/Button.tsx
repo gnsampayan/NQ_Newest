@@ -13,11 +13,12 @@ const Btn = styled.button<{
     textHoverColor?: string,
     height?: string,
     width?: string,
+    padding?: string,
 }>`
         display: flex;
         height: ${({ height }) => height || '60px'};
         width: ${({ width }) => width || 'auto'};
-        padding: 0px 50px;
+        padding: ${({ padding }) => padding || '0px 50px'};
         justify-content: center;
         align-items: center;
         gap: 12px;
@@ -49,7 +50,7 @@ const Btn = styled.button<{
 
 interface Props {
     asset?: IconType;
-    title: string;
+    title?: string;
     borderColor?: string;
     borderHoverColor?: string;
     bgColor?: string;
@@ -61,6 +62,7 @@ interface Props {
     onClick: () => void;
     height?: string,
     width?: string,
+    padding?: string,
 }
 
 const Button = ({ 
@@ -76,7 +78,8 @@ const Button = ({
     textHoverColor,
     onClick,
     height,
-    width
+    width,
+    padding
 } : Props) => {
         return (
             <>
@@ -91,6 +94,7 @@ const Button = ({
                     textColor={textColor}
                     height={height}
                     width={width}
+                    padding={padding}
                     >
                         <IconWrapper icon={IconAsset} fillColor={fillColor} fillHoverColor={fillHoverColor}/>
                         {title}

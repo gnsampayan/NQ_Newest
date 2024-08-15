@@ -206,7 +206,7 @@ const SignIn: React.FC = () => {
 					const type = userData.user_type;
 					setUserType(userData.user_type);
 
-					if (type === "admin" || "super") {
+					if (type === "admin" || type === "super") {
 						navigate("/members"); 
 						window.location.reload();
 					} else {
@@ -229,10 +229,10 @@ const SignIn: React.FC = () => {
 	useEffect(() => {
 		const token = localStorage.getItem('token');
 		if (token) {
-			if (userType === "admin" || "super") {
+			if (userType === "admin" || userType === "super") {
 				navigate("/members"); 
 			} else {
-				navigate("/shop")
+				navigate("/shop");
 			}
 		}
 	}, [navigate]);

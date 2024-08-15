@@ -29,8 +29,6 @@ const Input = styled.input`
     all: unset;
     padding: 8px;
     border-radius: 4px;
-    width: 100%;
-    height: 100%;
     color: white;
     background: #3B3B3B;
     cursor: pointer;
@@ -168,6 +166,13 @@ const TagName = styled.p`
     font-weight: 400;
     line-height: 140%; /* 22.4px */
 `
+const PricingAndSales = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    gap: 10px;
+`
 
 interface ItemCreationProps {
     isEditing: boolean;
@@ -189,6 +194,9 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     const [tags, setTags] = useState<string[]>([]);
     const [quantity, setQuantity] = useState<number>(0);
     const [inputKey, setInputKey] = useState(Date.now());
+    const [saleBool, setSaleBool] = useState<number>(0);
+    const [saleRate, setSaleRate] = useState<number>(1);
+    const [saleEnd, setSaleEnd] = useState<string>('');
 
     const [databaseTags, setDatabaseTags] = useState<string[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -202,6 +210,9 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             setPrice(itemData.price.toString() || '');
             setTags(itemData.tags || []);
             setQuantity(itemData.quantity || 0);
+            setSaleBool(itemData.saleBool || 0);
+            setSaleRate(itemData.saleRate || 1);
+            setSaleEnd(itemData.saleEnd || '');
             
             if (itemData.image) {
                 // Assuming itemData.image is a Base64 string from the backend
@@ -307,6 +318,10 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         formData.append('price', price);
         formData.append('tags', JSON.stringify(tags));
         formData.append('quantity', quantity.toString());
+        // Append sale fields
+        formData.append('saleBool', saleBool.toString());
+        formData.append('saleRate', saleRate.toString());
+        formData.append('saleEnd', saleEnd);
         if (selectedImage) {
             formData.append('image', selectedImage);
         }
@@ -361,8 +376,10 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     setSelectedImage(null);
                     setPreview('');
                     setTag('');
+                    setSaleBool(0);
+                    setSaleRate(1);
+                    setSaleEnd('');
                     setInputKey(Date.now());  // This will change the key and reset the input
-                    console.log("Form reset executed");
                 }
                 // Refetch the tags after successful submission
                 fetchTags();
@@ -463,15 +480,51 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </Description>
-                <Description>
-                    <Label>Item price</Label>
-                    <Input 
-                        type="text"
-                        placeholder="$0.00"
-                        value={displayPrice}
-                        onChange={handlePriceChange}
-                    />
-                </Description>
+                <PricingAndSales>
+                    <Description>
+                        <Label>Item price</Label>
+                        <Input 
+                            type="text"
+                            placeholder="$0.00"
+                            value={displayPrice}
+                            onChange={handlePriceChange}
+                        />
+                    </Description>
+                    <Description>
+                        <Label>Enable Sale</Label>
+                        <input 
+                            type="checkbox" 
+                            checked={(saleBool === 1) ? true : false} 
+                            onChange={(e) => setSaleBool((e.target.checked) ? 1 : 0)} 
+                        />
+                    </Description>
+                    {(saleBool === 1) && 
+                        <>
+                            <Description>
+                                <Label>Sale Rate</Label>
+                                <Input 
+                                    type="number"
+                                    placeholder="1.00"
+                                    value={saleRate}
+                                    step="0.01" // This allows increments of 0.1, which fits your decimal(2,1) requirement
+                                    min="0.01" // Optional: Set a minimum value if necessary
+                                    max="1.00" // Optional: Set a maximum value if necessary
+                                    onChange={(e) => setSaleRate(parseFloat(e.target.value))}
+                                />
+                            </Description>
+                            <Description>
+                                <Label>Sale End Date</Label>
+                                <Input 
+                                    style={{width: "200px"}}
+                                    type="text"
+                                    placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                    value={saleEnd}
+                                    onChange={(e) => setSaleEnd(e.target.value)}
+                                />
+                            </Description>
+                        </>
+                    }
+                </PricingAndSales>
                 <Description>
                     <Label>Search or Create Tags</Label>
                     <TagSearchAndSubmit>

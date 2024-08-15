@@ -74,9 +74,11 @@ const GenericSpread = () => {
       try {
         const response = await fetch(`${apiConfig.API_URL}/items`);
         const data = await response.json();
-        const itemsWithTags = data.map((item: ItemType) => ({
+        const itemsWithTags = data.map((item: ItemType & { sale_bool?: number; sale_rate?: number }) => ({
           ...item,
           tags: item.tags || [],
+          saleBool: item.sale_bool,
+          saleRate: item.sale_rate,
         }));
         setItems(itemsWithTags);
         setFilteredItems(itemsWithTags); // Initially display all items
@@ -179,10 +181,12 @@ const GenericSpread = () => {
             key={index}
             image={item.image}
             itemName={item.title}
-            addToCart={() => {}}
+            addToCart={() => { } }
             price={item.price}
             rating={0}
-            boxSize="standard"
+            boxSize="standard" 
+            saleBool={item.saleBool} 
+            saleRate={item.saleRate}          
           />
         ))}
       </Items>

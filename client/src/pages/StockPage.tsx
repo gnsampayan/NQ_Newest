@@ -8,6 +8,7 @@ import Button from '../components/Buttons/Button';
 import { IoMdAdd } from "react-icons/io";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { CiEdit } from "react-icons/ci";
+import DeleteConfirmationStep from '../components/Widgets/Elements/DeleteConfirmationStep';
 
 const Grid = styled.div`
   display: flex;
@@ -65,9 +66,18 @@ const DeleteItem = styled.button`
   }
 `
 const CreateModalButton = styled.div`
+  z-index: 99;
+  &:hover {
+    opacity: 100%;
+  }
+`
+const TopButtons = styled.div`
   margin-left: 20px;
   margin-top: 20px;
   z-index: 99;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
   &:hover {
     opacity: 100%;
   }
@@ -104,21 +114,20 @@ const Body = styled.p`
   font-style: normal;
   font-weight: 400;
   line-height: 140%; /* 22.4px */
+  overflow: auto;
+`
+const PricingAndSale = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  gap: 20px;
 `
 
-interface Item {
-  id: number;
-  title: string;
-  image: string; // Base64 string
-  quantity: number;
-  price: number;
-  description: string;
-  tags: string[];
-  // Add more item properties as needed
-}
-
 const StockPage: React.FC = () => {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<ItemType[]>([]);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [itemIdToDelete, setItemIdToDelete] = useState<number | null>(null);
   
   const fetchItems = async () => {
     try {
@@ -126,7 +135,7 @@ const StockPage: React.FC = () => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const data: Item[] = await response.json();
+      const data: ItemType[] = await response.json();
       setItems(data);
     } catch (error) {
       console.error('Fetch error:', error);
@@ -136,6 +145,21 @@ const StockPage: React.FC = () => {
   useEffect(() => {
     fetchItems();
   }, [items]);
+
+  const confirmDelete = (itemId: number) => {
+    setItemIdToDelete(itemId);
+    setIsDeleteModalVisible(true);
+  };
+  const handleConfirmDelete = () => {
+    if (itemIdToDelete !== null) {
+      handleItemDelete(itemIdToDelete);
+      setIsDeleteModalVisible(false);
+      setItemIdToDelete(null);
+    }
+  };
+  const handleCancelDelete = () => {
+    setIsDeleteModalVisible(false);
+  };
 
   const handleItemDelete = async (itemId: number) => {
     console.log("Deleting item with ID:", itemId);
@@ -154,7 +178,7 @@ const StockPage: React.FC = () => {
       console.log(data.message);
       // Updating the state to remove the deleted item
       setItems(currentItems => currentItems.filter(item => item.id !== itemId));
-      
+      setIsDeleteModalVisible(false);
     } catch (error) {
       console.error("Deletion failed:", error);
     }
@@ -172,8 +196,6 @@ const StockPage: React.FC = () => {
     if (itemData) {
       let itemDataForState: ItemType = {
         ...itemData,
-        price: itemData.price,
-        rating: 0
       };
       setCurrentItemData(itemDataForState);
     } else {
@@ -190,6 +212,13 @@ const StockPage: React.FC = () => {
 
   return (
     <>
+    {isDeleteModalVisible && (
+        <DeleteConfirmationStep
+          message="Are you sure you want to delete this item?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     <EditItemModal 
       $isVisible={vis} 
       onClose={() => setVis(false)} 
@@ -202,13 +231,20 @@ const StockPage: React.FC = () => {
       $isVisible={createModalVis}
       onClose={() => setCreateModalVis(false)}
     />
-    <CreateModalButton>
+    <TopButtons>
       <Button 
         asset={IoMdAdd} 
         title={'Create Item'} 
         onClick={openCreateModal}
-        />
-    </CreateModalButton>
+        bgColor='#A259FF'
+        bgHoverColor='white'
+        fillColor='white'
+        fillHoverColor='#A259FF'
+        textHoverColor='#A259FF'
+        borderHoverColor='white'
+      />
+      <Button title={"Manage Tags"} onClick={() => {}} />
+    </TopButtons>
     <Grid>
       {items.map(item => (
         <ItemCard key={item.id}>
@@ -221,10 +257,22 @@ const StockPage: React.FC = () => {
               <Label>Title</Label>
               <Body>{item.title}</Body>
             </Description>
-            <Description>
-              <Label>Price</Label>
-              <Body>{item.price}</Body>
-            </Description>
+            <PricingAndSale>
+              <Description>
+                <Label>Price</Label>
+                <Body>{item.price}</Body>
+              </Description>
+              <Description>
+                <Label>Sale?</Label>
+                <Body>{(item.saleBool === 1) ? "Yes" : "No"}</Body>
+              </Description>
+              {(item.saleBool === 1) &&
+                <Description>
+                  <Label>Sale Rate</Label>
+                  <Body>{(item.saleBool === 1) ? item.saleRate : "null"}</Body>
+                </Description>
+              }
+            </PricingAndSale>
             <Description>
               <Label>Description</Label>
               <Body>{item.description}</Body>
@@ -238,10 +286,8 @@ const StockPage: React.FC = () => {
               <Body>{item.quantity}</Body>
             </Description>
           </ItemInfo>
-          <DeleteItem onClick={() => handleItemDelete(item.id)}><RiDeleteBin5Line/></DeleteItem>
-          <Button 
-            // borderColor={'#3B3B3B'}
-            // borderHoverColor={'#3B3B3B'}
+          <DeleteItem onClick={() => confirmDelete(item.id)}><RiDeleteBin5Line/></DeleteItem>
+          <Button
             height='40px'
             width='100px'
             asset={CiEdit} 

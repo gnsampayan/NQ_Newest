@@ -92,12 +92,14 @@ const FilteredPage = () => {
                                 key={i.id}
                                 image={i.image}
                                 itemName={i.title}
-                                addToCart={() => handleAddToCartClick(i) } // add addToCart function here
+                                addToCart={() => handleAddToCartClick(i)} // add addToCart function here
                                 price={i.price}
-                                rating={i.rating} 
-                                boxSize={"large"}
-                                />
-                            ))
+                                rating={i.rating}
+                                boxSize={"large"} 
+                                saleBool={i.saleBool} 
+                                saleRate={i.saleRate}
+                            />
+                        ))
                         ) : (
                         <NoItems>No items</NoItems>
                     )}

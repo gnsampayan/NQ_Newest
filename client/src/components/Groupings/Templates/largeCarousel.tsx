@@ -85,9 +85,7 @@ interface Props {
   items: ItemType[];
 }
 
-const LargeCarousel = ({
-  items
-}: Props) => {
+const LargeCarousel = ({ items }: Props) => {
   const itemGroupRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -169,12 +167,15 @@ const LargeCarousel = ({
           {items.map((item: ItemType, index: number) => (
             <ItemCard 
               key={index}
-              image={item.image} 
-              itemName={item.title} 
+              image={item.image}
+              itemName={item.title}
               addToCart={() => handleAddToCartClick(item)}
-              price={item.price} 
-              rating={item.rating || 0} 
-              boxSize={"large"} />
+              price={item.price}
+              rating={item.rating || 0}
+              boxSize={"large"} 
+              saleBool={item.saleBool} 
+              saleRate={item.saleRate} 
+            />
           ))}
         </Group>
         <RightButton onClick={scrollRightHandler}>

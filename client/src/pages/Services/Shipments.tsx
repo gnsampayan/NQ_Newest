@@ -346,9 +346,9 @@ const Deliveries = () => {
             <ServiceSection>
                 {token ? 
                 <>
-                    <Button title={"Add Recurring Delivery"} onClick={() => {}} />
+                    <Button title={"Request New Shipment"} onClick={() => {}} />
                     <Wrap>
-                        <h1>Deliveries</h1>
+                        <h1>Shipments</h1>
                         <ButtonRef ref={buttonRef}>
                             <ButtonCounter
                                 title={filterTitle}

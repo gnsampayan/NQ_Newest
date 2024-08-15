@@ -16,7 +16,7 @@ export default function(pool) {
           return;
       }
       
-      const { title, description, price, quantity } = req.body;
+      const { title, description, price, quantity, saleBool, saleRate, saleEnd } = req.body;
       const image = req.file.buffer; // Access the image's binary data
 
       // Parse tags from JSON string to array/object
@@ -29,8 +29,8 @@ export default function(pool) {
       }
 
       pool.query(
-        'INSERT INTO items (title, description, price, image, tags, quantity) VALUES (?, ?, ?, ?, ?, ?)',
-        [title, description, price, image, JSON.stringify(parsedTags), quantity],
+        'INSERT INTO items (title, description, price, image, tags, quantity, sale_bool, sale_rate, sale_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [title, description, price, image, JSON.stringify(parsedTags), quantity, saleBool, saleRate, saleEnd],
         (err, results) => {
           if (err) {
             console.error('Error inserting data:', err);
@@ -69,7 +69,7 @@ export default function(pool) {
   
 
     router.get('/', (req, res) => {
-      const query = 'SELECT id, title, description, price, image, tags, quantity FROM items';
+      const query = 'SELECT id, title, description, price, image, tags, quantity, rating, sale_bool, sale_rate, sale_end FROM items';
       pool.query(query, (err, results) => {
         if (err) {
           console.error('Error fetching items:', err);
@@ -78,6 +78,9 @@ export default function(pool) {
           const itemsWithBase64Images = results.map(item => ({
             ...item,
             image: item.image ? Buffer.from(item.image).toString('base64') : null,
+            saleBool: item.sale_bool,
+            saleRate: item.sale_rate,
+            saleEnd: item.sale_end,
           }));
           res.json(itemsWithBase64Images);
         }
@@ -135,7 +138,7 @@ export default function(pool) {
       const itemId = req.params.itemId;
   
       // Handle the incoming data similar to the POST route
-      const { title, description, price, quantity } = req.body;
+      const { title, description, price, quantity, saleBool, saleRate, saleEnd } = req.body;
       let image, parsedTags;
   
       // Check and process the image if it's provided
@@ -152,8 +155,8 @@ export default function(pool) {
       }
   
       // Update query
-      let updateQuery = 'UPDATE items SET title = ?, description = ?, price = ?, quantity = ?, tags = ?';
-      let queryParams = [title, description, price, quantity, JSON.stringify(parsedTags)];
+      let updateQuery = 'UPDATE items SET title = ?, description = ?, price = ?, quantity = ?, tags = ?, sale_bool = ?, sale_rate = ?, sale_end = ?';
+      let queryParams = [title, description, price, quantity, JSON.stringify(parsedTags), saleBool, saleRate, saleEnd];
   
       // Add image to query if it exists
       if (image) {

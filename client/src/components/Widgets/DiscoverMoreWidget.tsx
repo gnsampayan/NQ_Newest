@@ -74,7 +74,14 @@ const DiscoverMore = () => {
             try {
                 const response = await fetch(`${apiConfig.API_URL}/items`);
                 const data = await response.json();
-                setItems(data);
+                // Temporarily extend ItemType to include sale_bool and sale_rate
+				const itemsWithTags = data.map((item: ItemType & { sale_bool?: number; sale_rate?: number }) => ({
+					...item,
+					tags: item.tags || [],         
+					saleBool: item.sale_bool,  
+					saleRate: item.sale_rate,      
+				}));
+                setItems(itemsWithTags);
             } catch (error) {
                 console.error('Error fetching items:', error);
             }
@@ -123,9 +130,11 @@ const DiscoverMore = () => {
                     itemName={i.title}
                     addToCart={() => handleAddToCartClick(i)} // add addToCart funtion here
                     price={i.price}
-                    rating={i.rating} 
-                    boxSize={"large"}
-                    />
+                    rating={i.rating}
+                    boxSize={"large"} 
+                    saleBool={i.saleBool} 
+                    saleRate={i.saleRate}                   
+                />
                 ))
             ) : (
                 <NoItems>No items</NoItems>

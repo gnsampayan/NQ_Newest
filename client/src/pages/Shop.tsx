@@ -201,7 +201,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 				// Ensure each item has a 'tags' field initialized as an array
 				const itemsWithTags = data.map((item: ItemType) => ({
 					...item,
-					tags: item.tags || [], // If 'tags' is null/undefined, initialize as empty array
+					tags: item.tags || [],
 				}));
 				setItems(itemsWithTags);
 				// Calculate item counts for each tab
@@ -236,7 +236,9 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 				itemDescription={filteredItems.map(item => item.description)}
 				amount={filteredItems.map(item => item.price)}
 				name={filteredItems.map(item => item.title)}
-				onClick={(itemName) => handleItemClick(itemName)}
+				onClick={(itemName) => handleItemClick(itemName)} 
+				saleBool={filteredItems.map(item => item.saleBool)} 
+				saleRate={filteredItems.map(item => item.saleRate)}			
 			/>
 		);
 	});

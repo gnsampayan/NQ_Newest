@@ -61,12 +61,15 @@ const AddToCartConfirmation = ({
         <H2>Added To Cart</H2>
         <ItemCardContainer>
             <ItemCard 
-                image={item.image} 
-                itemName={item.title} 
-                addToCart={() => {}} 
-                price={item.price} 
-                rating={item.rating} 
-                boxSize={"standard"} />
+              image={item.image}
+              itemName={item.title}
+              addToCart={() => { } }
+              price={item.price}
+              rating={item.rating}
+              boxSize={"standard"} 
+              saleBool={item.saleBool} 
+              saleRate={item.saleRate} 
+            />
         </ItemCardContainer>
       </ModalContent>
     </Frame>

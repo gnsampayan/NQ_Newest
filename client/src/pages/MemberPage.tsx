@@ -91,7 +91,28 @@ const Description = styled.p`
   font-weight: 400;
   line-height: 140%; /* 22.4px */
 `
-
+const Label = styled.p`
+  color: #858584;
+  margin-bottom: 10px;
+  /* Caption - Space Mono */
+  font-family: "Space Mono";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 110%; /* 13.2px */
+`
+const UserType = styled.h5`
+  color: var(--White, #FFF);
+  margin-bottom: 20px;
+  margin-top: 0px;
+  /* Base(Body) - Work Sans */
+  font-family: "Work Sans";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 22.4px */
+  text-transform: capitalize;
+`
 
 const MemberPage: React.FC = () => {
   const navigate = useNavigate();
@@ -135,9 +156,11 @@ const MemberPage: React.FC = () => {
   return (
     <Wrapper>
       <Frame>
+        <Title>User Area </Title>
+        <Label>User Type</Label>
+        <UserType>{userType}</UserType>
         {token && (userType === "admin") && 
           <>
-          <Title>Admin Area</Title>
           <BoxContainer>
             <Box>
               <BoxTitle>White Label Configuration</BoxTitle>
@@ -190,7 +213,6 @@ const MemberPage: React.FC = () => {
         }
         {token && (userType === "super") && 
           <>
-            <Title>Super User Area</Title>
             <BoxContainer>
               <Box>
                 <BoxTitle>My Schedule</BoxTitle>

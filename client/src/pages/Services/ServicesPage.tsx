@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import Deliveries from "./Deliveries";
+import Deliveries from "./Shipments";
 import ContractorServices from "./ContractorServices";
 import ServicesSection from "../../components/Widgets/ServicesWidget";
 import ToolRentals from "./ToolRentals";

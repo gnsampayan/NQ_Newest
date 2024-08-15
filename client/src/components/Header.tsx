@@ -296,7 +296,8 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 			<DDFrame ref={userDropdownRef} style={{padding: "20px 20px 20px 20px"}}>
 				{token ? 
 					<>
-						{(userType === "admin" || "super") && <DDNav onClick={() => navigate('/members')}>User Area</DDNav>}
+						{(userType === "admin" || userType === "super") && <DDNav onClick={() => navigate('/members')}>User Area</DDNav>}
+						<DDNav>My Orders</DDNav>
 						<DDNav>My Profile</DDNav>
 						<DDNav>Account Settings</DDNav>
 						<DDNav>My Wishlist</DDNav>
@@ -314,7 +315,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 	const ServicesDropdown = () => {
 		return (
 			<DDFrame ref={servicesDropdownRef}>
-				<DDNav onClick={() => navigate('/services/deliveries')}>Deliveries</DDNav>
+				<DDNav onClick={() => navigate('/services/deliveries')}>Shipments</DDNav>
 				<DDNav onClick={() => navigate('/services/contractor-services')}>Contractor Services</DDNav>
 				<DDNav onClick={() => navigate('/services/tool-rentals')}>Tool Rentals</DDNav>
 				<DDNav onClick={() => navigate('/services/installation-services')}>Installation Services</DDNav>

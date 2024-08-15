@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BsCartPlus, BsFillStarFill } from "react-icons/bs";
+import { BsCartPlus } from "react-icons/bs";
 import { useNavigate } from "react-router";
 
 const styleConfig = {
@@ -177,7 +177,6 @@ const Price = styled.div<{ boxSize: BoxSize }>`
     flex: 1 0 0;
     cursor: default;
     gap: 8px;
-    
     flex-direction: ${(props) => styleConfig[props.boxSize].flexDirection};
 `;
 const Rating = styled.div<{ boxSize: BoxSize }>`
@@ -206,9 +205,20 @@ const Caption = styled.p<{ boxSize: BoxSize }>`
 const Caption2 = styled(Caption)`
     text-align: right;
 `;
-const Base = styled.p`
+const Base = styled.p<{ saleBool : number }>`
     align-self: stretch;
+    text-decoration: ${(props) => (props.saleBool === 1) ? "line-through" : "none"};
+    color: ${(props) => props.saleBool ? "#a85144" : "#5aff73"};
 
+    font-family: "Space Mono";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+`;
+const Base2 = styled.p`
+    text-align: right;
+    align-self: stretch;
     color: white;
 
     font-family: "Space Mono";
@@ -217,9 +227,6 @@ const Base = styled.p`
     font-weight: 400;
     line-height: 140%; /* 22.4px */
 `;
-const Base2 = styled(Base)`
-    text-align: right;
-`;
 const AddToCartAndAdditionalInfo = styled.div<{ boxSize: BoxSize }>`
     width: 100%;
     margin-top: auto; /* Push this div to the bottom */
@@ -227,6 +234,23 @@ const AddToCartAndAdditionalInfo = styled.div<{ boxSize: BoxSize }>`
     display: flex;
     flex-direction: column;
 `;
+const SalePrice = styled.div<{ saleBool: number }>`
+    align-self: stretch;
+    color: #5aff73;
+    display: ${(props) => (props.saleBool === 1) ? "block" : "none"};
+    font-family: "Space Mono";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+`
+const Discount = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+`
 interface Props {
     image: string;
     itemName: string;
@@ -234,10 +258,12 @@ interface Props {
     price: number;
     rating: number;
     boxSize: BoxSize;
+    saleBool: number;
+    saleRate: number;
 }
 type BoxSize = 'standard' | 'large';
 
-const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props) => {
+const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize, saleRate, saleBool } : Props) => {
     const navigate = useNavigate();
 
     const handleItemClick = () => {
@@ -248,6 +274,7 @@ const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props
         event.stopPropagation();  // This prevents the parent Card's onClick from being triggered
         addToCart();
     };
+    const salePrice = saleBool ? (price * saleRate).toFixed(2) : null;
   return (
     <>
         <Card boxSize={boxSize} onClick={handleItemClick}>
@@ -265,12 +292,16 @@ const ItemCard = ({ image, itemName, addToCart, price, rating, boxSize } : Props
                     <AdditionalInfo>
                         <Price boxSize={boxSize}>
                             <Caption boxSize={boxSize}>Price</Caption>
-                            <Base>${price}</Base>
+                            <Discount>
+                                <Base saleBool={saleBool}>${price}</Base>
+                                <SalePrice saleBool={saleBool}>
+                                    ${salePrice}
+                                </SalePrice>
+                            </Discount>
                         </Price>
                         <Rating boxSize={boxSize}>
                             <Caption2 boxSize={boxSize}>Rating</Caption2>
                             <Base2>{rating}
-                                <BsFillStarFill style={{transform: 'translateY(-3px)', marginLeft: '10px'}}/>
                             </Base2>
                         </Rating>
                     </AdditionalInfo>

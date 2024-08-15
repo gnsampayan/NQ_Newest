@@ -65,11 +65,15 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 			try {
 				const response = await fetch(`${apiConfig.API_URL}/items`);
 				const data = await response.json();
-				// Ensure each item has a 'tags' field initialized as an array
-				const itemsWithTags = data.map((item: ItemType) => ({
+	
+				// Temporarily extend ItemType to include sale_bool and sale_rate
+				const itemsWithTags = data.map((item: ItemType & { sale_bool?: number; sale_rate?: number }) => ({
 					...item,
-					tags: item.tags || [], // If 'tags' is null/undefined, initialize as empty array
+					tags: item.tags || [],         
+					saleBool: item.sale_bool,  
+					saleRate: item.sale_rate,      
 				}));
+	
 				setItems(itemsWithTags);
 			} catch (error) {
 				console.error('Error fetching items:', error);
@@ -77,6 +81,7 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 		};
 		fetchItems();
 	}, []);
+	
 
 	const filteredSection = TabWidgetParams.find(section => section.title === selectedSection);
 
@@ -107,7 +112,7 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 						fillHoverColor={"white"}
 						/>
 				</SectionHeader>
-				<LargeCarousel 	items={filteredItems}/>
+				<LargeCarousel items={filteredItems}/>
 			</Container>
 		</Wrapper>
 	);

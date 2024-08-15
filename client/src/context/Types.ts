@@ -7,6 +7,9 @@ export interface ItemType {
     price: number;
     rating: number;
     tags: string[];
+    saleBool: number;
+    saleRate: number;
+    saleEnd: string;
   }
 
 export interface CartItemType {
