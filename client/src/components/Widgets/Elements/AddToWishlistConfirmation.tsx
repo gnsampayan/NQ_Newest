@@ -30,18 +30,20 @@ const ModalContent = styled.div`
 const H2 = styled.h2`
     color: white;
 `;
+
 const ItemCardContainer = styled.div`
     position: relative;
     max-width: 300px;
-`
-const AddToCartConfirmation = ({
+`;
+
+const AddToWishlistConfirmation = ({
   item,
   onClose,
-  delete: isDeleted = false,  // Default to false
+  alreadyInWishlist,
 }: {
   item: ItemType;
   onClose: () => void;
-  delete?: boolean;
+  alreadyInWishlist: boolean;
 }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,10 +56,11 @@ const AddToCartConfirmation = ({
   const handleClose = () => {
     onClose();
   };
+
   return (
     <Frame onClick={handleClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}> 
-        <H2>{isDeleted ? "Deleted From Cart" : "Added To Cart"}</H2>
+        <H2>{alreadyInWishlist ? "Already in Wishlist" : "Added To Wishlist"}</H2>
         <ItemCardContainer>
             <ItemCard 
               image={item.image}
@@ -75,4 +78,4 @@ const AddToCartConfirmation = ({
   );
 };
 
-export default AddToCartConfirmation;
+export default AddToWishlistConfirmation;

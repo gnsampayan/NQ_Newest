@@ -107,4 +107,66 @@ export async function fetchUsernameFromDatabase(): Promise<string | null> {
   }
 }
 
+// Utility function to add an item to the wishlist
+export const addItemToWishlist = async (
+  newItem: ItemType,
+  setConfirmationItem: (item: ItemType) => void
+): Promise<void> => {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    console.error('User must be logged in to add items to the wishlist.');
+    return;
+  }
+
+  try {
+    const wishlistData = await fetchWishlist(token);
+
+    if (wishlistData.itemIdsArray.includes(newItem.id)) {
+      console.log(`Item ${newItem.id} is already in the wishlist.`);
+    } else {
+      await addItemToWishlistAPI(newItem, token);
+      console.log(`Item ${newItem.id} added to the wishlist.`);
+    }
+
+    setConfirmationItem(newItem);
+  } catch (error) {
+    console.error('Error handling wishlist:', error);
+  }
+};
+
+const fetchWishlist = async (token: string) => {
+  const response = await fetch(`${apiConfig.API_URL}/wishlists`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to fetch wishlist: ${errorText}`);
+  }
+
+  return await response.json();
+};
+
+const addItemToWishlistAPI = async (newItem: ItemType, token: string) => {
+  const response = await fetch(`${apiConfig.API_URL}/wishlists`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ items: [{ id: newItem.id }] }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to add item to wishlist: ${errorText}`);
+  }
+
+  return await response.json();
+};
 

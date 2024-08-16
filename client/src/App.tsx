@@ -17,6 +17,7 @@ import ItemPage from './pages/ItemPage';
 import ServicesPage from './pages/Services/ServicesPage';
 import ShoppingCart from './components/Widgets/Elements/ShoppingCart';
 import CheckOut from './pages/CheckOut';
+import WishlistPage from './pages/WishlistPage';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -78,6 +79,7 @@ function MainApp() {
           <Route path="/item/:itemName" element={<ItemPage />} />
           <Route path="/category/:categoryName" element={<FilteredPage />} />
           <Route path="/check-out" element={<CheckOut />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
           {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </Wrapper>

@@ -7,8 +7,10 @@ import { ItemType } from "../context/Types";
 import apiConfig from "../api-config";
 import { useEffect, useState } from "react";
 import AddToCartConfirmation from "../components/Widgets/Elements/AddToCartConfirmation";
-import { addItemToCart } from "../utils/utilityFunctions";
+import { addItemToCart, addItemToWishlist } from "../utils/utilityFunctions";
 import Footer from "../components/Widgets/FooterWidget";
+import AddToWishlistConfirmation from "../components/Widgets/Elements/AddToWishlistConfirmation";
+import LoginPromptModal from "../components/Widgets/Elements/LoginPromptModal";
 
 const Page = styled.div`
     color: white;
@@ -299,76 +301,89 @@ const RatingStars = ({ rating }: { rating: number }) => {
   };
 
 const ItemPage = () => {
-    const location = useLocation();
-    const { image, itemName } = location.state as {
-        image: string;
-        itemName: string;
-    };
-    const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
+    const { state } = useLocation();
+    const { image, itemName } = state as { image: string; itemName: string };
+    
+    const [confirmationItemForCart, setConfirmationItemForCart] = useState<ItemType | null>(null);
+    const [confirmationItemForWishlist, setConfirmationItemForWishlist] = useState<ItemType | null>(null);
+    const [alreadyInWishlist, setAlreadyInWishlist] = useState(false);
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [item, setItem] = useState<ItemType | null>(null);
     const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
-
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const response = await fetch(`${apiConfig.API_URL}/items`);
-                const data = await response.json();
-                const foundItem = data.find((item: ItemType) => item.title.toLowerCase() === itemName.toLowerCase());
-                
-                // Map the back-end properties to front-end properties
-                if (foundItem) {
-                    const mappedItem: ItemType = {
-                        ...foundItem,
-                        saleBool: foundItem.sale_bool,
-                        saleRate: foundItem.sale_rate,
-                        saleEnd: foundItem.sale_end,   
-                        
-                    };
-                    setItem(mappedItem);
-                } else {
-                    setItem(null);
-                }
-            } catch (error) {
-                console.error('Error fetching items:', error);
-            }
-        };
-        fetchItems();
-    }, [itemName]);
     
 
     useEffect(() => {
-        if (item && item.saleBool) {
-            const saleEndTime = new Date(item.saleEnd).getTime();
-            startCountdown(saleEndTime);
+        const fetchItemDetails = async () => {
+          try {
+            const response = await fetch(`${apiConfig.API_URL}/items`);
+            const data = await response.json();
+            const foundItem = data.find((item: ItemType) => item.title.toLowerCase() === itemName.toLowerCase());
+            setItem(foundItem || null);
+          } catch (error) {
+            console.error('Error fetching items:', error);
+          }
+        };
+        
+        fetchItemDetails();
+      }, [itemName]);
+    
+
+    useEffect(() => {
+        if (item?.saleBool) {
+          startCountdown(new Date(item.saleEnd).getTime());
         }
-    }, [item]);
+      }, [item]);
 
     const startCountdown = (targetTime: number) => {
         const updateTimer = () => {
-            const currentTime = new Date().getTime();  // Get current time in UTC
-            const remainingTime = targetTime - currentTime;
-    
-            if (remainingTime <= 0) {
-                clearInterval(interval);
-                setTime({ hours: 0, minutes: 0, seconds: 0 });
-            } else {
-                const totalHours = Math.floor(remainingTime / (1000 * 60 * 60));
-                const mins = Math.floor((remainingTime / (1000 * 60)) % 60);
-                const secs = Math.floor((remainingTime / 1000) % 60);
-                setTime({ hours: totalHours, minutes: mins, seconds: secs });
-            }
+          const remainingTime = targetTime - Date.now();
+          
+          if (remainingTime <= 0) {
+            clearInterval(interval);
+            setTime({ hours: 0, minutes: 0, seconds: 0 });
+          } else {
+            setTime({
+              hours: Math.floor(remainingTime / (1000 * 60 * 60)),
+              minutes: Math.floor((remainingTime / (1000 * 60)) % 60),
+              seconds: Math.floor((remainingTime / 1000) % 60),
+            });
+          }
         };
     
         const interval = setInterval(updateTimer, 1000);
-        updateTimer(); // Initial call to set the timer immediately
-    
+        updateTimer();
         return () => clearInterval(interval);
-    };
+      };
 
     const handleAddToCartClick = async (newItem: ItemType) => {
-        await addItemToCart(newItem, setConfirmationItem);
+        await addItemToCart(newItem, setConfirmationItemForCart);
     };
 
+    const handleAddToWishlistClick = async (newItem: ItemType) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setShowLoginPrompt(true);  // Show the login prompt modal
+            return;
+        }
+
+        try {
+            const response = await fetch(`${apiConfig.API_URL}/wishlists`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            const data = await response.json();
+            const isAlreadyInWishlist = data.itemIdsArray.includes(newItem.id);
+    
+            setAlreadyInWishlist(isAlreadyInWishlist);
+            if (!isAlreadyInWishlist) {
+                await addItemToWishlist(newItem, setConfirmationItemForWishlist);
+            } else {
+                setConfirmationItemForWishlist(newItem);
+            }
+        } catch (error) {
+            console.error('Error adding item to wishlist:', error);
+        }
+    };
+    
     if (!item) {
         return <p>Loading item details...</p>;
     }
@@ -384,7 +399,7 @@ const ItemPage = () => {
                         title={""}
                         bgColor="white"
                         padding="0px 20px"
-                        onClick={() => console.log('added to wishlist')}
+                        onClick={() => handleAddToWishlistClick(item)}
                     />
                 </LikeBtnContainer>
             </Image>
@@ -477,11 +492,21 @@ const ItemPage = () => {
                 </ItemInfoContainer>
             </Frame>
             <Footer />
-            {confirmationItem && (
+            {confirmationItemForCart && (
                 <AddToCartConfirmation 
-                    item={confirmationItem} 
-                    onClose={() => setConfirmationItem(null)}
+                    item={confirmationItemForCart} 
+                    onClose={() => setConfirmationItemForCart(null)}
                 />
+            )}
+            {confirmationItemForWishlist && (
+                <AddToWishlistConfirmation
+                item={confirmationItemForWishlist} 
+                onClose={() => setConfirmationItemForWishlist(null)}
+                alreadyInWishlist={alreadyInWishlist}
+                />
+            )}
+            {showLoginPrompt && ( // Render the login prompt modal
+                <LoginPromptModal onClose={() => setShowLoginPrompt(false)} />
             )}
         </Page>
     );

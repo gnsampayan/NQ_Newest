@@ -300,7 +300,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 						<DDNav>My Orders</DDNav>
 						<DDNav>My Profile</DDNav>
 						<DDNav>Account Settings</DDNav>
-						<DDNav>My Wishlist</DDNav>
+						<DDNav onClick={() => navigate('/wishlist')}>My Wishlist</DDNav>
 						<DDNav onClick={handleSignInAndOut}>Sign Out</DDNav>
 					</> 
 					: 

@@ -55,6 +55,7 @@ const ItemCardsCollection = styled.div`
     gap: 30px;
     height: auto;
     flex-wrap: wrap;
+
 `
 const NoItems = styled.div`
   font-size: 18px;
@@ -62,6 +63,9 @@ const NoItems = styled.div`
   text-align: center;
   margin-top: 20px;
 `;
+const ItemFrame = styled.div`
+    max-width: 330px;
+`
 
 const FilteredPage = () => {
     const location = useLocation();
@@ -88,17 +92,19 @@ const FilteredPage = () => {
                 <ItemCardsCollection>
                     {relevantItems && relevantItems.length > 0 ? (
                         relevantItems.map(i => (
-                            <ItemCard
-                                key={i.id}
-                                image={i.image}
-                                itemName={i.title}
-                                addToCart={() => handleAddToCartClick(i)} // add addToCart function here
-                                price={i.price}
-                                rating={i.rating}
-                                boxSize={"large"} 
-                                saleBool={i.saleBool} 
-                                saleRate={i.saleRate}
-                            />
+                            <ItemFrame>
+                                <ItemCard
+                                    key={i.id}
+                                    image={i.image}
+                                    itemName={i.title}
+                                    addToCart={() => handleAddToCartClick(i)} // add addToCart function here
+                                    price={i.price}
+                                    rating={i.rating}
+                                    boxSize={"large"} 
+                                    saleBool={i.saleBool} 
+                                    saleRate={i.saleRate}
+                                />
+                            </ItemFrame>
                         ))
                         ) : (
                         <NoItems>No items</NoItems>

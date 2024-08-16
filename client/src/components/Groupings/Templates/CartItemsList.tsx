@@ -172,9 +172,12 @@ const CartItemsList: React.FC<CartItemsListProps> = ({ maxHeight }) => {
             description: item.description,
             price: item.price,
             image: item.image,
-            quantity: item.totalInStock, // Assuming you have totalInStock, otherwise, adjust accordingly
-            rating: 4.5, // Add a default rating or get it from somewhere
-            tags: [] // Add tags if available
+            quantity: item.totalInStock,
+            rating: 0,
+            tags: [],
+            saleBool: 0,
+            saleRate: 0,
+            saleEnd: ''
         };
         
         setIsDelete(true);
