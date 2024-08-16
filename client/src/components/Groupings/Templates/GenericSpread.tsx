@@ -4,6 +4,7 @@ import { ItemType } from "../../../context/Types";
 import apiConfig from "../../../api-config";
 import ItemCard from "../../Cards/ItemCard";
 import ButtonCounter from "../../Buttons/ButtonCounter";
+import FilteringColumnWidget from "../../Widgets/FilteringColumnWidget";
 
 const Spread = styled.div`
   width: 100%;
@@ -58,6 +59,10 @@ const Items = styled.div`
 const ButtonRef = styled.div`
   position: relative;
 `;
+const Floor = styled.div`
+	width: 100%;
+	display: flex;
+`
 
 
 const GenericSpread = () => {
@@ -65,6 +70,9 @@ const GenericSpread = () => {
   const [filteredItems, setFilteredItems] = useState<ItemType[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [buttonTitle, setButtonTitle] = useState("All");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number] | null>(null);
+  const [dropdownOption, setDropdownOption] = useState<string>("All");
 
   const buttonRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -74,11 +82,9 @@ const GenericSpread = () => {
       try {
         const response = await fetch(`${apiConfig.API_URL}/items`);
         const data = await response.json();
-        const itemsWithTags = data.map((item: ItemType & { sale_bool?: number; sale_rate?: number }) => ({
+        const itemsWithTags = data.map((item: ItemType) => ({
           ...item,
           tags: item.tags || [],
-          saleBool: item.sale_bool,
-          saleRate: item.sale_rate,
         }));
         setItems(itemsWithTags);
         setFilteredItems(itemsWithTags); // Initially display all items
@@ -90,26 +96,46 @@ const GenericSpread = () => {
     fetchItems();
   }, []);
 
+  const applyFilters = (tags: string[], priceRange: [number, number] | null, dropdown: string) => {
+    let filtered = [...items];
+
+    if (tags.length > 0) {
+      filtered = filtered.filter(item =>
+        tags.every(tag =>
+          item.tags.some(itemTag => itemTag.toLowerCase() === tag.toLowerCase())
+        )
+      );
+    }
+
+    if (priceRange) {
+      filtered = filtered.filter(item => item.price >= priceRange[0] && item.price <= priceRange[1]);
+    }
+
+    if (dropdown === "Lowest Price") {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (dropdown === "Highest Price") {
+      filtered.sort((a, b) => b.price - a.price);
+    } else if (dropdown !== "All") {
+      filtered = filtered.filter(item =>
+        item.tags.some(tag => tag.toLowerCase() === dropdown.toLowerCase())
+      );
+    }
+
+    setFilteredItems(filtered);
+  };
+
+  const handleFilterChange = (newSelectedTags: string[], newPriceRange?: [number, number] | null) => {
+    const updatedPriceRange = newPriceRange || null;
+    setSelectedTags(newSelectedTags);
+    setSelectedPriceRange(updatedPriceRange);
+    applyFilters(newSelectedTags, updatedPriceRange, dropdownOption);
+  };
+
   const handleOptionClick = (option: string) => {
     setButtonTitle(option);
+    setDropdownOption(option);
     setIsDropdownVisible(false);
-
-    let sortedItems = [...items];
-
-    if (option === "All") {
-      setFilteredItems(items);
-    } else if (option === "Lowest Price") {
-      sortedItems.sort((a, b) => a.price - b.price);
-      setFilteredItems(sortedItems);
-    } else if (option === "Highest Price") {
-      sortedItems.sort((a, b) => b.price - a.price);
-      setFilteredItems(sortedItems);
-    } else {
-      sortedItems = items.filter((item) =>
-        item.tags.some((tag) => tag.toLowerCase() === option.toLowerCase())
-      );
-      setFilteredItems(sortedItems);
-    }
+    applyFilters(selectedTags, selectedPriceRange, option);
   };
 
   const toggleDropdown = () => {
@@ -161,36 +187,39 @@ const GenericSpread = () => {
   };
 
   return (
-    <Spread>
-      <ButtonContainer>
-        <ButtonRef ref={buttonRef}>
-          <ButtonCounter
-            onClick={toggleDropdown}
-            title={buttonTitle}
-            type="default"
-            totalVisItemsCards={filteredItems.length} // Show count of visible items
-          />
-        </ButtonRef>
-        <Dropdown ref={dropdownRef} isVisible={isDropdownVisible}>
-          {renderOptions()}
-        </Dropdown>
-      </ButtonContainer>
-      <Items>
-        {filteredItems.map((item, index) => (
-          <ItemCard
-            key={index}
-            image={item.image}
-            itemName={item.title}
-            addToCart={() => { } }
-            price={item.price}
-            rating={0}
-            boxSize="standard" 
-            saleBool={item.saleBool} 
-            saleRate={item.saleRate}          
-          />
-        ))}
-      </Items>
-    </Spread>
+    <Floor>
+      <FilteringColumnWidget onFilterChange={handleFilterChange} />
+      <Spread>
+        <ButtonContainer>
+          <ButtonRef ref={buttonRef}>
+            <ButtonCounter
+              onClick={toggleDropdown}
+              title={buttonTitle}
+              type="default"
+              totalVisItemsCards={filteredItems.length} // Show count of visible items
+            />
+          </ButtonRef>
+          <Dropdown ref={dropdownRef} isVisible={isDropdownVisible}>
+            {renderOptions()}
+          </Dropdown>
+        </ButtonContainer>
+        <Items>
+          {filteredItems.map((item, index) => (
+            <ItemCard
+              key={index}
+              image={item.image}
+              itemName={item.title}
+              addToCart={() => { } }
+              price={item.price}
+              rating={0}
+              boxSize="standard" 
+              saleBool={item.saleBool} 
+              saleRate={item.saleRate}          
+            />
+          ))}
+        </Items>
+      </Spread>
+    </Floor>
   );
 };
 

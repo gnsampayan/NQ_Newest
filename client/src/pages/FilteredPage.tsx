@@ -65,6 +65,7 @@ const NoItems = styled.div`
 `;
 const ItemFrame = styled.div`
     max-width: 330px;
+    display: flex;
 `
 
 const FilteredPage = () => {

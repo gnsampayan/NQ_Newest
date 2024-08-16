@@ -173,6 +173,27 @@ const PricingAndSales = styled.div`
     flex-direction: row;
     gap: 10px;
 `
+const AddTagButton = styled.button`
+    all: unset;
+    display: flex;
+    color: white;
+    border: 1px solid white;
+    border-radius: 20px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0px 20px;
+    /* Caption - Work Sans */
+    font-family: "Work Sans";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 110%; /* 13.2px */
+    &:hover {
+        background: white;
+        color: #A259FF;
+    }
+`
 
 interface ItemCreationProps {
     isEditing: boolean;
@@ -549,7 +570,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                                 </Dropdown>
                             )}
                         </TagSearch>
-                        <Button asset={MdOutlineNewLabel} height={'auto'} title={'Create New Tag'} onClick={handleTagAdd} />
+                        <AddTagButton onClick={handleTagAdd} type="button"><MdOutlineNewLabel/>Create New Tag</AddTagButton>
                     </TagSearchAndSubmit>
                 </Description>
                 <Description>

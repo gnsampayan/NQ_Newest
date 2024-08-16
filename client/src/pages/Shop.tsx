@@ -8,6 +8,7 @@ import SmallCarousel from "../components/Groupings/Templates/SmallCarousel";
 import { ItemType } from "../context/Types";
 import GenericSpread from "../components/Groupings/Templates/GenericSpread";
 import apiConfig from "../api-config";
+
 const Wrapper = styled.div<ShopProps>`
 	color: white;
 	margin-left: ${props => props.$margin};
@@ -57,49 +58,6 @@ const TabButton = styled.button<{ isActive: boolean }>`
         background-color: ${props => props.isActive ? '#858584' : '#3B3B3B'};
     }
 `;
-const Floor = styled.div`
-	width: 100%;
-	display: flex;
-`
-const FilterColumn = styled.div`
-	display: flex;
-	flex-direction: column;
-	padding: 40px;
-	color: white;
-	height: 100%;
-	margin-top: 80px;
-	margin-left: 20px;
-	border-radius: 20px;
-	background: #3B3B3B;
-`;
-const H5 = styled.h4`
-	/* H5 - Work Sans */
-    font-family: "Work Sans";
-    font-style: normal;
-    font-weight: 600;
-    line-height: 140%; /* 30.8px */
-    text-transform: capitalize;
-	color: #858584;
-`
-const Caption = styled.p`
-	/* Caption - Space Mono */
-    font-family: "Space Mono";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 110%; /* 13.2px */
-	color: #858584;
-`
-const Body = styled.p`
-	cursor: pointer;
-	/* H5 - Work Sans */
-	font-family: "Work Sans";
-	font-size: 16px;
-	font-style: normal;
-	font-weight: 400;
-	line-height: 140%; /* 22.4px */
-	padding-left: 20px;
-`
 const Row = styled.div`
 	width: 100%;
 	margin-bottom: 40px;
@@ -272,39 +230,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 						<H3>Find More Selections</H3>
 						<P>Browse Through A Wide Range Of Quality Items</P>
 					</SectionHeadline>
-					<Floor>
-						<FilterColumn>
-							<H5>Type</H5>
-							<ul>
-								<Caption>Tools</Caption>
-									<Body>Wireless</Body>
-									<Body>Wired</Body>
-									<Body>Manual</Body>
-								<Caption>Materials</Caption>
-									<Body>Concrete</Body>
-									<Body>Plywood</Body>
-									<Body>Lumber</Body>
-									<Body>Metals</Body>
-									<Body>Insulation</Body>
-							</ul>
-							<H5>Brands</H5>
-								<Body>Dewalt</Body>
-								<Body>Milwaukee</Body>
-								<Body>Bosch</Body>
-								<Body>Makita</Body>
-							<H5>Price</H5>
-								<Body>$1 - $10</Body>
-								<Body>$11 - $50</Body>
-								<Body>$51 - $100</Body>
-								<Body>$101 - above</Body>
-							<H5>Discount</H5>
-								<Body>Clearance</Body>
-								<Body>Daily Deals</Body>
-								<Body>On Sale</Body>
-								<Body>Open Box</Body>
-						</FilterColumn>
-						<GenericSpread />
-					</Floor>
+					<GenericSpread />
 				</FloorSection>
 			</Wrapper>
 		</>
