@@ -297,9 +297,9 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 				{token ? 
 					<>
 						{(userType === "admin" || userType === "super") && <DDNav onClick={() => navigate('/members')}>User Area</DDNav>}
-						<DDNav>My Orders</DDNav>
-						<DDNav>My Profile</DDNav>
-						<DDNav>Account Settings</DDNav>
+						<DDNav onClick={() => navigate('/orders')}>My Orders</DDNav>
+						<DDNav onClick={() => navigate('/profile')}>My Profile</DDNav>
+						<DDNav onClick={() => navigate('/account')}>Account Settings</DDNav>
 						<DDNav onClick={() => navigate('/wishlist')}>My Wishlist</DDNav>
 						<DDNav onClick={handleSignInAndOut}>Sign Out</DDNav>
 					</> 

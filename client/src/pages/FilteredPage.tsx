@@ -56,6 +56,7 @@ const ItemCardsCollection = styled.div`
   gap: 30px;
   height: auto;
   flex-wrap: wrap;
+  justify-content: center;
 `;
 
 const NoItems = styled.div`

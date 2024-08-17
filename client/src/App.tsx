@@ -18,6 +18,9 @@ import ServicesPage from './pages/Services/ServicesPage';
 import ShoppingCart from './components/Widgets/Elements/ShoppingCart';
 import CheckOut from './pages/CheckOut';
 import WishlistPage from './pages/WishlistPage';
+import OrdersPage from './pages/OrdersPage';
+import ProfilePage from './pages/ProfilePage';
+import AccountSettingsPage from './pages/AccountSettings';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -81,6 +84,9 @@ function MainApp() {
           <Route path="/category/:categoryName" element={<FilteredPage />} />
           <Route path="/check-out" element={<CheckOut />} />
           <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/account" element={<AccountSettingsPage />} />
           {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </Wrapper>

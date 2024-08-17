@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import { FormEvent, useState } from "react";
 import Footer from "../components/Widgets/FooterWidget";
-import ContactUsImage from "../assets/images/office_setting.png"; // Ensure this path is correct
+import ContactUsImage from "../assets/images/office_setting.png";
+import MapUrl from "../assets/images/map.png";
 
 const Wrapper = styled.div`
     height: 100%;
@@ -142,6 +143,72 @@ const SubmitButton = styled.button`
     text-transform: capitalize;
     cursor: pointer;
 `
+const SectionHeadline = styled.div`
+	display: flex;
+	width: 1050px;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+`
+const H3 = styled.h3`
+	align-self: stretch;
+
+	color: white;
+
+	/* H3 - Work Sans */
+	font-family: "Work Sans";
+	font-size: 38px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 120%; /* 45.6px */
+	text-transform: capitalize;
+`
+const ContactInformation = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+const Label = styled.p`
+    color: #858584;
+    /* Caption - Space Mono */
+    font-family: "Space Mono";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 110%; /* 13.2px */
+`
+const Body = styled.p`
+    color: var(--White, #FFF);
+    /* Base(Body) - Work Sans */
+    font-family: "Work Sans";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+`
+const Details = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+const InfoSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 1050px;
+`
+const Container = styled.div`
+    display: flex;
+    flex-direction: row;
+    background: #3B3B3B;
+    padding: 20px;
+    border-radius: 20px;
+    justify-content: flex-start;
+    gap: 60px;
+    align-items: center;
+`
+const Map = styled.img`
+    width: 525px;
+    height: 300px;
+    border-radius: 10px;
+`
 
 const ContactUs: React.FC = () => {
     const [name, setName] = useState("");
@@ -156,7 +223,7 @@ const ContactUs: React.FC = () => {
     return (
         <>
             <head>
-                <title>Contact Us - Your Site Name</title>
+                <title>Contact Us - NQ Hardware and General Enterprise</title>
                 <meta name="description" content="Contact us for any inquiries or support. We're here to help!" />
                 <meta name="keywords" content="contact, support, inquiries" />
             </head>
@@ -167,7 +234,7 @@ const ContactUs: React.FC = () => {
                         <HeadlineAndSubheadParent>
                             <HeadlineAndSubhead>
                                 <Headline>
-                                    <H2>Contact Us</H2>
+                                    <H2>Contact us</H2>
                                 </Headline>
                                 <Subhead>
                                     <P>We're here to help! Fill out the form below and we'll get back to you as soon as possible.</P>
@@ -207,6 +274,33 @@ const ContactUs: React.FC = () => {
                         </Form>
                     </ContactForm>
                 </Frame>
+                <InfoSection>
+                    <SectionHeadline>
+                        <H3>More information</H3>
+                        <P>Have a question or need assistance? Feel free to send us a message, give us a call, or visit our location—we're here to help!</P>
+                    </SectionHeadline>
+                    <Container>
+                        <Map src={MapUrl}/>
+                        <ContactInformation>
+                            <Details>
+                                <Label>Address</Label>
+                                <Body>123 Elm Street, Suite 456, Springfield, IL 62701</Body>
+                            </Details>
+                            <Details>
+                                <Label>Phone</Label>
+                                <Body>{"(555) 123-4567"}</Body>
+                            </Details>
+                            <Details>
+                                <Label>Support</Label>
+                                <Body>{"support@nqhardware.com"}</Body>
+                            </Details>
+                            <Details>
+                                <Label>Billing Inquiries</Label>
+                                <Body>{"billing@nqhardware.com"}</Body>
+                            </Details>
+                        </ContactInformation>
+                    </Container>
+                </InfoSection>
                 <Footer />
             </Wrapper>
         </>
