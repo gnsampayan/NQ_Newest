@@ -79,25 +79,34 @@ export default function(pool) {
   });
   
 
-    router.get('/', (req, res) => {
-      const query = 'SELECT id, title, description, price, image, tags, quantity, rating, sale_bool, sale_rate, sale_timed, sale_end FROM items';
-      pool.query(query, (err, results) => {
-        if (err) {
-          console.error('Error fetching items:', err);
-          res.status(500).send('Error fetching items');
-        } else {
-          const itemsWithBase64Images = results.map(item => ({
-            ...item,
-            image: item.image ? Buffer.from(item.image).toString('base64') : null,
-            saleBool: item.sale_bool,
-            saleRate: item.sale_rate,
-            saleTimed: item.sale_timed,
-            saleEnd: item.sale_end,
-          }));
-          res.json(itemsWithBase64Images);
-        }
-      });
+  router.get('/', (req, res) => {
+    const { tag } = req.query;
+    let query = 'SELECT id, title, description, price, image, tags, quantity, rating, sale_bool, sale_rate, sale_timed, sale_end FROM items';
+    let queryParams = [];
+  
+    if (tag) {
+      query += ' WHERE JSON_CONTAINS(tags, ?)';
+      queryParams.push(`"${tag}"`);
+    }
+  
+    pool.query(query, queryParams, (err, results) => {
+      if (err) {
+        console.error('Error fetching items:', err);
+        res.status(500).send('Error fetching items');
+      } else {
+        const itemsWithBase64Images = results.map(item => ({
+          ...item,
+          image: item.image ? Buffer.from(item.image).toString('base64') : null,
+          saleBool: item.sale_bool,
+          saleRate: item.sale_rate,
+          saleTimed: item.sale_timed,
+          saleEnd: item.sale_end,
+        }));
+        res.json(itemsWithBase64Images);
+      }
     });
+  });
+  
     router.get('/check-exists', (req, res) => {
       const { title } = req.query;
   

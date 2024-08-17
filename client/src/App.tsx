@@ -66,6 +66,7 @@ function MainApp() {
         <Routes>
           <Route path="/" element={<HomePage $margin={margin} />} />
           <Route path="/filtered" element={<FilteredPage />} />
+          <Route path="/shop/:filterName" element={<FilteredPage />} />
           <Route path="/trending" element={<FilteredPage />} />
           <Route path="/shop" element={<Shop $margin={margin} />} />
           <Route path="/services" element={<ServicesPage $margin={margin} />} />

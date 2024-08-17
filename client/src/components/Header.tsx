@@ -315,7 +315,7 @@ const Header: React.FC<HeaderProps> = ({ ontoggleBladeVis, onToggleCartVis, cart
 	const ServicesDropdown = () => {
 		return (
 			<DDFrame ref={servicesDropdownRef}>
-				<DDNav onClick={() => navigate('/services/deliveries')}>Shipments</DDNav>
+				<DDNav onClick={() => navigate('/services/shipments')}>Shipments</DDNav>
 				<DDNav onClick={() => navigate('/services/contractor-services')}>Contractor Services</DDNav>
 				<DDNav onClick={() => navigate('/services/tool-rentals')}>Tool Rentals</DDNav>
 				<DDNav onClick={() => navigate('/services/installation-services')}>Installation Services</DDNav>

@@ -67,11 +67,9 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 				const data = await response.json();
 	
 				// Temporarily extend ItemType to include sale_bool and sale_rate
-				const itemsWithTags = data.map((item: ItemType & { sale_bool?: number; sale_rate?: number }) => ({
+				const itemsWithTags = data.map((item: ItemType) => ({
 					...item,
-					tags: item.tags || [],         
-					saleBool: item.sale_bool,  
-					saleRate: item.sale_rate,      
+					tags: item.tags || [],
 				}));
 	
 				setItems(itemsWithTags);

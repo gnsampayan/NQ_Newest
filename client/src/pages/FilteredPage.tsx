@@ -6,6 +6,7 @@ import AddToCartConfirmation from "../components/Widgets/Elements/AddToCartConfi
 import { useEffect, useState } from "react";
 import { addItemToCart } from "../utils/utilityFunctions";
 import FilterButtonWithDropDown from "../components/Buttons/FilterButtonWithDropDown";
+import apiConfig from "../api-config";
 
 const Container = styled.div`
   display: flex;
@@ -74,43 +75,62 @@ const FilterButtonContainer = styled.div`
 
 const FilteredPage = () => {
     const location = useLocation();
-    const { relevantItems, heading, subhead } = (location.state as { 
-        relevantItems: ItemType[], 
-        heading: string, 
-        subhead: string 
-    }) || { relevantItems: [] };
+    const { relevantItems, heading, subhead, filterName } = (location.state as { 
+      relevantItems: ItemType[], 
+      heading: string, 
+      subhead: string,
+      filterName: string
+    }) || { relevantItems: [], heading: "", subhead: "", filterName: "" };
 
-    const [filteredItems, setFilteredItems] = useState<ItemType[]>(relevantItems);
+    const [allItems, setAllItems] = useState<ItemType[]>([]);
+    const [filteredItems, setFilteredItems] = useState<ItemType[]>([]);
     const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
     const [dropdownOption, setDropdownOption] = useState<string>("All");
 
+    // Fetch items if relevantItems is empty or null
     useEffect(() => {
-        applyFilters(dropdownOption);
-      }, [dropdownOption, relevantItems]
-    );
+      const initializeItems = async () => {
+        if (relevantItems && relevantItems.length > 0) {
+          setAllItems(relevantItems);
+        } else {
+          try {
+            console.log(`Fetching items with tag: ${filterName}`);
+            const response = await fetch(`${apiConfig.API_URL}/items?tag=${filterName}`);
+            const data = await response.json();
+            console.log("Fetched items:", data);
+            setAllItems(data);
+          } catch (error) {
+            console.error("Error fetching items:", error);
+          }
+        }
+      };
+
+      initializeItems();
+    }, [relevantItems, filterName]);
+  
+    // Apply filters when dropdownOption or allItems changes
+    useEffect(() => {
+      applyFilters(dropdownOption);
+    }, [dropdownOption, allItems]);
       
     const applyFilters = (dropdown: string) => {
-    console.log("Applying filters with dropdown option:", dropdown);
-    
-    let filtered = [...relevantItems];
-    
-    if (dropdown === "Lowest Price") {
-        filtered.sort((a, b) => a.price - b.price);
-    } else if (dropdown === "Highest Price") {
-        filtered.sort((a, b) => b.price - a.price);
-    } else if (dropdown === "Biggest Discounts") {
-        filtered = filtered
-        .filter(item => item.saleRate !== undefined && item.saleRate !== null) // Filter out items without a saleRate
-        .sort((a, b) => a.saleRate! - b.saleRate!); // Sort items by saleRate in ascending order (lowest saleRate first)
-    } else if (dropdown !== "All") {
-        filtered = filtered.filter(item =>
-        item.tags.some(tag => tag.toLowerCase() === dropdown.toLowerCase())
-        );
-    }
-    
-    console.log("Filtered items:", filtered);
-    
-    setFilteredItems(filtered);
+      if (!allItems) return;
+      let filtered = [...allItems];
+      
+      if (dropdown === "Lowest Price") {
+          filtered.sort((a, b) => a.price - b.price);
+      } else if (dropdown === "Highest Price") {
+          filtered.sort((a, b) => b.price - a.price);
+      } else if (dropdown === "Biggest Discounts") {
+          filtered = filtered
+          .filter(item => item.saleRate !== undefined && item.saleRate !== null) // Filter out items without a saleRate
+          .sort((a, b) => a.saleRate! - b.saleRate!); // Sort items by saleRate in ascending order (lowest saleRate first)
+      } else if (dropdown !== "All") {
+          filtered = filtered.filter(item =>
+          item.tags.some(tag => tag.toLowerCase() === dropdown.toLowerCase())
+          );
+      }
+      setFilteredItems(filtered);
     };
       
       
@@ -140,25 +160,25 @@ const FilteredPage = () => {
                         />
                 </FilterButtonContainer>
                 <ItemCardsCollection>
-                    {filteredItems.length > 0 ? (
-                        filteredItems.map(i => (
-                        <ItemFrame key={i.id}>
-                            <ItemCard
-                            image={i.image}
-                            itemName={i.title}
-                            addToCart={() => handleAddToCartClick(i)}
-                            price={i.price}
-                            rating={i.rating}
-                            boxSize={"large"}
-                            saleBool={i.saleBool}
-                            saleRate={i.saleRate}
-                            />
-                        </ItemFrame>
-                        ))
-                    ) : (
-                        <NoItems>No items</NoItems>
-                    )}
-                </ItemCardsCollection>
+                {filteredItems.length > 0 ? (
+                  filteredItems.map((i) => (
+                    <ItemFrame key={i.id}>
+                      <ItemCard
+                        image={i.image}
+                        itemName={i.title}
+                        addToCart={() => handleAddToCartClick(i)}
+                        price={i.price}
+                        rating={i.rating}
+                        boxSize={"large"}
+                        saleBool={i.saleBool}
+                        saleRate={i.saleRate}
+                      />
+                    </ItemFrame>
+                  ))
+                ) : (
+                  <NoItems>No items</NoItems>
+                )}
+              </ItemCardsCollection>
             </Container>
             {confirmationItem && (
                 <AddToCartConfirmation 

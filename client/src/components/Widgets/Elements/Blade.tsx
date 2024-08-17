@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import styled from "styled-components";
 import 'typeface-work-sans';
 
@@ -6,42 +7,59 @@ const BladeContents = styled.div<Props>`
     position: fixed;
     top: 0;
     z-index: 2;
-    background-color: white;
-    border-right: 1px solid black;
+    background: #221F27;
     width: 400px;
     height: 100vh;
     display: ${props => (props.$isVisible ? 'block' : 'none')};
-    padding-top: 100px;
-    padding-bottom: 40px;
+    padding-top: 120px;
+    padding-bottom: 20px;
     overflow-y: auto;
 `;
 
-const Text = styled.h5`
-    color: #2B2B2B;
-    font-family: 'Work Sans', sans-serif;
-    font-style: normal;
-    font-weight: 300;
-    font-size: 1.375rem;
+const ButtonText = styled.h5`
+    color: white;
     margin-left: 40px;
-    margin-bottom: 20px;
     cursor: pointer;
+    /* Base(Body) - Work Sans */
+    font-family: "Work Sans";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
     &:hover {
         color: #a259ff;
-        font-weight: 400;
     }
 `;
-const Promo = styled(Text)`
-  font-weight: 400;
-  &:hover {
+
+const PromoButton = styled.h5`
+    margin-left: 40px;
+    color: white;
+    cursor: pointer;
+    /* H5 - Work Sans */
+    font-family: "Work Sans";
+    font-size: 22px;
+    font-style: normal;
     font-weight: 600;
-  }
+    line-height: 140%; /* 30.8px */
+    text-transform: capitalize;
+    &:hover {
+        color: #a259ff;
+    }
 `;
+
 const TitleTxt = styled.h3`
-    color: #2B2B2B;
-    font-family: 'Work Sans', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 400;
+    color: #858584;
     margin: 40px 0px 20px 40px;
+    /* Base (Body) - Space Mono */
+    font-family: "Space Mono";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+`;
+
+const IndentedSection = styled.div`
+    margin-left: 40px;
 `;
 
 interface Props {
@@ -49,29 +67,50 @@ interface Props {
   }
 
 const Blade = ({ $isVisible } : Props) => {
-    return <BladeContents $isVisible={$isVisible} >
-        {$isVisible && 
-            <>
-                <section>
-                    <Promo>In Stock</Promo>
-                    <Promo>Featured</Promo>
-                    <Promo>On Sale</Promo>
-                    <Promo>Popular</Promo>
-                </section>
-                <TitleTxt>CATEGORIES</TitleTxt>
-                <section>
-                    <Text>Electronics</Text>
-                    <Text>Hardware</Text>
-                    <Text>Plumbing</Text>
-                    <Text>Tools</Text>
-                    <Text>Carpentry</Text>
-                    <Text>Masonry</Text>
-                    <Text>Ladders</Text>
-                    <Text>Wire</Text>
-                </section>
-            </>
-        }
-    </BladeContents>;
-}
+    const navigate = useNavigate();
 
-export default Blade
+    const handleNavigateToShop = (filterName: string) => {
+        navigate(`/shop/${filterName}`, { state: { filterName } });
+        location.reload();
+    };
+
+    const handleNavigateToService = (serviceType: string) => {
+        navigate(`/services/${serviceType}`);
+    };
+
+    return (
+        <BladeContents $isVisible={$isVisible}>
+            {$isVisible && (
+                <>
+                    <section>
+                        <PromoButton onClick={() => handleNavigateToShop("Featured Finds")}>Featured</PromoButton>
+                        <PromoButton onClick={() => handleNavigateToShop("Trending")}>Trending</PromoButton>
+                        <PromoButton onClick={() => handleNavigateToShop("Best Sellers")}>Best Sellers</PromoButton>
+                        <PromoButton onClick={() => handleNavigateToShop("On Sale")}>On Sale</PromoButton>
+                        <PromoButton onClick={() => handleNavigateToShop("Most Reviews")}>Most Reviews</PromoButton>
+                    </section>
+                    <TitleTxt>Categories</TitleTxt>
+                    <IndentedSection>
+                        <ButtonText onClick={() => handleNavigateToShop("Electrical")}>Electrical</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToShop("Metals")}>Metals</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToShop("Plumbing")}>Plumbing</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToShop("Tools")}>Tools</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToShop("Lumber")}>Lumber</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToShop("Masonry")}>Masonry</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToShop("Fixtures")}>Fixtures</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToShop("Insulation")}>Insulation</ButtonText>
+                    </IndentedSection>
+                    <TitleTxt>Services</TitleTxt>
+                    <IndentedSection>
+                        <ButtonText onClick={() => handleNavigateToService("shipments")}>Shipments</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToService("contractor-services")}>Contractor Services</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToService("tool-rentals")}>Tool Rentals</ButtonText>
+                        <ButtonText onClick={() => handleNavigateToService("installation-services")}>Installation Services</ButtonText>
+                    </IndentedSection>
+                </>
+            )}
+        </BladeContents>
+    );
+};
+
+export default Blade;
