@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import Deliveries from "./Shipments";
+import Shipments from "./Shipments";
 import ContractorServices from "./ContractorServices";
 import ServicesSection from "../../components/Widgets/ServicesWidget";
 import ToolRentals from "./ToolRentals";
@@ -102,8 +102,8 @@ const ServicesPage = ({ $margin }: Props) => {
 
     const renderServiceSection = () => {
         switch (activeServiceTab) {
-            case 'Deliveries':
-                return <Deliveries />;
+            case 'Shipments':
+                return <Shipments />;
             case 'Contractor Services':
                 return <ContractorServices />;
             case 'Tool Rentals':

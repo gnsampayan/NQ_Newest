@@ -53,7 +53,7 @@ const P = styled.p`
 const ServicesSection = () => {
 
     const servicesInfo  = [
-        {icon: Truck, title: "Deliveries", description: "Fast and reliable product delivery service."},
+        {icon: Truck, title: "Shipments", description: "Fast and reliable construction materials shipment service."},
         {icon: Contractor, title: "Contractor Services", description: "Professional services for your construction needs."},
         {icon: Rental, title: "Tool Rentals", description: "A wide range of tools available for rent."},
         {icon: Installation, title: "Installation Services", description: "Expert installation services for various products."},

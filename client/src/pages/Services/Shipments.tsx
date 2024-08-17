@@ -233,7 +233,7 @@ const DeliveryList = ({ deliveries, onOptions }: { deliveries: Delivery[], onOpt
     );
 };
 
-const Deliveries = () => {
+const Shipments = () => {
     const [deliveries, setDeliveries] = useState<Delivery[]>([]);
     const [filteredDeliveries, setFilteredDeliveries] = useState<Delivery[]>([]);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -380,4 +380,4 @@ const Deliveries = () => {
     );
 };
 
-export default Deliveries;
+export default Shipments;
