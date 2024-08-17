@@ -121,7 +121,8 @@ const PricingAndSale = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: row;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 0px 10px;
 `
 
 const StockPage: React.FC = () => {
@@ -270,6 +271,16 @@ const StockPage: React.FC = () => {
                 <Description>
                   <Label>Sale Rate</Label>
                   <Body>{(item.saleBool === 1) ? item.saleRate : "null"}</Body>
+                </Description>
+              }
+              <Description>
+                <Label>Timed?</Label>
+                <Body>{(item.saleTimed === 1) ? "Yes" : "No"}</Body>
+              </Description>
+              {(item.saleTimed === 1) &&
+                <Description>
+                  <Label>Sale Timer</Label>
+                  <Body>{(item.saleTimed === 1) ? item.saleEnd : "null"}</Body>
                 </Description>
               }
             </PricingAndSale>

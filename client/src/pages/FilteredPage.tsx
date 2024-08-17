@@ -3,69 +3,73 @@ import { useLocation } from "react-router-dom";
 import { ItemType } from "../context/Types";
 import ItemCard from "../components/Cards/ItemCard";
 import AddToCartConfirmation from "../components/Widgets/Elements/AddToCartConfirmation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { addItemToCart } from "../utils/utilityFunctions";
+import FilterButtonWithDropDown from "../components/Buttons/FilterButtonWithDropDown";
 
 const Container = styled.div`
-	display: flex;
-	justify-content: center;
-    flex-direction: column;
-    padding: 60px;
-    min-height: calc(100vh - 100px);
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 60px;
+  min-height: calc(100vh - 100px);
 `;
 
 const SectionHeadlineAndButton = styled.div`
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 100px;
-    width: 100%;
-    margin-bottom: 50px;
-`
-const SectionHeadline = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    flex: 1 0 0;
-`
-const H3 = styled.h3`
-    align-self: stretch;
-    color: white;
-    /* H3 - Work Sans */
-    font-family: "Work Sans";
-    font-size: 38px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 120%; /* 45.6px */
-    text-transform: capitalize;
-`
-const P = styled.p`
-    align-self: stretch;
-    color: white;
-    /* Body Text- Work Sans */
-    font-family: "Work Sans";
-    font-size: 22px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 160%; /* 35.2px */
-    text-transform: capitalize;
-`
-const ItemCardsCollection = styled.div`
-    display: flex;
-    gap: 30px;
-    height: auto;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: auto;
+`;
 
-`
+const SectionHeadline = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1 0 0;
+`;
+
+const H3 = styled.h3`
+  align-self: stretch;
+  color: white;
+  font-family: "Work Sans";
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 120%;
+  text-transform: capitalize;
+`;
+
+const P = styled.p`
+  align-self: stretch;
+  color: white;
+  font-family: "Work Sans";
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 160%;
+  text-transform: capitalize;
+`;
+
+const ItemCardsCollection = styled.div`
+  display: flex;
+  gap: 30px;
+  height: auto;
+  flex-wrap: wrap;
+`;
+
 const NoItems = styled.div`
   font-size: 18px;
   color: gray;
   text-align: center;
   margin-top: 20px;
 `;
+
 const ItemFrame = styled.div`
-    max-width: 330px;
-    display: flex;
+  max-width: 330px;
+  display: flex;
+`;
+const FilterButtonContainer = styled.div`
+  margin-bottom: 20px;
 `
 
 const FilteredPage = () => {
@@ -75,11 +79,50 @@ const FilteredPage = () => {
         heading: string, 
         subhead: string 
     }) || { relevantItems: [] };
-    const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
 
-    const handleAddToCartClick = async (newItem: ItemType) => {
-        await addItemToCart(newItem, setConfirmationItem);
+    const [filteredItems, setFilteredItems] = useState<ItemType[]>(relevantItems);
+    const [confirmationItem, setConfirmationItem] = useState<ItemType | null>(null);
+    const [dropdownOption, setDropdownOption] = useState<string>("All");
+
+    useEffect(() => {
+        applyFilters(dropdownOption);
+      }, [dropdownOption, relevantItems]
+    );
+      
+    const applyFilters = (dropdown: string) => {
+    console.log("Applying filters with dropdown option:", dropdown);
+    
+    let filtered = [...relevantItems];
+    
+    if (dropdown === "Lowest Price") {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (dropdown === "Highest Price") {
+        filtered.sort((a, b) => b.price - a.price);
+    } else if (dropdown === "Biggest Discounts") {
+        filtered = filtered
+        .filter(item => item.saleRate !== undefined && item.saleRate !== null) // Filter out items without a saleRate
+        .sort((a, b) => a.saleRate! - b.saleRate!); // Sort items by saleRate in ascending order (lowest saleRate first)
+    } else if (dropdown !== "All") {
+        filtered = filtered.filter(item =>
+        item.tags.some(tag => tag.toLowerCase() === dropdown.toLowerCase())
+        );
+    }
+    
+    console.log("Filtered items:", filtered);
+    
+    setFilteredItems(filtered);
     };
+      
+      
+      const handleDropdownChange = (dropdown: string) => {
+        console.log("Dropdown changed to:", dropdown);
+        setDropdownOption(dropdown);
+      };
+      
+    
+      const handleAddToCartClick = async (newItem: ItemType) => {
+        await addItemToCart(newItem, setConfirmationItem);
+      };
 
     return (
         <>
@@ -90,24 +133,29 @@ const FilteredPage = () => {
                         <P>{subhead}</P>
                     </SectionHeadline>
                 </SectionHeadlineAndButton>
+                <FilterButtonContainer>
+                    <FilterButtonWithDropDown
+                            onFilterChange={handleDropdownChange}
+                            totalVisibleItems={filteredItems.length}
+                        />
+                </FilterButtonContainer>
                 <ItemCardsCollection>
-                    {relevantItems && relevantItems.length > 0 ? (
-                        relevantItems.map(i => (
-                            <ItemFrame>
-                                <ItemCard
-                                    key={i.id}
-                                    image={i.image}
-                                    itemName={i.title}
-                                    addToCart={() => handleAddToCartClick(i)} // add addToCart function here
-                                    price={i.price}
-                                    rating={i.rating}
-                                    boxSize={"large"} 
-                                    saleBool={i.saleBool} 
-                                    saleRate={i.saleRate}
-                                />
-                            </ItemFrame>
+                    {filteredItems.length > 0 ? (
+                        filteredItems.map(i => (
+                        <ItemFrame key={i.id}>
+                            <ItemCard
+                            image={i.image}
+                            itemName={i.title}
+                            addToCart={() => handleAddToCartClick(i)}
+                            price={i.price}
+                            rating={i.rating}
+                            boxSize={"large"}
+                            saleBool={i.saleBool}
+                            saleRate={i.saleRate}
+                            />
+                        </ItemFrame>
                         ))
-                        ) : (
+                    ) : (
                         <NoItems>No items</NoItems>
                     )}
                 </ItemCardsCollection>

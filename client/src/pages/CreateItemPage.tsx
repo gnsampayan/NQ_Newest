@@ -216,7 +216,8 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     const [quantity, setQuantity] = useState<number>(0);
     const [inputKey, setInputKey] = useState(Date.now());
     const [saleBool, setSaleBool] = useState<number>(0);
-    const [saleRate, setSaleRate] = useState<number>(1);
+    const [saleRate, setSaleRate] = useState<number | null>(null);
+    const [saleTimed, setSaleTimed] = useState<number>(0);
     const [saleEnd, setSaleEnd] = useState<string>('');
 
     const [databaseTags, setDatabaseTags] = useState<string[]>([]);
@@ -232,8 +233,9 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             setTags(itemData.tags || []);
             setQuantity(itemData.quantity || 0);
             setSaleBool(itemData.saleBool || 0);
-            setSaleRate(itemData.saleRate || 1);
-            setSaleEnd(itemData.saleEnd || '');
+            setSaleRate(itemData.saleBool ? itemData.saleRate : null);
+            setSaleTimed(itemData.saleTimed || 0);
+            setSaleEnd(itemData.saleTimed ? itemData.saleEnd : '');
             
             if (itemData.image) {
                 // Assuming itemData.image is a Base64 string from the backend
@@ -297,6 +299,27 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         reader.readAsDataURL(file);
     };
 
+    const handleSaleBoolChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setSaleBool(isChecked ? 1 : 0);
+    
+        if (!isChecked) {
+            // If saleBool is 0, automatically set saleTimed to 0 and clear saleRate
+            setSaleRate(null);
+            setSaleTimed(0);
+            setSaleEnd('');
+        }
+    };
+
+    const handleSaleTimedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        // Only allow changing saleTimed if saleBool is 1
+        if (saleBool === 1) {
+            setSaleTimed(isChecked ? 1 : 0);
+            setSaleEnd(isChecked ? saleEnd : '');
+        }
+    };
+
     const handleImageChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const files = e.target.files;
         if (files && files.length > 0) {
@@ -332,7 +355,17 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
+
+        if (saleBool === 1 && (saleRate === null || saleRate <= 0)) {
+            alert("Sale Rate is required and must be greater than 0 when sale is enabled.");
+            return;
+        }
+
+        if (saleTimed === 1 && !saleEnd) {
+            alert("Sale End Date is required when sale timer is enabled.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
@@ -341,7 +374,8 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         formData.append('quantity', quantity.toString());
         // Append sale fields
         formData.append('saleBool', saleBool.toString());
-        formData.append('saleRate', saleRate.toString());
+        formData.append('saleRate', saleRate !== null ? saleRate.toString() : '');
+        formData.append('saleTimed', saleTimed.toString());
         formData.append('saleEnd', saleEnd);
         if (selectedImage) {
             formData.append('image', selectedImage);
@@ -398,7 +432,8 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     setPreview('');
                     setTag('');
                     setSaleBool(0);
-                    setSaleRate(1);
+                    setSaleRate(null);
+                    setSaleTimed(0);
                     setSaleEnd('');
                     setInputKey(Date.now());  // This will change the key and reset the input
                 }
@@ -469,6 +504,12 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         e.preventDefault(); // Prevents the input from losing focus
     };
 
+    const getCurrentDateTime = (): string => {
+        const now = new Date();
+        return now.toISOString().slice(0, 19) + 'Z'; // Format as YYYY-MM-DDTHH:MM:SSZ
+    };
+    
+
     return (
         <Wrapper>
             <Form onSubmit={handleSubmit}>
@@ -515,8 +556,8 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                         <Label>Enable Sale</Label>
                         <input 
                             type="checkbox" 
-                            checked={(saleBool === 1) ? true : false} 
-                            onChange={(e) => setSaleBool((e.target.checked) ? 1 : 0)} 
+                            checked={saleBool === 1} 
+                            onChange={handleSaleBoolChange} 
                         />
                     </Description>
                     {(saleBool === 1) && 
@@ -525,24 +566,39 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                                 <Label>Sale Rate</Label>
                                 <Input 
                                     type="number"
-                                    placeholder="1.00"
-                                    value={saleRate}
+                                    placeholder="0.00"
+                                    value={saleRate !== null ? saleRate : ''}
                                     step="0.01" // This allows increments of 0.1, which fits your decimal(2,1) requirement
                                     min="0.01" // Optional: Set a minimum value if necessary
-                                    max="1.00" // Optional: Set a maximum value if necessary
+                                    max="0.99" // Optional: Set a maximum value if necessary
                                     onChange={(e) => setSaleRate(parseFloat(e.target.value))}
                                 />
                             </Description>
                             <Description>
-                                <Label>Sale End Date</Label>
-                                <Input 
-                                    style={{width: "200px"}}
-                                    type="text"
-                                    placeholder="YYYY-MM-DDTHH:MM:SSZ"
-                                    value={saleEnd}
-                                    onChange={(e) => setSaleEnd(e.target.value)}
+                                <Label>Add Timer?</Label>
+                                <input 
+                                    type="checkbox" 
+                                    checked={saleTimed === 1} 
+                                    onChange={handleSaleTimedChange} 
                                 />
                             </Description>
+                            {(saleTimed === 1) && 
+                                <Description>
+                                    <Label>Sale End Date</Label>
+                                    <Input 
+                                        style={{width: "200px"}}
+                                        type="text"
+                                        placeholder={getCurrentDateTime()}
+                                        value={saleEnd}
+                                        onChange={(e) => setSaleEnd(e.target.value)}
+                                        onFocus={() => {
+                                            if (!saleEnd) { // Only populate if the field is empty
+                                                setSaleEnd(getCurrentDateTime());
+                                            }
+                                        }}
+                                    />
+                                </Description>
+                            }
                         </>
                     }
                 </PricingAndSales>

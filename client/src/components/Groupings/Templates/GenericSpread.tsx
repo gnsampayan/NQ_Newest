@@ -1,52 +1,15 @@
 import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ItemType } from "../../../context/Types";
 import apiConfig from "../../../api-config";
 import ItemCard from "../../Cards/ItemCard";
-import ButtonCounter from "../../Buttons/ButtonCounter";
 import FilteringColumnWidget from "../../Widgets/FilteringColumnWidget";
+import FilterButtonWithDropDown from "../../Buttons/FilterButtonWithDropDown";
 
 const Spread = styled.div`
   width: 100%;
   height: 100%;
 `;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 60px;
-  position: relative;
-`;
-
-const Dropdown = styled.div<{ isVisible: boolean }>`
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 60px;
-  background-color: rgba(43, 43, 43, 1);
-  border: 2px solid #858584;
-  border-radius: 20px;
-  width: auto;
-  display: ${(props) => (props.isVisible ? "flex" : "none")};
-  z-index: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  gap: 10px;
-
-  &:hover {
-    border-color: white;
-  }
-`;
-
-const Option = styled.h5`
-  color: white;
-  text-align: center;
-  font-family: "Work Sans";
-  font-size: 18px;
-  font-weight: 400;
-  cursor: pointer;
-`;
-
 const Items = styled.div`
   width: 100%;
   display: flex;
@@ -55,27 +18,21 @@ const Items = styled.div`
   gap: 20px;
   overflow: hidden;
 `;
-
-const ButtonRef = styled.div`
-  position: relative;
-`;
 const Floor = styled.div`
 	width: 100%;
 	display: flex;
 `
-
-
+const FilterButtonContainer = styled.div`
+  margin-right: 60px;
+`
 const GenericSpread = () => {
   const [items, setItems] = useState<ItemType[]>([]);
   const [filteredItems, setFilteredItems] = useState<ItemType[]>([]);
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [buttonTitle, setButtonTitle] = useState("All");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number] | null>(null);
   const [dropdownOption, setDropdownOption] = useState<string>("All");
 
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -98,7 +55,8 @@ const GenericSpread = () => {
 
   const applyFilters = (tags: string[], priceRange: [number, number] | null, dropdown: string) => {
     let filtered = [...items];
-
+  
+    // Filter by tags
     if (tags.length > 0) {
       filtered = filtered.filter(item =>
         tags.every(tag =>
@@ -106,23 +64,30 @@ const GenericSpread = () => {
         )
       );
     }
-
+  
+    // Filter by price range
     if (priceRange) {
       filtered = filtered.filter(item => item.price >= priceRange[0] && item.price <= priceRange[1]);
     }
-
+  
+    // Filter and sort by dropdown option
     if (dropdown === "Lowest Price") {
       filtered.sort((a, b) => a.price - b.price);
     } else if (dropdown === "Highest Price") {
       filtered.sort((a, b) => b.price - a.price);
+    } else if (dropdown === "Biggest Discounts") {
+      filtered = filtered
+        .filter(item => item.saleRate !== undefined && item.saleRate !== null) // Filter out items without a saleRate
+        .sort((a, b) => a.saleRate! - b.saleRate!); // Sort items by saleRate in ascending order (lowest saleRate first)
     } else if (dropdown !== "All") {
       filtered = filtered.filter(item =>
         item.tags.some(tag => tag.toLowerCase() === dropdown.toLowerCase())
       );
     }
-
+  
     setFilteredItems(filtered);
   };
+  
 
   const handleFilterChange = (newSelectedTags: string[], newPriceRange?: [number, number] | null) => {
     const updatedPriceRange = newPriceRange || null;
@@ -131,78 +96,21 @@ const GenericSpread = () => {
     applyFilters(newSelectedTags, updatedPriceRange, dropdownOption);
   };
 
-  const handleOptionClick = (option: string) => {
-    setButtonTitle(option);
-    setDropdownOption(option);
-    setIsDropdownVisible(false);
-    applyFilters(selectedTags, selectedPriceRange, option);
+  const handleDropdownChange = (dropdown: string) => {
+    setDropdownOption(dropdown);
+    applyFilters(selectedTags, selectedPriceRange, dropdown);
   };
-
-  const toggleDropdown = () => {
-    setIsDropdownVisible((prev) => !prev);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        buttonRef.current &&
-        !buttonRef.current.contains(target) &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(target)
-      ) {
-        setIsDropdownVisible(false);
-      }
-    };
-
-    if (isDropdownVisible) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownVisible]);
-
-  const renderOptions = () => {
-    const options = [
-      "All",
-      "Featured",
-      "Lowest Price",
-      "Highest Price",
-      "Best Deals",
-      "Best Sellers",
-      "Best Rating",
-      "Most Reviews",
-      "Biggest Discounts",
-    ];
-
-    return options
-      .filter((option) => option !== buttonTitle)
-      .map((option) => (
-        <Option key={option} onClick={() => handleOptionClick(option)}>
-          {option}
-        </Option>
-      ));
-  };
-
+  
   return (
     <Floor>
       <FilteringColumnWidget onFilterChange={handleFilterChange} />
       <Spread>
-        <ButtonContainer>
-          <ButtonRef ref={buttonRef}>
-            <ButtonCounter
-              onClick={toggleDropdown}
-              title={buttonTitle}
-              type="default"
-              totalVisItemsCards={filteredItems.length} // Show count of visible items
-            />
-          </ButtonRef>
-          <Dropdown ref={dropdownRef} isVisible={isDropdownVisible}>
-            {renderOptions()}
-          </Dropdown>
-        </ButtonContainer>
+        <FilterButtonContainer>
+          <FilterButtonWithDropDown
+            onFilterChange={handleDropdownChange}
+            totalVisibleItems={filteredItems.length}
+          />
+        </FilterButtonContainer>
         <Items>
           {filteredItems.map((item, index) => (
             <ItemCard

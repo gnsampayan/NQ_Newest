@@ -7,8 +7,9 @@ export interface ItemType {
     price: number;
     rating: number;
     tags: string[];
-    saleBool: number;
+    saleBool: number; // boolean , 0 or 1
     saleRate: number;
+    saleTimed: number; // boolean , 0 or 1
     saleEnd: string;
   }
 

@@ -445,7 +445,7 @@ const ItemPage = () => {
                             </Tags>
                         </AdditionalInfo>
                     </ItemInfo>
-                    {(item.saleBool === 1) ? 
+                    {(item.saleTimed === 1) ? 
                         <SaleTimer>
                             <P>Sale ends in:</P>
                             <Timer>
