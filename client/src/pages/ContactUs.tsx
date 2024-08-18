@@ -208,6 +208,7 @@ const Map = styled.img`
     width: 525px;
     height: 300px;
     border-radius: 10px;
+    object-fit: cover;
 `
 
 const ContactUs: React.FC = () => {

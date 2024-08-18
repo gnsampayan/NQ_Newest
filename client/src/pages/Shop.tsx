@@ -117,6 +117,16 @@ const FloorSection = styled.div`
 	width: 100%;
 	margin-top: 100px;
 `
+const LoadingMsg = styled.div`
+	color: var(--White, #FFF);
+	/* H5 - Space Mono */
+	font-family: "Space Mono";
+	font-size: 22px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 160%; /* 35.2px */
+	text-transform: capitalize;
+`
 interface ShopProps {
 	$margin: string;
 }
@@ -126,6 +136,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 	const [selectedSection, setSelectedSection] = useState<string>(TabWidgetParams[0].title);
 	const [visibleTitles, setVisibleTitles] = useState<string[]>([]);
 	const [itemCounts, setItemCounts] = useState<{ [key: string]: number }>({});
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		const breakpoints = [
@@ -177,7 +188,9 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 				setItemCounts(counts);
 			} catch (error) {
 				console.error('Error fetching items:', error);
-			}
+			} finally {
+                setLoading(false);
+            }
 		};
 		fetchItems();
 	}, []);
@@ -218,7 +231,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 	return (
 		<>
 			<Wrapper $margin={$margin}>
-				{SplitSections.length > 0 ? SplitSections : <p>Loading items...</p>}
+				{loading ? <LoadingMsg>Loading items...</LoadingMsg> : SplitSections}
 				<Parent>
 					{Tabs.length > 0 ? Tabs : <p>Loading items...</p>}
 				</Parent>

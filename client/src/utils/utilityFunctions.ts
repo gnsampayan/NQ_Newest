@@ -54,6 +54,8 @@ export const addItemToCart = async (
         price: newItem.price,
         buyQuantity: 1,
         totalInStock: newItem.quantity,
+        saleBool: newItem.saleBool,
+        saleRate: newItem.saleRate,
       };
       guestCart.push(cartItem);
     }

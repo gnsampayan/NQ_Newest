@@ -8,6 +8,7 @@ export const TabWidgetParams = [
 ];
 export const carouselSmallParams = [
     { include: [
+        "Lumber",
         "Tools", 
         "Power tools",
     ] }
