@@ -275,12 +275,12 @@ const StockPage: React.FC = () => {
               }
               <Description>
                 <Label>Timed?</Label>
-                <Body>{(item.saleTimed === 1) ? "Yes" : "No"}</Body>
+                <Body>{(item.saleIsTimed === 1) ? "Yes" : "No"}</Body>
               </Description>
-              {(item.saleTimed === 1) &&
+              {(item.saleIsTimed === 1) &&
                 <Description>
                   <Label>Sale Timer</Label>
-                  <Body>{(item.saleTimed === 1) ? item.saleEnd : "null"}</Body>
+                  <Body>{(item.saleIsTimed === 1) ? item.saleEnd : "null"}</Body>
                 </Description>
               }
             </PricingAndSale>

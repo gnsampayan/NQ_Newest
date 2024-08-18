@@ -234,8 +234,8 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             setQuantity(itemData.quantity || 0);
             setSaleBool(itemData.saleBool || 0);
             setSaleRate(itemData.saleBool ? itemData.saleRate : null);
-            setSaleTimed(itemData.saleTimed || 0);
-            setSaleEnd(itemData.saleTimed ? itemData.saleEnd : '');
+            setSaleTimed(itemData.saleIsTimed || 0);
+            setSaleEnd(itemData.saleIsTimed ? itemData.saleEnd : '');
             
             if (itemData.image) {
                 // Assuming itemData.image is a Base64 string from the backend

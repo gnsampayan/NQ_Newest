@@ -391,7 +391,7 @@ const ToolRentals = () => {
         of ownership. From power tools to specialized equipment, our rental 
         services provide everything you need to get the job done efficiently 
         and cost-effectively.`,
-        btnTitle: 'Become a Member',
+        btnTitle: 'Sign In',
         url: "/sign-in",
         image: ToolRentalImage
     };

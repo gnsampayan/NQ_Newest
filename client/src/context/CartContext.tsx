@@ -50,9 +50,21 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
                     data.itemIdsArray.forEach((itemId: number) => {
                         itemCounts[itemId] = (itemCounts[itemId] || 0) + 1;
                     });
-
-                    const uniqueItems: CartItemType[] = data.cart.map((item: CartItemType) => ({
-                        ...item,
+                    
+                    // Map backend fields to frontend-friendly camelCase fields
+                    const uniqueItems: CartItemType[] = data.cart.map((item: any) => ({
+                        id: item.id,
+                        title: item.title,
+                        description: item.description,
+                        price: parseFloat(item.price), // Ensure price is a number
+                        image: item.image,
+                        totalInStock: item.totalInStock,
+                        rating: parseFloat(item.rating), // Ensure rating is a number
+                        saleBool: item.sale_bool, // Map sale_bool to saleBool
+                        saleRate: parseFloat(item.sale_rate), // Ensure saleRate is a number
+                        saleIsTimed: item.sale_timed, // Map sale_timed to saleIsTimed
+                        saleEnd: item.sale_end,
+                        tags: item.tags, // Assuming tags are stored correctly
                         buyQuantity: itemCounts[item.id],
                     }));
                     setCartItems(uniqueItems);

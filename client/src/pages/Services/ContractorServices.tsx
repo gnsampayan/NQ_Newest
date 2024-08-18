@@ -352,7 +352,7 @@ const ContractorServices = () => {
         contractor services. Whether it's residential, commercial, or 
         industrial, our experienced professionals deliver quality workmanship 
         and exceptional results.`,
-        btnTitle: 'Become a Member',
+        btnTitle: 'Sign In',
         url: "/sign-in",
         image: ContractorImage
     };

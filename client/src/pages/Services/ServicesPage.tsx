@@ -73,7 +73,7 @@ const ServicesPage = ({ $margin }: Props) => {
         all your needs. From fast and reliable deliveries to expert contractor work, 
         convenient tool rentals, and precise installation services, we offer 
         everything to support your projects efficiently and effectively.`,
-        btnTitle: 'Become a Member',
+        btnTitle: 'Sign In',
         url: "/sign-in",
         image: ServicesImage
     }

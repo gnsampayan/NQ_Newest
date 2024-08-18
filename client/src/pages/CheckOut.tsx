@@ -161,7 +161,10 @@ const CheckOut = () => {
     const SHIPPING = 6;
 
     // Calculate subtotal by summing up the item prices in the cart
-    const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.buyQuantity, 0);
+    const subtotal = cartItems.reduce((sum, item) => {
+        const itemPrice = item.saleBool === 1 ? item.price * item.saleRate : item.price;
+        return sum + itemPrice * item.buyQuantity;
+    }, 0);
 
     // Calculate total by adding subtotal, tax, and shipping
     const total = subtotal + TAX + SHIPPING;

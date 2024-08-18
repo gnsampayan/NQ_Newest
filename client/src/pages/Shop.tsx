@@ -85,6 +85,7 @@ const SectionHeadline = styled.div`
 	align-items: flex-start;
 	gap: 10px;
 	margin-left: 60px;
+	margin-bottom: -80px;
 `
 const H3 = styled.h3`
 	align-self: stretch;

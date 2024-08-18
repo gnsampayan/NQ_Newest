@@ -25,7 +25,8 @@ const Page = styled.div`
 const Image = styled.div<{ image: string }>`
     width: 1280px;
     height: 560px;
-    background: url(${props => props.image}) lightgray center / contain  no-repeat;
+    border-radius: 20px;
+    background: url(${props => props.image}) #3B3B3B center / contain  no-repeat;
     position: relative;
     margin-top: 10px;
 `
@@ -445,7 +446,7 @@ const ItemPage = () => {
                             </Tags>
                         </AdditionalInfo>
                     </ItemInfo>
-                    {(item.saleTimed === 1) ? 
+                    {(item.saleIsTimed === 1) ? 
                         <SaleTimer>
                             <P>Sale ends in:</P>
                             <Timer>

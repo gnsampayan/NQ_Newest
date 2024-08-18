@@ -368,7 +368,7 @@ const Shipments = () => {
                     <HeroWidget 
                         headline="Reliable and Fast Deliveries"
                         subhead="Experience prompt and dependable delivery services tailored to meet your needs. From small parcels to large shipments, we ensure your items are delivered safely and on time, every time."
-                        btnTitle="Become a Member" 
+                        btnTitle="Sign In" 
                         urlDestination="/sign-in" 
                         heroImage={DeliverImage}
                     />

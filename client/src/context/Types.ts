@@ -9,7 +9,7 @@ export interface ItemType {
     tags: string[];
     saleBool: number; // boolean , 0 or 1
     saleRate: number;
-    saleTimed: number; // boolean , 0 or 1
+    saleIsTimed: number; // boolean , 0 or 1
     saleEnd: string;
   }
 
@@ -21,4 +21,6 @@ export interface CartItemType {
     price: number;
     buyQuantity: number;
     totalInStock: number;
+    saleBool: number; // boolean , 0 or 1
+    saleRate: number;
 }

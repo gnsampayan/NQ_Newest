@@ -60,9 +60,29 @@ const BoxContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
+  position: relative;
   &:hover {
     outline: 2px solid white;
   }
+`
+const WorkInProggress = styled.div`
+  position: absolute;
+  color: white;
+  /* H3 - Space Mono */
+  font-family: "Space Mono";
+  font-size: 38px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%; /* 45.6px */
+  text-transform: capitalize;
+  top: calc(50% - 68px);
+  left: calc(50% - 130px);
+  background-color: rgba(128, 128, 128, 0.5);
+  border-radius: 20px;
+  width: 260px;
+  height: 136px;
+  padding: 20px;
+  pointer-events: none;
 `
 const Buttons = styled.div`
   display: flex;
@@ -162,7 +182,8 @@ const MemberPage: React.FC = () => {
         {token && (userType === "admin") && 
           <>
           <BoxContainer>
-            <Box>
+            <Box style={{opacity: "0.3"}}>
+              <WorkInProggress>Work In Proggress</WorkInProggress>
               <BoxTitle>White Label Configuration</BoxTitle>
               <Description>Customize the look and feel of your website to align with your brand. Adjust colors, fonts, logos, and other styling elements to create a cohesive and personalized online presence that reflects your business identity.</Description>
               <Button asset={CiEdit} title={"Edit Style"} onClick={() => handleButtonClick}/>
@@ -175,7 +196,8 @@ const MemberPage: React.FC = () => {
                 <Button asset={MdViewInAr} title={"Manage Items"} onClick={handleViewStockClick}/>
               </Buttons>
             </Box>
-            <Box>
+            <Box style={{opacity: "0.3"}}>
+              <WorkInProggress>Work In Proggress</WorkInProggress>
               <BoxTitle>Delivery Settings</BoxTitle>
               <Description>List construction materials for reccuring deliveries, oversee your drivers' schedule, rate, and routes.</Description>
               <Buttons>
@@ -184,7 +206,8 @@ const MemberPage: React.FC = () => {
                 <Button asset={IoCalendarOutline} title={"View Schedule"} onClick={() => handleButtonClick}/>
               </Buttons>
             </Box>
-            <Box>
+            <Box style={{opacity: "0.3"}}>
+              <WorkInProggress>Work In Proggress</WorkInProggress>
               <BoxTitle>Contractor Operations</BoxTitle>
               <Description>Manage your contractor workforce by adding new professionals, overseeing their roles, schedules, and performance.</Description>
               <Buttons>
@@ -192,7 +215,8 @@ const MemberPage: React.FC = () => {
                 <Button asset={MdGroups} title={"View Team"} onClick={() => handleButtonClick}/>
               </Buttons>
             </Box>
-            <Box>
+            <Box style={{opacity: "0.3"}}>
+              <WorkInProggress>Work In Proggress</WorkInProggress>
               <BoxTitle>Rental Equipment Management</BoxTitle>
               <Description>Keep your rental inventory up to date by adding new equipment, editing existing listings, and managing the availability of tools and machinery for customer rentals.</Description>
               <Buttons>
@@ -200,7 +224,8 @@ const MemberPage: React.FC = () => {
                 <Button asset={PiToolboxDuotone} title={"Edit Rental Inventory"} onClick={() => handleButtonClick}/>
               </Buttons>
             </Box>
-            <Box>
+            <Box style={{opacity: "0.3"}}>
+              <WorkInProggress>Work In Proggress</WorkInProggress>
               <BoxTitle>Service Installation Management</BoxTitle>
               <Description>Offer a variety of installation services to your customers. Manage and edit all existing installation services.</Description>
               <Buttons>
@@ -214,7 +239,8 @@ const MemberPage: React.FC = () => {
         {token && (userType === "super") && 
           <>
             <BoxContainer>
-              <Box>
+              <Box style={{opacity: "0.3"}}>
+                <WorkInProggress>Work In Proggress</WorkInProggress>
                 <BoxTitle>My Schedule</BoxTitle>
                 <Description>Stay organized by viewing your work schedule, easily request time off, and submit anonymous or non-anonymous feedback to management. Keep track of your work-life balance all in one place.</Description>
                 <Buttons>

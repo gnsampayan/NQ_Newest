@@ -126,7 +126,8 @@ const CartItemsList: React.FC<CartItemsListProps> = ({ maxHeight }) => {
     const [isDelete, setIsDelete] = useState<boolean>(false);
 
     useEffect(() => {
-        fetchCartItems(); // Fetch cart items initially when component mounts
+        fetchCartItems(); 
+        console.log(cartItems);
     }, [fetchCartItems]);
 
     useEffect(() => {
@@ -177,7 +178,8 @@ const CartItemsList: React.FC<CartItemsListProps> = ({ maxHeight }) => {
             tags: [],
             saleBool: 0,
             saleRate: 0,
-            saleEnd: ''
+            saleIsTimed: 0,
+            saleEnd: '',
         };
         
         setIsDelete(true);
@@ -187,32 +189,39 @@ const CartItemsList: React.FC<CartItemsListProps> = ({ maxHeight }) => {
     return (
         <>
             <ItemsList maxHeight={maxHeight}>
-                {cartItems.map((item, index) => (
-                    item && ( // Ensure item is defined before rendering
-                    <ItemCard key={item.id}>
-                        <Contents>
-                            <ItemIndex>{index + 1}</ItemIndex>
-                            <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.description} />
-                            <ItemInfo onClick={() => handleOnClick(item)}>
-                                <ItemName>{item.title}</ItemName>
-                                <ItemDescription>{item.description}</ItemDescription>
-                            </ItemInfo>
-                        </Contents>
-                        <PriceAndDelete>
-                            <ItemPrice>${(Math.round(item.price * item.buyQuantity * 100) / 100).toFixed(2)}</ItemPrice>
-                            <ItemQuantity
-                                type="number"
-                                value={inputValues[item.id] || ""}
-                                placeholder="1"
-                                min="1"
-                                max={item.totalInStock}
-                                onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                            />
-                            <DeleteButton onClick={() => handleDelete(item)}><BsTrash3 /></DeleteButton>
-                        </PriceAndDelete>
-                    </ItemCard>
-                    )
-                ))}
+                {cartItems.map((item, index) => {
+                    const finalPrice = item.saleBool === 1 
+                        ? item.price * item.saleRate 
+                        : item.price;
+                    const totalPrice = (finalPrice * item.buyQuantity).toFixed(2);
+
+                    return (
+                        item && ( // Ensure item is defined before rendering
+                        <ItemCard key={item.id}>
+                            <Contents>
+                                <ItemIndex>{index + 1}</ItemIndex>
+                                <ItemImage src={`data:image/jpeg;base64,${item.image}`} alt={item.description} />
+                                <ItemInfo onClick={() => handleOnClick(item)}>
+                                    <ItemName>{item.title}</ItemName>
+                                    <ItemDescription>{item.description}</ItemDescription>
+                                </ItemInfo>
+                            </Contents>
+                            <PriceAndDelete>
+                                <ItemPrice>${totalPrice}</ItemPrice>
+                                <ItemQuantity
+                                    type="number"
+                                    value={inputValues[item.id] || ""}
+                                    placeholder="1"
+                                    min="1"
+                                    max={item.totalInStock}
+                                    onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                                />
+                                <DeleteButton onClick={() => handleDelete(item)}><BsTrash3 /></DeleteButton>
+                            </PriceAndDelete>
+                        </ItemCard>
+                        )
+                    );
+                })}
             </ItemsList>
             {confirmationItem && (
                 <AddToCartConfirmation 

@@ -34,7 +34,25 @@ export default function(pool) {
       }
 
       if (results.length === 0 || !results[0].items) {
-        return res.status(200).json({ cart: [], itemIdsArray: [] });
+
+        const mappedCartItems = itemResults.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: parseFloat(item.price), // Convert to a float if price is stored as a string
+          image: item.image,
+          totalInStock: item.quantity, // Map quantity to totalInStock
+          rating: parseFloat(item.rating), // Convert to a float if rating is stored as a string
+          saleBool: item.sale_bool, // Map sale_bool to saleBool
+          saleRate: parseFloat(item.sale_rate), // Convert to a float if sale_rate is stored as a string
+          saleIsTimed: item.sale_timed, // Map sale_timed to saleIsTimed
+          saleEnd: item.sale_end,
+          tags: item.tags, // Assuming tags are stored correctly
+          buyQuantity: item.buyQuantity, // Assuming buyQuantity is fetched from somewhere else or passed in
+        }));
+
+        res.status(200).json({ cart: mappedCartItems, itemIdsArray });
+        console.log(mappedCartItems);
       }
 
       let itemIdsArray = results[0].items;

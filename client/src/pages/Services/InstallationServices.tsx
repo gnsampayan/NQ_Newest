@@ -348,7 +348,7 @@ const InstallationServices = () => {
         subhead: `Ensure seamless and accurate installations with our expert services. 
         From home improvements to commercial setups, our experienced team guarantees 
         precision, safety, and satisfaction for all your installation needs.`,
-        btnTitle: 'Become a Member',
+        btnTitle: 'Sign In',
         url: "/sign-in",
         image: InstallationServicesImage
     };

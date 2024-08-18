@@ -70,7 +70,7 @@ const Blade = ({ $isVisible } : Props) => {
     const navigate = useNavigate();
 
     const handleNavigateToShop = (filterName: string) => {
-        navigate(`/shop/${filterName}`, { state: { filterName } });
+        navigate(`/shop/${filterName}`, { state: { filterName, heading: filterName } });
         location.reload();
     };
 
@@ -83,7 +83,7 @@ const Blade = ({ $isVisible } : Props) => {
             {$isVisible && (
                 <>
                     <section>
-                        <PromoButton onClick={() => handleNavigateToShop("Featured Finds")}>Featured</PromoButton>
+                        <PromoButton onClick={() => handleNavigateToShop("Featured Finds")}>Featured Finds</PromoButton>
                         <PromoButton onClick={() => handleNavigateToShop("Trending")}>Trending</PromoButton>
                         <PromoButton onClick={() => handleNavigateToShop("Best Sellers")}>Best Sellers</PromoButton>
                         <PromoButton onClick={() => handleNavigateToShop("On Sale")}>On Sale</PromoButton>
