@@ -31,7 +31,15 @@ app.use(log);
 // Configure CORS
 const corsOptions = {
   origin: (origin, callback) => {
-    const whitelist = ['https://therealglenn.com', 'http://localhost:3000', 'http://localhost:5173'];
+    const whitelist = [
+      'https://therealglenn.com', 
+      'http://localhost:3000', 
+      'http://localhost:5173', 
+      'https://162.240.97.162', 
+      'http://162.240.97.162', 
+      'https://nqhardware.com', 
+      'http://nqhardware.com'
+    ];
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
