@@ -34,25 +34,8 @@ export default function(pool) {
       }
 
       if (results.length === 0 || !results[0].items) {
-
-        const mappedCartItems = itemResults.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: parseFloat(item.price), // Convert to a float if price is stored as a string
-          image: item.image,
-          totalInStock: item.quantity, // Map quantity to totalInStock
-          rating: parseFloat(item.rating), // Convert to a float if rating is stored as a string
-          saleBool: item.sale_bool, // Map sale_bool to saleBool
-          saleRate: parseFloat(item.sale_rate), // Convert to a float if sale_rate is stored as a string
-          saleIsTimed: item.sale_timed, // Map sale_timed to saleIsTimed
-          saleEnd: item.sale_end,
-          tags: item.tags, // Assuming tags are stored correctly
-          buyQuantity: item.buyQuantity, // Assuming buyQuantity is fetched from somewhere else or passed in
-        }));
-
-        res.status(200).json({ cart: mappedCartItems, itemIdsArray });
-        console.log(mappedCartItems);
+        // If no cart or items are found, return an empty cart
+        return res.status(200).json({ cart: [], itemIdsArray: [] });
       }
 
       let itemIdsArray = results[0].items;
@@ -66,20 +49,35 @@ export default function(pool) {
           return res.status(200).json({ cart: [], itemIdsArray: [] });
         }
 
+        // Fetch item details from the items table
         pool.query('SELECT * FROM items WHERE id IN (?)', [itemIdsArray], (err, itemResults) => {
           if (err) {
             console.error('Error retrieving items from database:', err);
             return res.status(500).json({ error: 'Error retrieving items from database' });
           }
+          if (!itemResults) {
+            return res.status(500).json({ error: 'No items found in the database' });
+        }
 
-          // Map the database's quantity field to totalInStock for frontend compatibility
+          // Map the item results to a format expected by the frontend
           const mappedCartItems = itemResults.map(item => ({
-            ...item,
-            totalInStock: item.quantity // Map quantity to totalInStock
-        }));
-
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            price: parseFloat(item.price), // Convert to a float if price is stored as a string
+            image: item.image,
+            totalInStock: item.quantity, // Map quantity to totalInStock
+            rating: parseFloat(item.rating), // Convert to a float if rating is stored as a string
+            saleBool: item.sale_bool, // Map sale_bool to saleBool
+            saleRate: parseFloat(item.sale_rate), // Convert to a float if sale_rate is stored as a string
+            saleIsTimed: item.sale_timed, // Map sale_timed to saleIsTimed
+            saleEnd: item.sale_end,
+            tags: item.tags, // Assuming tags are stored correctly
+            buyQuantity: item.buyQuantity, // Assuming buyQuantity is fetched from somewhere else or passed in
+          }));
 
           res.status(200).json({ cart: mappedCartItems, itemIdsArray });
+          console.log(mappedCartItems);
         });
       } catch (parseError) {
         console.error('Error handling cart items:', parseError);
@@ -87,6 +85,7 @@ export default function(pool) {
       }
     });
   });
+
 
   // Add or Update Cart Item for the Authenticated User
   router.post('/', authenticateToken, (req, res) => {

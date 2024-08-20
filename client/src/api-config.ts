@@ -17,6 +17,6 @@ const config: { [key: string]: Config } = {
   production,
 };
 
-const env = 'production';
+const env = 'development';
 //console.log(env + " TEST");
 export default config[env];
