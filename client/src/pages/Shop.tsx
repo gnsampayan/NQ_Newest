@@ -4,7 +4,7 @@ import FilteredRow from "../components/Groupings/FilteredRow";
 import CategoriesSection from "../components/Widgets/CategoriesWidget";
 import { useEffect, useState } from "react";
 import { TabWidgetParams, carouselSmallParams } from "../components/Params/filterRowParams";
-import SmallCarousel from "../components/Groupings/Templates/smallCarousel";
+import SmallCarousel from "../components/Groupings/Templates/SmallCarousel";
 import { ItemType } from "../context/Types";
 import GenericSpread from "../components/Groupings/Templates/GenericSpread";
 import apiConfig from "../api-config";

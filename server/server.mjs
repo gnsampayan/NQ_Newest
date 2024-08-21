@@ -32,9 +32,9 @@ app.use(log);
 const corsOptions = {
   origin: (origin, callback) => {
     const whitelist = [
-      'https://therealglenn.com', 
+      'https://api.therealglenn.com', 
       'http://localhost:3000', 
-      'http://localhost:5173', 
+      'http://localhost:8081', 
       'https://162.240.97.162', 
       'http://162.240.97.162', 
       'https://nqhardware.com', 
@@ -80,9 +80,9 @@ const port = 8081;
 if (process.env.NODE_ENV === 'production') {
   // HTTPS options
   const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/api.therealglenn.com/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/api.therealglenn.com/fullchain.pem'),
-    ca: fs.readFileSync('/etc/letsencrypt/live/api.therealglenn.com/chain.pem'), // Optional: Path to your CA bundle (if you have one)
+    key: fs.readFileSync('/etc/letsencrypt/live/nqhardware.com/nqhardware.key'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/nqhardware.com/nqhardware.cert'),
+    //ca: fs.readFileSync('/etc/letsencrypt/live/api.therealglenn.com/chain.pem'), // Optional: Path to your CA bundle (if you have one)
   };
 
   https.createServer(httpsOptions, app).listen(port, () => {

@@ -7,7 +7,7 @@ import apiConfig from "../../api-config";
 import { ItemType } from "../../context/Types";
 import Button from "../Buttons/Button";
 import { BsEye } from "react-icons/bs";
-import LargeCarousel from "./Templates/largeCarousel";
+import LargeCarousel from "./Templates/LargeCarousel";
 
 const Wrapper = styled.div`
 	z-index: 5;

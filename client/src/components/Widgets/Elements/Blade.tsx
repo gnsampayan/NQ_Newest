@@ -70,7 +70,8 @@ const Blade = ({ $isVisible } : Props) => {
     const navigate = useNavigate();
 
     const handleNavigateToShop = (filterName: string) => {
-        navigate(`/shop/${filterName}`, { state: { filterName, heading: filterName } });
+        const urlFriendlyString = encodeURIComponent(filterName);
+        navigate(`/shop/${urlFriendlyString}`, { state: { filterName, heading: filterName } });
         location.reload();
     };
 
