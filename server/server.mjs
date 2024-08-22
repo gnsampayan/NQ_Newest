@@ -32,13 +32,15 @@ app.use(log);
 const corsOptions = {
   origin: (origin, callback) => {
     const whitelist = [
-      'https://api.therealglenn.com', 
-      'http://localhost:3000', 
-      'http://localhost:8081', 
-      'https://162.240.97.162', 
-      'http://162.240.97.162', 
-      'https://nqhardware.com', 
-      'http://nqhardware.com'
+      'https://api.nqhardware.com',
+      'http://localhost:8081',
+      'http://localhost:3000',
+      'https://162.240.97.162',
+      'http://162.240.97.162',
+      'https://nqhardware.com',
+      'http://nqhardware.com',
+      'https://162.241.218.79',
+      'http://162.241.218.79'
     ];
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
@@ -80,9 +82,9 @@ const port = 8081;
 if (process.env.NODE_ENV === 'production') {
   // HTTPS options
   const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/nqhardware.com/nqhardware.key'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/nqhardware.com/nqhardware.cert'),
-    //ca: fs.readFileSync('/etc/letsencrypt/live/api.therealglenn.com/chain.pem'), // Optional: Path to your CA bundle (if you have one)
+    key: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/cert.pem'),
+      ca: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/chain.pem'),
   };
 
   https.createServer(httpsOptions, app).listen(port, () => {
