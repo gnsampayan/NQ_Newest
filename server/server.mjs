@@ -32,23 +32,26 @@ app.use(log);
 const corsOptions = {
   origin: (origin, callback) => {
     const whitelist = [
-      'https://api.therealglenn.com', 
+      'https://api.nqhardware.com', 
       'http://localhost:3000', 
       'http://localhost:8081', 
       'https://162.240.97.162', 
       'http://162.240.97.162', 
       'https://nqhardware.com', 
-      'http://nqhardware.com'
+      'http://nqhardware.com',
+      'https://www.nqhardware.com'
     ];
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
+      console.error(`Blocked by CORS: ${origin}`); // Add this line
       callback(new Error('Not allowed by CORS'));
     }
   },
   optionsSuccessStatus: 200,
-  credentials: true, // If you need to send cookies or authentication headers
+  credentials: true,
 };
+
 app.use(cors(corsOptions));
 
 app.use(json()); // Middleware for parsing JSON
@@ -80,9 +83,9 @@ const port = 8081;
 if (process.env.NODE_ENV === 'production') {
   // HTTPS options
   const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/nqhardware.com/nqhardware.key'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/nqhardware.com/nqhardware.cert'),
-    //ca: fs.readFileSync('/etc/letsencrypt/live/api.therealglenn.com/chain.pem'), // Optional: Path to your CA bundle (if you have one)
+    key: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/nqhardware.key'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/nqhardware.cert'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/chain.pem'),
   };
 
   https.createServer(httpsOptions, app).listen(port, () => {

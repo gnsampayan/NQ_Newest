@@ -2,7 +2,7 @@ import axios from 'axios';
 import apiConfig from "../../../api-config";  // Make sure to update the path if necessary
 
 const HighlightedItemConfig = {
-  item: "Zipties" // Change this to any item name to test
+  item: "Zip Ties 8 inch (1000 Pack), 40lbs Tensile Strength, Black Cable Ties, Wire Ties for indoor and outdoor use, by Skalon" // Change this to any item name to test
 };
 
 const fetchSaleConfig = async () => {

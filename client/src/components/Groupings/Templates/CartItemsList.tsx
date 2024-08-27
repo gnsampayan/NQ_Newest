@@ -178,7 +178,7 @@ const CartItemsList: React.FC<CartItemsListProps> = ({ maxHeight }) => {
             tags: [],
             saleBool: 0,
             saleRate: 0,
-            saleIsTimed: 0,
+            saleTimed: 0,
             saleEnd: '',
         };
         

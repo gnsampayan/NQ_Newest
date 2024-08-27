@@ -437,8 +437,9 @@ const ItemPage = () => {
                             </Description>
                             <Details>
                                 <Label>Details</Label>
-                                <div>detail one blahblahblah</div>
-                                <div>detail two blahblahblah</div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                                <div>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio.</div>
+                                <div>Nulla lorem metus, adipiscing ut, luctus sed, malesuada id, turpis.</div>
                             </Details>
                             <Tags>
                                 <Label>Tags</Label>
@@ -446,7 +447,7 @@ const ItemPage = () => {
                             </Tags>
                         </AdditionalInfo>
                     </ItemInfo>
-                    {(item.saleIsTimed === 1) ? 
+                    {(item.saleTimed === 1) ? 
                         <SaleTimer>
                             <P>Sale ends in:</P>
                             <Timer>

@@ -51,6 +51,16 @@ const Container = styled.div<{ $stackedLayout: boolean }>`
 	align-items: center;
 	width: 100%;
 `;
+const LoadingMsg = styled.div`
+	color: var(--White, #FFF);
+	/* H5 - Space Mono */
+	font-family: "Space Mono";
+	font-size: 22px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 160%; /* 35.2px */
+	text-transform: capitalize;
+`
 
 interface TabSectionProps {
 	selectedSection: string;
@@ -59,6 +69,7 @@ interface TabSectionProps {
 const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 	const [items, setItems] = useState<ItemType[]>([]);
 	const navigate = useNavigate();
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		const fetchItems = async () => {
@@ -75,22 +86,23 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 				setItems(itemsWithTags);
 			} catch (error) {
 				console.error('Error fetching items:', error);
-			}
+			} finally {
+                setLoading(false);
+            }
 		};
 		fetchItems();
 	}, []);
 	
 
 	const filteredSection = TabWidgetParams.find(section => section.title === selectedSection);
+		if (!filteredSection) {
+			return <p>No items available for this section</p>;
+		}
+		const filteredItems = items.filter(item => item.tags && item.tags.includes(filteredSection.title));
+		const heading : string = filteredSection.title;
+		const subhead : string = filteredSection.subtitle;
 
-	if (!filteredSection) {
-		return <p>No items available for this section</p>;
-	}
 
-	const filteredItems = items.filter(item => item.tags && item.tags.includes(filteredSection.title));
-
-	const heading : string = filteredSection.title;
-	const subhead : string = filteredSection.subtitle;
 	const handleSeeAll = (filteredItems: ItemType[]) => {
 		navigate('/filtered', { state: { relevantItems : filteredItems, heading, subhead } });
 	};
@@ -110,7 +122,7 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 						fillHoverColor={"white"}
 						/>
 				</SectionHeader>
-				<LargeCarousel items={filteredItems}/>
+				{loading ? <LoadingMsg>Loading items...</LoadingMsg> : <LargeCarousel items={filteredItems}/>}
 			</Container>
 		</Wrapper>
 	);
