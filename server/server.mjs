@@ -83,9 +83,9 @@ const port = 8081;
 if (process.env.NODE_ENV === 'production') {
   // HTTPS options
   const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/nqhardware.key'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/nqhardware.cert'),
-    ca: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/chain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/cert.pem'),
+      ca: fs.readFileSync('/etc/letsencrypt/live/api.nqhardware.com/chain.pem'),
   };
 
   https.createServer(httpsOptions, app).listen(port, () => {
