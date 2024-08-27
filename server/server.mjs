@@ -32,14 +32,17 @@ app.use(log);
 const corsOptions = {
   origin: (origin, callback) => {
     const whitelist = [
-      'https://api.nqhardware.com', 
-      'http://localhost:3000', 
-      'http://localhost:8081', 
-      'https://162.240.97.162', 
-      'http://162.240.97.162', 
-      'https://nqhardware.com', 
-      'http://nqhardware.com',
-      'https://www.nqhardware.com'
+         'https://api.nqhardware.com',
+         'http://localhost:8081',
+         'http://localhost:3000',
+         'https://162.240.97.162',
+         'http://162.240.97.162',
+         'https://nqhardware.com',
+         'http://nqhardware.com',
+         'https://162.241.218.79',
+         'http://162.241.218.79',
+         'https://www.nqhardware.com',
+
     ];
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
