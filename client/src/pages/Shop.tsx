@@ -1,13 +1,14 @@
 // Shop.tsx
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import FilteredRow from "../components/Groupings/FilteredRow";
 import CategoriesSection from "../components/Widgets/CategoriesWidget";
-import { useEffect, useState } from "react";
 import { TabWidgetParams, carouselSmallParams } from "../components/Params/filterRowParams";
 import SmallCarousel from "../components/Groupings/Templates/SmallCarousel";
 import { ItemType } from "../context/Types";
 import GenericSpread from "../components/Groupings/Templates/GenericSpread";
 import apiConfig from "../api-config";
+import { useQuery } from '@tanstack/react-query';
 
 const Wrapper = styled.div<ShopProps>`
 	color: white;
@@ -132,11 +133,23 @@ interface ShopProps {
 }
 
 const Shop: React.FC<ShopProps> = ({ $margin }) => {
-	const [items, setItems] = useState<ItemType[]>([]);
 	const [selectedSection, setSelectedSection] = useState<string>(TabWidgetParams[0].title);
 	const [visibleTitles, setVisibleTitles] = useState<string[]>([]);
 	const [itemCounts, setItemCounts] = useState<{ [key: string]: number }>({});
-	const [loading, setLoading] = useState<boolean>(true);
+
+	// Use React Query to fetch and cache items
+	const { data: items = [], isLoading } = useQuery({
+		queryKey: ['items'],
+		queryFn: async () => {
+			const response = await fetch(`${apiConfig.API_URL}/items`);
+			const data = await response.json();
+			return data.map((item: ItemType) => ({
+				...item,
+				tags: item.tags || [],
+			}));
+		},
+		staleTime: 1000 * 60 * 5,
+	});
 
 	useEffect(() => {
 		const breakpoints = [
@@ -147,7 +160,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 		const handleResize = () => {
 			const width = window.innerWidth;
 			let maxTitles = TabWidgetParams.length;
-	
+
 			for (const breakpoint of breakpoints) {
 				if (width < breakpoint.width) {
 					maxTitles = breakpoint.maxTitles;
@@ -162,55 +175,38 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 			window.removeEventListener('resize', handleResize);
 		};
 	}, []);
-	
-	useEffect(() => {
-		const fetchItems = async () => {
-			try {
-				const response = await fetch(`${apiConfig.API_URL}/items`);
-				const data = await response.json();
-				// Ensure each item has a 'tags' field initialized as an array
-				const itemsWithTags = data.map((item: ItemType) => ({
-					...item,
-					tags: item.tags || [],
-				}));
-				setItems(itemsWithTags);
-				// Calculate item counts for each tab
-				const counts = TabWidgetParams.reduce((acc, tab) => {
-					const matchedItems = itemsWithTags.filter((item: ItemType) => {
-						return item.tags.some(tag => {
-							return tab.title.toLowerCase().includes(tag.toLowerCase());
-						});
-					});
-					acc[tab.title] = matchedItems.length;
-					return acc;
-				}, {} as { [key: string]: number });
 
-				setItemCounts(counts);
-			} catch (error) {
-				console.error('Error fetching items:', error);
-			} finally {
-                setLoading(false);
-            }
-		};
-		fetchItems();
-	}, []);
+	useEffect(() => {
+		// Calculate item counts for each tab whenever items change
+		const counts = TabWidgetParams.reduce((acc, tab) => {
+			const matchedItems = items.filter((item: ItemType) => {
+				return item.tags.some(tag => {
+					return tab.title.toLowerCase().includes(tag.toLowerCase());
+				});
+			});
+			acc[tab.title] = matchedItems.length;
+			return acc;
+		}, {} as { [key: string]: number });
+
+		setItemCounts(counts);
+	}, [items]);
 
 	const handleItemClick = (itemName: string) => {
 		console.log(itemName);
 	};
 
 	const SplitSections = carouselSmallParams.map((section, index) => {
-		const filteredItems = items.filter(item => section.include.some(tag => item.tags.includes(tag)));
+		const filteredItems = items.filter((item: ItemType) => section.include.some(tag => item.tags.includes(tag)));
 		return (
-			<SmallCarousel 
+			<SmallCarousel
 				key={index}
-				itemImage={filteredItems.map(item => item.image)}
-				itemDescription={filteredItems.map(item => item.description)}
-				amount={filteredItems.map(item => item.price)}
-				name={filteredItems.map(item => item.title)}
-				onClick={(itemName) => handleItemClick(itemName)} 
-				saleBool={filteredItems.map(item => item.saleBool)} 
-				saleRate={filteredItems.map(item => item.saleRate)}			
+				itemImage={filteredItems.map((item: ItemType) => item.image)}
+				itemDescription={filteredItems.map((item: ItemType) => item.description)}
+				amount={filteredItems.map((item: ItemType) => item.price)}
+				name={filteredItems.map((item: ItemType) => item.title)}
+				onClick={(itemName) => handleItemClick(itemName)}
+				saleBool={filteredItems.map((item: ItemType) => item.saleBool)}
+				saleRate={filteredItems.map((item: ItemType) => item.saleRate)}
 			/>
 		);
 	});
@@ -231,7 +227,7 @@ const Shop: React.FC<ShopProps> = ({ $margin }) => {
 	return (
 		<>
 			<Wrapper $margin={$margin}>
-				{loading ? <LoadingMsg>Loading items...</LoadingMsg> : SplitSections}
+				{isLoading ? <LoadingMsg>Loading items...</LoadingMsg> : SplitSections}
 				<Parent>
 					{Tabs.length > 0 ? Tabs : <p>Loading items...</p>}
 				</Parent>

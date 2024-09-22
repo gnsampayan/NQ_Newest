@@ -1,7 +1,7 @@
-// TabSection.tsx
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
+import { useQuery } from '@tanstack/react-query';  // Import useQuery
 import { TabWidgetParams } from '../Params/filterRowParams';
 import apiConfig from "../../api-config";
 import { ItemType } from "../../context/Types";
@@ -67,44 +67,39 @@ interface TabSectionProps {
 }
 
 const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
-	const [items, setItems] = useState<ItemType[]>([]);
 	const navigate = useNavigate();
-	const [loading, setLoading] = useState<boolean>(true);
 
-	useEffect(() => {
-		const fetchItems = async () => {
-			try {
-				const response = await fetch(`${apiConfig.API_URL}/items`);
-				const data = await response.json();
-	
-				// Temporarily extend ItemType to include sale_bool and sale_rate
-				const itemsWithTags = data.map((item: ItemType) => ({
-					...item,
-					tags: item.tags || [],
-				}));
-	
-				setItems(itemsWithTags);
-			} catch (error) {
-				console.error('Error fetching items:', error);
-			} finally {
-                setLoading(false);
-            }
-		};
-		fetchItems();
-	}, []);
-	
+	// Use useQuery to fetch and cache items
+	const { data: items = [], isLoading, isError } = useQuery({
+		queryKey: ['items'],
+		queryFn: async () => {
+			const response = await fetch(`${apiConfig.API_URL}/items`);
+			const data = await response.json();
+
+			// Ensure each item has a 'tags' property
+			return data.map((item: ItemType) => ({
+				...item,
+				tags: item.tags || [],
+			}));
+		},
+		staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+	});
+
+	if (isError) {
+		return <p>Error fetching items.</p>;
+	}
 
 	const filteredSection = TabWidgetParams.find(section => section.title === selectedSection);
-		if (!filteredSection) {
-			return <p>No items available for this section</p>;
-		}
-		const filteredItems = items.filter(item => item.tags && item.tags.includes(filteredSection.title));
-		const heading : string = filteredSection.title;
-		const subhead : string = filteredSection.subtitle;
+	if (!filteredSection) {
+		return <p>No items available for this section</p>;
+	}
 
+	const filteredItems = items.filter((item: ItemType) => item.tags && item.tags.includes(filteredSection.title));
+	const heading: string = filteredSection.title;
+	const subhead: string = filteredSection.subtitle;
 
 	const handleSeeAll = (filteredItems: ItemType[]) => {
-		navigate('/filtered', { state: { relevantItems : filteredItems, heading, subhead } });
+		navigate('/filtered', { state: { relevantItems: filteredItems, heading, subhead } });
 	};
 
 	return (
@@ -115,14 +110,14 @@ const TabSection: React.FC<TabSectionProps> = ({ selectedSection }) => {
 						<H3>{heading}</H3>
 						<P>{subhead}</P>
 					</div>
-					<Button 
-						asset={BsEye} 
-						title={"See All"} 
+					<Button
+						asset={BsEye}
+						title={"See All"}
 						onClick={() => handleSeeAll(filteredItems)}
 						fillHoverColor={"white"}
-						/>
+					/>
 				</SectionHeader>
-				{loading ? <LoadingMsg>Loading items...</LoadingMsg> : <LargeCarousel items={filteredItems}/>}
+				{isLoading ? <LoadingMsg>Loading items...</LoadingMsg> : <LargeCarousel items={filteredItems} />}
 			</Container>
 		</Wrapper>
 	);

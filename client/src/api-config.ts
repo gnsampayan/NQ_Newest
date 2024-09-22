@@ -5,6 +5,7 @@ interface Config {
 //Local Machine running Express JS
 const development: Config = {
   API_URL: 'http://localhost:8081/api',
+  // API_URL: 'https://api.gspyn.com/api',
 };
 // Bluehost VPS running Express JS
 const production: Config = {
@@ -17,6 +18,6 @@ const config: { [key: string]: Config } = {
   production,
 };
 
-const env = 'production';
+const env = 'development';
 //console.log(env + " TEST");
 export default config[env];

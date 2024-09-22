@@ -34,7 +34,7 @@ const corsOptions = {
     const whitelist = [
          'https://api.nqhardware.com',
          'http://localhost:8081',
-         'http://localhost:3000',
+         'http://localhost:5173', // dev
          'https://162.240.97.162',
          'http://162.240.97.162',
          'https://nqhardware.com',

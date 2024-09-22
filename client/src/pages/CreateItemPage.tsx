@@ -7,6 +7,9 @@ import { MdOutlineNewLabel } from "react-icons/md";
 import { LuDelete } from "react-icons/lu";
 import { RiSave3Fill } from "react-icons/ri";
 import { IoMdAdd } from 'react-icons/io';
+import { z } from 'zod';
+import { tagSchema } from '../schemas/tagSchema';
+import { itemCreateSchema, itemResponseSchema, itemCreateResponseSchema, itemUpdateResponseSchema, itemUpdateSchema } from '../schemas/itemSchema';
 
 // Styled components
 const Wrapper = styled.div`
@@ -194,6 +197,10 @@ const AddTagButton = styled.button`
         color: #A259FF;
     }
 `
+const ErrorText = styled.p`
+    color: red;
+    font-size: 12px;
+`
 
 interface ItemCreationProps {
     isEditing: boolean;
@@ -205,7 +212,7 @@ interface TagResponse {
     tag: string;
 }
 
-const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreationProps ) => {
+const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate }: ItemCreationProps) => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string>('');
     const [title, setTitle] = useState<string>('');
@@ -223,28 +230,48 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     const [databaseTags, setDatabaseTags] = useState<string[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
+    const [formErrors, setFormErrors] = useState<z.ZodIssue[] | null>(null);
+
     const tagInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (isEditing && itemData) {
-            setTitle(itemData.title || '');
-            setDescription(itemData.description || '');
-            setPrice(itemData.price.toString() || '');
-            setTags(itemData.tags || []);
-            setQuantity(itemData.quantity || 0);
-            setSaleBool(itemData.saleBool || 0);
-            setSaleRate(itemData.saleBool ? itemData.saleRate : null);
-            setSaleTimed(itemData.saleTimed || 0 );
-            setSaleEnd(itemData.saleTimed ? itemData.saleEnd : '');
-            
-            if (itemData.image) {
-                // Assuming itemData.image is a Base64 string from the backend
-                setPreview(`data:image/jpeg;base64,${itemData.image}`);
+            try {
+                const validatedItem = itemResponseSchema.parse(itemData);
+                setTitle(validatedItem.title || '');
+                setDescription(validatedItem.description || '');
+                setPrice(validatedItem.price.toString() || '');
+                setTags(validatedItem.tags || []);
+                setQuantity(validatedItem.quantity || 0);
+                setSaleBool(validatedItem.saleBool ? 1 : 0);
+                setSaleRate(validatedItem.saleRate ? parseFloat(validatedItem.saleRate) : null);
+                setSaleTimed(validatedItem.saleTimed ? 1 : 0);
+                setSaleEnd(validatedItem.saleTimed ? validatedItem.saleEnd ?? '' : '');
+
+                if (validatedItem.image) {
+                    setPreview(`data:image/jpeg;base64,${validatedItem.image}`);
+                    // Convert base64 to Blob, then to File
+                    const byteString = atob(validatedItem.image);
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    for (let i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    const blob = new Blob([ab], { type: 'image/jpeg' });
+                    const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                    setSelectedImage(file);
                 } else {
                     setPreview('');
                 }
+            } catch (error) {
+                if (error instanceof z.ZodError) {
+                    console.error("Validation error for item data:", error.errors);
+                } else {
+                    console.error("Error validating item data:", error);
+                }
             }
-            fetchTags();
+        }
+        fetchTags();
     }, [isEditing, itemData]);
 
     const fetchTags = async () => {
@@ -253,14 +280,20 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             if (!response.ok) {
                 throw new Error(`Error: Failed to fetch tags. Status: ${response.status}`);
             }
-    
+
             const responseText = await response.text();
-            console.log('Response Text:', responseText); // Log the raw response text
-    
+
             // Only parse JSON if the response text is not empty
             if (responseText) {
                 const data: TagResponse[] = JSON.parse(responseText);
-                const tags = data.map(item => item.tag);
+
+                const result = z.array(tagSchema).safeParse(data);
+                if (!result.success) {
+                    console.error('Tag validation failed:', result.error);
+                    throw new Error('Invalid tag data received from the server');
+                }
+
+                const tags = result.data.map(item => item.tag);
                 setDatabaseTags(tags);
             } else {
                 console.error('Empty response from the server');
@@ -269,7 +302,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
             console.error('Failed to fetch tags:', error);
         }
     };
-    
+
     const downsampleImage = (file: File, callback: (blob: Blob) => void) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -281,7 +314,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                 scale = scale > 1 ? 1 : scale; // Ensure scale is not greater than 1
                 canvas.width = img.width * scale;
                 canvas.height = img.height * scale;
-    
+
                 const ctx = canvas.getContext('2d');
                 if (ctx) {
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -302,7 +335,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     const handleSaleBoolChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.target.checked;
         setSaleBool(isChecked ? 1 : 0);
-    
+
         if (!isChecked) {
             // If saleBool is 0, automatically set saleTimed to 0 and clear saleRate
             setSaleRate(null);
@@ -334,7 +367,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         }
     };
 
-    const formatPrice = (value : any) => {
+    const formatPrice = (value: any) => {
         // Remove non-numeric characters except the decimal point
         const cleaned = ('' + value).replace(/[^\d.]/g, '');
         // Format the number to two decimal places
@@ -347,55 +380,91 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
     };
 
     const displayPrice = price ? `$${price}` : '';
-    
+
     const handleQuantityChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const newQuantity = parseInt(e.target.value);
         setQuantity(newQuantity)
     }
 
+    const validateFormData = () => {
+        try {
+            const schema = isEditing ? itemUpdateSchema : itemCreateSchema;
+            const validatedData = schema.parse({
+                id: isEditing && itemData ? itemData.id : undefined,
+                title: title,
+                description: description,
+                price: parseFloat(price),
+                quantity: quantity,
+                tags: tags,
+                image: selectedImage ? selectedImage.name : undefined,
+                saleBool: saleBool === 1 ? true : false,
+                saleRate: saleRate !== null ? saleRate : undefined,
+                saleTimed: saleTimed === 1 ? true : false,
+                saleEnd: saleEnd ? new Date(saleEnd) : undefined,
+            });
+            return { isValid: true, errors: null, validatedData };
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return { isValid: false, errors: error.errors, validatedData: null };
+            }
+            return { isValid: false, errors: [{ message: 'An error occurred while validating the form data' }], validatedData: null };
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (saleBool === 1 && (saleRate === null || saleRate <= 0)) {
+        const { isValid, errors, validatedData } = validateFormData();
+
+        if (!isValid || !validatedData) {
+            setFormErrors(errors as z.ZodIssue[]);
+            console.log("errors on submit", errors);
+            return;
+        } else {
+            setFormErrors(null);
+            console.log("validatedData on submit", validatedData);
+        }
+
+        if (validatedData.saleBool && (validatedData.saleRate == null || validatedData.saleRate <= 0)) {
             alert("Sale Rate is required and must be greater than 0 when sale is enabled.");
             return;
         }
 
-        if (saleTimed === 1 && !saleEnd) {
+        if (validatedData.saleTimed && !validatedData.saleEnd) {
             alert("Sale End Date is required when sale timer is enabled.");
             return;
         }
 
         const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('price', price);
-        formData.append('tags', JSON.stringify(tags));
-        formData.append('quantity', quantity.toString());
-        // Append sale fields
-        formData.append('saleBool', saleBool.toString());
-        formData.append('saleRate', saleRate !== null ? saleRate.toString() : '');
-        formData.append('saleTimed', saleTimed.toString());
-        formData.append('saleEnd', saleEnd);
+        formData.append('title', validatedData.title);
+        formData.append('description', validatedData.description || '');
+        formData.append('price', validatedData.price.toString());
+        formData.append('tags', JSON.stringify(validatedData.tags));
+        formData.append('quantity', validatedData.quantity.toString());
+        formData.append('saleBool', validatedData.saleBool ? '1' : '0');
+        formData.append('saleRate', validatedData.saleRate ? validatedData.saleRate.toString() : '');
+        formData.append('saleTimed', validatedData.saleTimed ? '1' : '0');
+        formData.append('saleEnd', validatedData.saleEnd ? validatedData.saleEnd.toISOString() : '');
         if (selectedImage) {
             formData.append('image', selectedImage);
         }
-    
+
         try {
             // Check if item exists if creating a new item
             if (!isEditing) {
-                const checkExistsResponse = await fetch(`${apiConfig.API_URL}/items/check-exists?title=${encodeURIComponent(title)}`);
+                const checkExistsResponse = await fetch(`${apiConfig.API_URL}/items/check-exists?title=${encodeURIComponent(validatedData.title)}`);
                 if (!checkExistsResponse.ok) {
                     throw new Error(`Error: Failed to check if item exists. Status: ${checkExistsResponse.status}`);
-                }            
+                }
                 const checkExistsData = await checkExistsResponse.json();
                 if (checkExistsData.exists) {
                     console.error('Error: Item already exists');
+                    alert('Error: Item already exists.');
                     return;
                 }
                 console.log(checkExistsData);
             }
-    
+
             // Create or update item
             let response;
             if (isEditing && itemData) {
@@ -404,19 +473,24 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     method: 'PUT',
                     body: formData,
                 });
-                console.log('Perform update operation');
+                console.log('Performed update operation');
             } else {
                 response = await fetch(`${apiConfig.API_URL}/items`, {
                     method: 'POST',
                     body: formData,
                 });
-                console.log('Perform create operation');
+                console.log('Performed create operation');
             }
-    
+
             if (response.ok) {
                 const responseData = await response.json();
-                console.log(responseData);
-    
+                console.log('Server responseData: ', responseData);
+                const result = isEditing ? itemUpdateResponseSchema.safeParse(responseData) : itemCreateResponseSchema.safeParse(responseData);
+                if (!result.success) {
+                    console.error('Validation errors in response data:', result.error.errors);
+                    throw new Error('Invalid response data format');
+                }
+
                 // Call onSuccessfulUpdate after successful response
                 if (typeof onSuccessfulUpdate === 'function') {
                     onSuccessfulUpdate();
@@ -439,14 +513,18 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                 }
                 // Refetch the tags after successful submission
                 fetchTags();
+                alert('Item created successfully');
             } else {
-                console.error(`Error: ${response.status}`, await response.json());
+                const errorData = await response.json();
+                console.error(`Error: ${response.status}`, errorData);
+                alert(`Error submitting form: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
+            alert('Error submitting form, please try again.');
         }
     };
-    
+
     // Filter tags based on input
     const filteredTags = databaseTags ? databaseTags.filter(
         dbTag => dbTag.toLowerCase().includes(tag.toLowerCase()) && !tags.includes(dbTag)
@@ -508,17 +586,16 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
         const now = new Date();
         return now.toISOString().slice(0, 19) + 'Z'; // Format as YYYY-MM-DDTHH:MM:SSZ
     };
-    
 
     return (
         <Wrapper>
             <Form onSubmit={handleSubmit}>
                 <Description>
                     <Label>Upload Item Image</Label>
-                    <Input 
+                    <Input
                         key={inputKey}
-                        type="file" 
-                        accept="image/*" 
+                        type="file"
+                        accept="image/*"
                         onChange={handleImageChange}
                     />
                     {preview && <ImagePreview src={preview} alt="Preview" />}
@@ -526,16 +603,19 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                 <Heading>Item Details</Heading>
                 <Description>
                     <Label>Item title</Label>
-                    <Input 
+                    <Input
                         type="text"
                         placeholder="Type item title here"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
+                    {formErrors && formErrors.some(error => error.path.includes('name')) && (
+                        <ErrorText>{formErrors.find(error => error.path.includes('name'))?.message}</ErrorText>
+                    )}
                 </Description>
                 <Description>
                     <Label>Item description</Label>
-                    <TextArea 
+                    <TextArea
                         name="description"
                         placeholder="Type description here"
                         value={description}
@@ -545,7 +625,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                 <PricingAndSales>
                     <Description>
                         <Label>Item price</Label>
-                        <Input 
+                        <Input
                             type="text"
                             placeholder="$0.00"
                             value={displayPrice}
@@ -554,17 +634,17 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                     </Description>
                     <Description>
                         <Label>Enable Sale</Label>
-                        <input 
-                            type="checkbox" 
-                            checked={saleBool === 1} 
-                            onChange={handleSaleBoolChange} 
+                        <input
+                            type="checkbox"
+                            checked={saleBool === 1}
+                            onChange={handleSaleBoolChange}
                         />
                     </Description>
-                    {(saleBool === 1) && 
+                    {(saleBool === 1) &&
                         <>
                             <Description>
                                 <Label>Sale Rate</Label>
-                                <Input 
+                                <Input
                                     type="number"
                                     placeholder="0.00"
                                     value={saleRate !== null ? saleRate : ''}
@@ -576,17 +656,17 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                             </Description>
                             <Description>
                                 <Label>Add Timer?</Label>
-                                <input 
-                                    type="checkbox" 
-                                    checked={saleTimed === 1} 
-                                    onChange={handleSaleTimedChange} 
+                                <input
+                                    type="checkbox"
+                                    checked={saleTimed === 1}
+                                    onChange={handleSaleTimedChange}
                                 />
                             </Description>
-                            {(saleTimed === 1) && 
+                            {(saleTimed === 1) &&
                                 <Description>
                                     <Label>Sale End Date</Label>
-                                    <Input 
-                                        style={{width: "200px"}}
+                                    <Input
+                                        style={{ width: "200px" }}
                                         type="text"
                                         placeholder={getCurrentDateTime()}
                                         value={saleEnd}
@@ -626,18 +706,18 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                                 </Dropdown>
                             )}
                         </TagSearch>
-                        <AddTagButton onClick={handleTagAdd} type="button"><MdOutlineNewLabel/>Create New Tag</AddTagButton>
+                        <AddTagButton onClick={handleTagAdd} type="button"><MdOutlineNewLabel />Create New Tag</AddTagButton>
                     </TagSearchAndSubmit>
                 </Description>
                 <Description>
                     <Label>Current Tags</Label>
                     <TagItems>
                         {tags.map((tag, index) => (
-                                <Tag key={index}>
-                                    <TagName>{tag}</TagName>
-                                    <DeleteTagBtn type='button' onClick={() => handleTagDelete(tag)}><LuDelete/></DeleteTagBtn>
-                                </Tag>
-                            ))}
+                            <Tag key={index}>
+                                <TagName>{tag}</TagName>
+                                <DeleteTagBtn type='button' onClick={() => handleTagDelete(tag)}><LuDelete /></DeleteTagBtn>
+                            </Tag>
+                        ))}
                     </TagItems>
                 </Description>
                 <Label>Item quantity</Label>
@@ -649,7 +729,7 @@ const ItemCreation = ({ isEditing, itemData, onSuccessfulUpdate } : ItemCreation
                 />
                 <SubmitContainer>
                     <Submit type="submit">
-                        <Button asset={isEditing ? RiSave3Fill : IoMdAdd} title={isEditing ? 'Save Changes' : 'Create Item'} onClick={() => {}} />
+                        <Button asset={isEditing ? RiSave3Fill : IoMdAdd} title={isEditing ? 'Save Changes' : 'Create Item'} onClick={() => { }} />
                     </Submit>
                 </SubmitContainer>
             </Form>

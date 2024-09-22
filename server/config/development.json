@@ -3,11 +3,20 @@
     "mail": {
         "host": "dev-mail-server"
     },
+    "comment": {
+        "oldServer": {
+            "host": "localhost",
+            "user": "root",
+            "password": "mrbonkers123",
+            "database": "dev_featured",
+            "port" : 3306
+        }
+    },
     "server": {
-        "host": "localhost",
-        "user": "root",
-        "password": "mrbonkers123",
-        "database": "dev_featured",
+        "host": "192.168.1.100",
+        "user": "admin",
+        "password": "Mrbonkers123!",
+        "database": "nq",
         "port" : 3306
     }
     
